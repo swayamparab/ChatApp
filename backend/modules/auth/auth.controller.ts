@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { signup } from "./auth.service";
-import { signupSchema } from "./auth.validation";
-import { ZodError } from "zod";
+import { login, signup } from "./auth.service";
+import { loginSchema, signupSchema } from "./auth.validation";
+import { success, ZodError } from "zod";
 
 export async function signupController(req: Request, res: Response) {
     try {
@@ -41,4 +41,72 @@ export async function signupController(req: Request, res: Response) {
             message: "Internal Server Error",
         });
     }
+}
+
+export async function loginController(req: Request, res: Response) {
+    try {
+
+        const data = loginSchema.parse(req.body);
+
+        const { token, user } = await login(data);
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: "Login successful",
+            user
+        })
+    }
+    catch (error) {
+        console.error(error);
+
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+                success: false,
+                errors: error.issues,
+            });
+        }
+
+        if (error instanceof Error) {
+            if (error.message === "Invalid credentials") {
+                return res.status(401).json({
+                    success: false,
+                    message: error.message,
+                });
+            }
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+export async function logoutController(req: Request, res: Response) {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 }
