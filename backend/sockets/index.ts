@@ -1,6 +1,7 @@
 import {Server as HttpServer} from "http"
 import {Server} from "socket.io"
 import { env } from "../config/env"
+import { handleConnection } from "./events/connection.event"
 
 export function createSocketServer(server: HttpServer){
     const io = new Server(server, {
@@ -11,11 +12,7 @@ export function createSocketServer(server: HttpServer){
     })
 
     io.on("connection", (socket)=>{
-        console.log(`Client connected: ${socket.id}`)
-
-        socket.on("disconnect", ()=>{
-            console.log(`Client disconnected: ${socket.id}`)
-        })
+        handleConnection(socket)
     })
 
     return io;
