@@ -1,7 +1,7 @@
 import { verifyToken } from "@/lib/jwt";
 import { Request, Response, NextFunction } from "express";
 
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
     try {
         const token = req.cookies.token;
 

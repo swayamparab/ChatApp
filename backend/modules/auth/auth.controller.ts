@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { login, signup } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.validation";
 import { success, ZodError } from "zod";
+import { findUserById } from "../users/user.service";
 
 export async function signupController(req: Request, res: Response) {
     try {
@@ -90,23 +91,51 @@ export async function loginController(req: Request, res: Response) {
 }
 
 export async function logoutController(req: Request, res: Response) {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
 
-    return res.status(200).json({
-      success: true,
-      message: "Logged out successfully",
-    });
-  } catch (error) {
-    console.error(error);
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully",
+        });
+    } catch (error) {
+        console.error(error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+}
+
+export async function getMeController(req: Request, res: Response) {
+    try {
+        const user = await findUserById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const { password, ...safeUser } = user;
+
+        return res.status(200).json({
+            success: true,
+            user: safeUser,
+        });
+    }
+    catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
 }
