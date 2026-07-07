@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { login, signup } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.validation";
-import { success, ZodError } from "zod";
+import {  ZodError } from "zod";
 import { findUserById } from "../users/user.service";
 
 export async function signupController(req: Request, res: Response) {
