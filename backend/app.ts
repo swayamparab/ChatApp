@@ -5,6 +5,7 @@ import healthRouter from './modules/health/health.route'
 import authRouter from "./modules/auth/auth.routes"
 import chatRequestRoutes from "./modules/chat-request/chat-request.routes"
 import conversationRoutes from "./modules/conversation/conversation.routes"
+import messagesRoutes from "./modules/message/message.routes";
 
 const app = express();
 
@@ -26,5 +27,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/chat-requests", chatRequestRoutes)
 
 app.use("/api/conversations", conversationRoutes);
+
+app.use("/api/conversations", messagesRoutes);
 
 export default app;
