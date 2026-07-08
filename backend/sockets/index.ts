@@ -15,7 +15,7 @@ export function createSocketServer(server: HttpServer){
     io.use(socketAuth);
 
     io.on("connection", (socket)=>{
-        handleConnection(socket)
+        handleConnection(io,socket)
     })
 
     return io;

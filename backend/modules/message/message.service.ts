@@ -33,7 +33,7 @@ export async function getMessages(userId: string, data: GetMessagesInput) {
     })
 }
 
-export async function sendMessage(userId:string, data: SendMessageInput) {
+export async function sendMessage(userId: string, data: SendMessageInput) {
     const participant = db.query.conversationParticipants.findFirst({
         where: and(
             eq(conversationParticipants.userId, userId),
@@ -41,16 +41,28 @@ export async function sendMessage(userId:string, data: SendMessageInput) {
         )
     })
 
-    if(!participant){
+    if (!participant) {
         throw new Error("You are not participant of this conversation");
     }
 
-    const [message] = await db.insert(messages)
-    .values({
-        conversationId: data.conversationId,
-        senderId: userId,
-        content: data.content
-    }).returning();
+    const [insertedMessage] = await db.insert(messages)
+        .values({
+            conversationId: data.conversationId,
+            senderId: userId,
+            content: data.content
+        }).returning();
+
+    const message = await db.query.messages.findFirst({
+        where: eq(messages.id, insertedMessage.id),
+        with: {
+            sender: {
+                columns: {
+                    id: true,
+                    username: true,
+                },
+            },
+        },
+    });
 
     return message;
 }

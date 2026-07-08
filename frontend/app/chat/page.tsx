@@ -71,14 +71,44 @@ export default function ChatPage() {
             console.log("Connected", socket.id)
         })
 
+        socket.on("new_message", (message) => {
+            setMessages((prev) => [...prev, message])
+        })
+
         socket.on("disconnect", () => {
             console.log("Disconnected")
         })
 
         return () => {
+            socket.off("new_message");
             socket.disconnect();
         }
     }, [])
+
+    async function handleSendMessage() {
+        if (!selectedConversation) return;
+
+        if (!content.trim()) return;
+
+        socket.emit(
+            "send_message",
+            {
+                conversationId: selectedConversation.conversationId,
+                content,
+            },
+            (response: {
+                success: boolean;
+                message?: string;
+            }) => {
+                if (!response.success) {
+                    alert(response.message);
+                    return;
+                }
+
+                setContent("");
+            }
+        );
+    }
 
     return (
         <div
@@ -190,7 +220,7 @@ export default function ChatPage() {
                     placeholder="Message..."
                 />
 
-                <button>Send</button>
+                <button onClick={handleSendMessage}>Send</button>
             </div>
         </div>
     );
