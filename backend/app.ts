@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import healthRouter from './modules/health/health.route'
 import authRouter from "./modules/auth/auth.routes"
 import chatRequestRoutes from "./modules/chat-request/chat-request.routes"
+import conversationRoutes from "./modules/conversation/conversation.routes"
 
 const app = express();
 
@@ -23,5 +24,7 @@ app.use("/health", healthRouter);
 app.use("/api/auth", authRouter);
 
 app.use("/api/chat-requests", chatRequestRoutes)
+
+app.use("/api/conversations", conversationRoutes);
 
 export default app;
