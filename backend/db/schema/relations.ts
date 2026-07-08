@@ -4,12 +4,16 @@ import { users } from "./users";
 import { chatRequests } from "./chat-requests";
 import { conversations } from "./conversations";
 import { conversationParticipants } from "./conversation-participants";
+import { messages } from "./messages";
 
 //A conversation has many participants.
+// One conversation has many messages.
 export const conversationsRelations = relations(
     conversations,
     ({ many }) => ({
         participants: many(conversationParticipants),
+
+        messages: many(messages)
     })
 );
 //A participant belongs to one conversation.
@@ -32,6 +36,7 @@ export const conversationParticipantsRelations = relations(
 // many sent requests
 // many received requests
 // many conversation participations
+// many messages
 export const usersRelations = relations(users, ({ many }) => ({
     sentRequests: many(chatRequests, {
         relationName: "sender",
@@ -42,6 +47,8 @@ export const usersRelations = relations(users, ({ many }) => ({
     }),
 
     conversationParticipants: many(conversationParticipants),
+
+    messages: many(messages)
 }));
 
 // Each chat request belongs to:
@@ -63,3 +70,17 @@ export const chatRequestsRelations = relations(
         }),
     })
 );
+
+//every message belongs to exactly ONE conversation.
+//every message has exactly one sender.
+export const messagesRelations = relations(messages, ({ one }) => ({
+    conversation: one(conversations, {
+        fields: [messages.conversationId],
+        references: [conversations.id],
+    }),
+
+    sender: one(users, {
+        fields: [messages.senderId],
+        references: [users.id],
+    }),
+}));
