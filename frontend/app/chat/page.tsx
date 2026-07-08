@@ -131,9 +131,17 @@ export default function ChatPage() {
                             onClick={() => {
                                 setSelectedConversation(conversation);
                                 loadMessages(conversation.conversationId);
-                                socket.emit("join_conversation", {
-                                    conversationId: conversation.conversationId
-                                })
+                                console.log("Joining room", conversation.conversationId);
+
+                                socket.emit(
+                                    "join_conversation",
+                                    {
+                                        conversationId: conversation.conversationId,
+                                    },
+                                    (response: { success: boolean; message?: string }) => {
+                                        console.log(response);
+                                    }
+                                );
                             }}
                             style={{
                                 cursor: "pointer",
