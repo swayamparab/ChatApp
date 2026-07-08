@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { GetMessagesInput } from "./message.validation";
+import { GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, messages } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
@@ -31,4 +31,26 @@ export async function getMessages(userId: string, data: GetMessagesInput) {
             asc(messages.createdAt)
         ]
     })
+}
+
+export async function sendMessage(userId:string, data: SendMessageInput) {
+    const participant = db.query.conversationParticipants.findFirst({
+        where: and(
+            eq(conversationParticipants.userId, userId),
+            eq(conversationParticipants.conversationId, data.conversationId)
+        )
+    })
+
+    if(!participant){
+        throw new Error("You are not participant of this conversation");
+    }
+
+    const [message] = await db.insert(messages)
+    .values({
+        conversationId: data.conversationId,
+        senderId: userId,
+        content: data.content
+    }).returning();
+
+    return message;
 }
