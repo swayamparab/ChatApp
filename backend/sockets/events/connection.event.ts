@@ -1,18 +1,10 @@
 import { Socket } from "socket.io";
+import { registerConversationEvents } from "./conversation.event";
 
 export function handleConnection(socket: Socket) {
-  console.log(
-    `User ${socket.userId} connected with socket ${socket.id}`
-  );
+  console.log(`User ${socket.userId} connected`);
 
-  socket.on("ping", (callback) => {
-    console.log(`Ping recieved from ${socket.id}`)
-
-    callback({
-      success: true,
-      message: "Pong!"
-    })
-  })
+  registerConversationEvents(socket);
 
   socket.on("disconnect", () => {
     console.log(`User ${socket.userId} disconnected`);

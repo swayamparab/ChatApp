@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { conversationParticipants } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function getConversations(userId: string) {
   const conversations = await db.query.conversationParticipants.findMany({
@@ -35,4 +35,21 @@ export async function getConversations(userId: string) {
       otherUser: otherParticipant?.user ?? null,
     };
   });
+}
+
+export async function isParticipant(
+  userId: string,
+  conversationId: string
+) {
+  const participant = await db.query.conversationParticipants.findFirst({
+    where: and(
+      eq(conversationParticipants.userId, userId),
+      eq(
+        conversationParticipants.conversationId,
+        conversationId
+      )
+    ),
+  });
+
+  return !!participant;
 }
