@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../../lib/socket";
 
 export default function ChatPage() {
@@ -15,6 +15,11 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<any[]>([]);
 
     const [content, setContent] = useState("");
+
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    const [typingUser, setTypingUser] = useState<string | null>(null);
 
     useEffect(() => {
         loadConversations();
@@ -79,8 +84,18 @@ export default function ChatPage() {
             console.log("Disconnected")
         })
 
+        socket.on("user_typing", (data) => {
+            setTypingUser(data.userId);
+        });
+
+        socket.on("user_stop_typing", () => {
+            setTypingUser(null);
+        });
+
         return () => {
             socket.off("new_message");
+            socket.off("user_typing");
+            socket.off("user_stop_typing");
             socket.disconnect();
         }
     }, [])
@@ -108,6 +123,34 @@ export default function ChatPage() {
                 setContent("");
             }
         );
+    }
+
+    function handleTyping(value: string) {
+        setContent(value);
+
+        if (!selectedConversation) return;
+
+        if (!isTyping) {
+            socket.emit("typing", {
+                conversationId: selectedConversation.conversationId
+            })
+            setIsTyping(true);
+        }
+
+        if (typingTimeout.current) {
+            clearTimeout(typingTimeout.current)
+        }
+
+        typingTimeout.current = setTimeout(() => {
+
+            socket.emit("stop_typing", {
+                conversationId: selectedConversation.conversationId
+            })
+
+            setIsTyping(false);
+
+        }, 2000);
+
     }
 
     return (
@@ -199,6 +242,12 @@ export default function ChatPage() {
                         : "Select a Conversation"}
                 </h2>
 
+                {typingUser && (
+                    <p>
+                        {selectedConversation?.otherUser.username} is typing...
+                    </p>
+                )}
+
                 <div
                     style={{
                         height: "80vh",
@@ -216,7 +265,7 @@ export default function ChatPage() {
 
                 <input
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) => handleTyping(e.target.value)}
                     placeholder="Message..."
                 />
 
