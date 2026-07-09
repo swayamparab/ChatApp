@@ -18,8 +18,9 @@ export default function ChatPage() {
 
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
-
     const [typingUser, setTypingUser] = useState<string | null>(null);
+
+    const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
     useEffect(() => {
         loadConversations();
@@ -92,10 +93,44 @@ export default function ChatPage() {
             setTypingUser(null);
         });
 
+        socket.on("user_online", ({ userId }) => {
+            setOnlineUsers((prev) =>
+                prev.includes(userId)
+                    ? prev
+                    : [...prev, userId]
+            );
+        });
+
+        socket.on("user_offline", ({ userId }) => {
+            setOnlineUsers((prev) =>
+                prev.filter((id) => id !== userId)
+            );
+        });
+
+        socket.on("online_users", (data) => {
+            setOnlineUsers(data.userIds);
+        });
+
+        socket.on(
+            "message_deleted",
+            ({ messageId }) => {
+                setMessages((prev) =>
+                    prev.filter(
+                        (message) =>
+                            message.id !== messageId
+                    )
+                );
+            }
+        );
+
         return () => {
             socket.off("new_message");
             socket.off("user_typing");
             socket.off("user_stop_typing");
+            socket.off("user_online");
+            socket.off("user_offline");
+            socket.off("online_users");
+            socket.off("message_deleted")
             socket.disconnect();
         }
     }, [])
@@ -259,8 +294,28 @@ export default function ChatPage() {
                             <b>{message.sender.username}</b>
 
                             <p>{message.content}</p>
+
+                            <button
+                                onClick={() => {
+                                    socket.emit(
+                                        "delete_message",
+                                        {
+                                            messageId: message.id,
+                                        },
+                                        (response: {
+                                            success: boolean;
+                                            message?: string;
+                                        }) => {
+                                            console.log(response);
+                                        }
+                                    );
+                                }}
+                            >
+                                Delete
+                            </button>
                         </div>
                     ))}
+
                 </div>
 
                 <input

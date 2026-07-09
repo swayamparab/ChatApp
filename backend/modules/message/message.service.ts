@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { GetMessagesInput, SendMessageInput } from "./message.validation";
+import { deleteMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, messages } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
@@ -65,4 +65,25 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
     });
 
     return message;
+}
+
+export async function deleteMessage(userId: string, data: deleteMessageInput) {
+    const message = await db.query.messages.findFirst({
+        where: eq(messages.id, data.messageId)
+    })
+
+    if (!message) {
+        throw new Error("Message not found")
+    }
+
+    if (message.senderId !== userId) {
+        throw new Error("Unauthorized")
+    }
+
+    await db.delete(messages).where(eq(messages.id, data.messageId));
+
+    return {
+        messageId: message.id,
+        conversationId: message.conversationId
+    }
 }
