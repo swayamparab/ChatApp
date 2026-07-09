@@ -17,12 +17,7 @@
 
     "resolveJsonModule": true,
 
-    "types": ["node"],
-
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "types": ["node"]
   },
 
   "include": ["**/*.ts"],

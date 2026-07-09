@@ -4,7 +4,7 @@ import { eq, or } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import type { SignupInput } from "./auth.validation";
 import type { LoginInput } from "./auth.validation";
-import { generateToken } from "@/lib/jwt";
+import { generateToken } from "../../lib/jwt";
 
 export async function signup(data: SignupInput) {
     const existingUsername = await db.query.users.findFirst({

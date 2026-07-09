@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { deleteMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
-import { conversationParticipants, messages } from "@/db/schema";
+import { conversationParticipants, messages } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function getMessages(userId: string, data: GetMessagesInput) {

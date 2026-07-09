@@ -1,4 +1,4 @@
-import { requireAuth } from "@/middleware/auth";
+import { requireAuth } from "../../middleware/auth";
 import { Router } from "express";
 import { getMessagesController, sendMessageController } from "./message.controller";
 

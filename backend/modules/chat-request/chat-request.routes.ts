@@ -1,4 +1,4 @@
-import { requireAuth } from "@/middleware/auth";
+import { requireAuth } from "../../middleware/auth";
 import { Router } from "express";
 import { acceptChatRequestController, sendChatRequestController } from "./chat-request.controller";
 

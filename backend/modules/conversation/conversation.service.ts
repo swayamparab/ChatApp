@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { conversationParticipants } from "@/db/schema";
+import { conversationParticipants } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function getConversations(userId: string) {
