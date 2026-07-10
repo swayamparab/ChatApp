@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { SignupRequest } from "@/schemas/auth";
 import { AuthResponse, GetCurrentUserResponse, LoginRequest } from "@/types/auth";
 
 export async function getCurrentUser() {
@@ -14,4 +15,13 @@ export async function login(data: LoginRequest) {
     );
 
     return response.data;
+}
+
+export async function signup(data: SignupRequest) {
+  const response = await api.post<AuthResponse>(
+    "/auth/signup",
+    data
+  );
+
+  return response.data;
 }

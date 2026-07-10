@@ -4,13 +4,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSocket } from "@/hooks/useSocket";
 
 export default function ChatLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    
+
     const router = useRouter();
 
     const {
@@ -19,11 +20,23 @@ export default function ChatLayout({
         isError,
     } = useCurrentUser();
 
+    const { socket } = useSocket();
+
     useEffect(() => {
         if (!isLoading && isError) {
             router.replace("/login");
         }
     }, [isLoading, isError, router]);
+
+    useEffect(() => {
+        if (data && !socket.connected) {
+            socket.connect();
+        }
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [data, socket]);
 
     if (isLoading) {
         return (
