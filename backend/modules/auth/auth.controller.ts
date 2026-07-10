@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { login, signup } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.validation";
-import {  ZodError } from "zod";
+import { ZodError } from "zod";
 import { findUserById } from "../users/user.service";
 
 export async function signupController(req: Request, res: Response) {
@@ -58,7 +58,7 @@ export async function loginController(req: Request, res: Response) {
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: "Login successful",
             user
@@ -75,11 +75,13 @@ export async function loginController(req: Request, res: Response) {
         }
 
         if (error instanceof Error) {
-            if (error.message === "Invalid credentials") {
-                return res.status(401).json({
-                    success: false,
-                    message: error.message,
-                });
+            switch (error.message) {
+                case "User does not exist":
+                case "Invalid Credentials":
+                    return res.status(401).json({
+                        success: false,
+                        message: "Invalid credentials",
+                    });
             }
         }
 
