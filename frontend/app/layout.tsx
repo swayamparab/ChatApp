@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
+
 import "./globals.css";
-import QueryProvider from "@/providers/QueryProvider"
+
+import QueryProvider from "@/providers/QueryProvider";
 import SocketProvider from "@/providers/SocketProvider";
 
+const geist = Geist({
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "ChatApp",
+  title: {
+    default: "ChatApp",
+    template: "%s | ChatApp",
+  },
   description: "Real-time one-to-one chat application",
 };
 
@@ -15,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen">
+      <body className={`${geist.className} min-h-screen`}>
         <QueryProvider>
           <SocketProvider>
             {children}
