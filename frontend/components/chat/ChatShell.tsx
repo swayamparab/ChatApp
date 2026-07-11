@@ -1,5 +1,5 @@
-import Sidebar from "./Sidebar";
-import ChatPanel from "./ChatPanel";
+import Sidebar from "./SideBar/Sidebar";
+import ChatPanel from "./ChatPanel/ChatPanel";
 
 export default function ChatShell() {
     return (
