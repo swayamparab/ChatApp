@@ -1,7 +1,15 @@
+import ChatHeader from "./ChatHeader";
+import MessageInput from "./MessageInput";
+import MessageList from "./MessageList";
+
 export default function ChatPanel() {
     return (
-        <section className="flex items-center justify-center bg-slate-950">
-            Select a conversation
-        </section>
+        <div className="flex h-full flex-col">
+            <ChatHeader />
+
+            <MessageList />
+
+            <MessageInput />
+        </div>
     );
 }

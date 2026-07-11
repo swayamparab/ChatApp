@@ -1,6 +1,8 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 type ConversationItemProps = {
     conversationId: string;
@@ -13,9 +15,30 @@ export default function ConversationItem({
     username,
     email,
 }: ConversationItemProps) {
+
+    const router = useRouter();
+
+    const { conversationId: currentConversationId } = useParams<{ conversationId?: string; }>();
+
+    const isActive = currentConversationId === conversationId;
+
     return (
-        <button
-            className="flex w-full items-center gap-3 border-b border-slate-800 p-4 text-left transition-colors hover:bg-slate-800"
+        <button onClick={() => router.push(`/chat/${conversationId}`)}
+            className={`
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        border-b
+                        border-slate-800
+                        p-4
+                        text-left
+                        transition-colors
+                        ${isActive
+                    ? "bg-slate-800"
+                    : "hover:bg-slate-800"
+                }
+            `}
         >
             <Avatar className="h-10 w-10">
                 <AvatarFallback>

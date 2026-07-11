@@ -1,5 +1,5 @@
-import ChatShell from "@/components/chat/ChatShell";
+import EmptyState from "@/components/chat/ChatPanel/EmptyState";
 
 export default function ChatPage() {
-  return <ChatShell />;
+    return <EmptyState />;
 }
