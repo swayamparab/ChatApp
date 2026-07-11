@@ -1,11 +1,5 @@
-import React from 'react'
+import ChatShell from "@/components/chat/ChatShell";
 
-const page = () => {
-  return (
-    <div>
-      chat page
-    </div>
-  )
+export default function ChatPage() {
+  return <ChatShell />;
 }
-
-export default page

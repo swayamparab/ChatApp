@@ -121,10 +121,51 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-950 text-white antialiased;
+}
+
+* {
+  @apply border-border;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+::selection {
+  @apply bg-blue-600 text-white;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(71 85 105);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 116 139);
 }
