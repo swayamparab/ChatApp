@@ -15,6 +15,7 @@ export function registerMessageEvent(io: Server, socket: Socket) {
 
             callback({
                 success: true,
+                message
             })
         }
         catch (error) {
@@ -84,12 +85,12 @@ export function registerMessageEvent(io: Server, socket: Socket) {
             socket
                 .to(validatedData.conversationId)
                 .emit("user_typing", {
-                    converstationId: validatedData.conversationId,
+                    conversationId: validatedData.conversationId,
                     userId: socket.userId
                 })
 
             callback?.({
-                success: true
+                success: true,
             })
 
         }

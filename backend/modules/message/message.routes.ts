@@ -5,6 +5,6 @@ import { getMessagesController, sendMessageController } from "./message.controll
 const router = Router();
 
 router.get("/:conversationId/messages", requireAuth, getMessagesController);
-router.post("/:conversationId/message", requireAuth, sendMessageController);
+router.post("/:conversationId/messages", requireAuth, sendMessageController);
 
 export default router;

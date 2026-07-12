@@ -34,7 +34,7 @@ export async function getMessages(userId: string, data: GetMessagesInput) {
 }
 
 export async function sendMessage(userId: string, data: SendMessageInput) {
-    const participant = db.query.conversationParticipants.findFirst({
+    const participant = await db.query.conversationParticipants.findFirst({
         where: and(
             eq(conversationParticipants.userId, userId),
             eq(conversationParticipants.conversationId, data.conversationId)
@@ -63,6 +63,10 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
             },
         },
     });
+
+    if (!message) {
+        throw new Error("Message not found");
+    }
 
     return message;
 }
