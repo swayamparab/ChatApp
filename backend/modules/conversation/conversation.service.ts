@@ -3,38 +3,70 @@ import { conversationParticipants } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function getConversations(userId: string) {
-  const conversations = await db.query.conversationParticipants.findMany({
-    where: eq(conversationParticipants.userId, userId),
+  const userConversations =
+    await db.query.conversationParticipants.findMany({
+      where: eq(conversationParticipants.userId, userId),
 
-    with: {
-      conversation: {
-        with: {
-          participants: {
-            with: {
-              user: {
-                columns: {
-                  id: true,
-                  username: true,
-                  email: true,
+      with: {
+        conversation: {
+          columns: {
+            id: true,
+            updatedAt: true,
+          },
+
+          with: {
+            participants: {
+              with: {
+                user: {
+                  columns: {
+                    id: true,
+                    username: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+
+            messages: {
+              orderBy: (messages, { desc }) => [
+                desc(messages.createdAt),
+              ],
+              limit: 1,
+              with: {
+                sender: {
+                  columns: {
+                    id: true,
+                    username: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  return conversations.map((conversation) => {
-    const otherParticipant = conversation.conversation.participants.find(
+  const conversations = userConversations.map((participant) => {
+    const conversation = participant.conversation;
+
+    const otherParticipant = conversation.participants.find(
       (participant) => participant.userId !== userId
     );
 
     return {
-      conversationId: conversation.conversation.id,
+      conversationId: conversation.id,
+      updatedAt: conversation.updatedAt,
       otherUser: otherParticipant?.user ?? null,
+      lastMessage: conversation.messages[0] ?? null,
     };
   });
+
+  conversations.sort(
+    (a, b) =>
+      b.updatedAt.getTime() - a.updatedAt.getTime()
+  );
+
+  return conversations;
 }
 
 export async function isParticipant(

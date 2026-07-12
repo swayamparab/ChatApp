@@ -45,7 +45,7 @@ export default function Sidebar() {
                             key={conversation.conversationId}
                             conversationId={conversation.conversationId}
                             username={conversation.otherUser.username}
-                            email={conversation.otherUser.email}
+                            lastMessage={conversation.lastMessage?.content ?? null}
                         />
                     ))
                 )}

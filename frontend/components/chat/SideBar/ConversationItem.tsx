@@ -7,13 +7,13 @@ import { useParams } from "next/navigation";
 type ConversationItemProps = {
     conversationId: string;
     username: string;
-    email: string;
+    lastMessage: string | null;
 };
 
 export default function ConversationItem({
     conversationId,
     username,
-    email,
+    lastMessage,
 }: ConversationItemProps) {
 
     const router = useRouter();
@@ -52,7 +52,7 @@ export default function ConversationItem({
                 </p>
 
                 <p className="truncate text-sm text-slate-400">
-                    {email}
+                    {lastMessage ?? "No messages yet"}
                 </p>
             </div>
         </button>

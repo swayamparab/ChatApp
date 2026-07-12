@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { deleteMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
-import { conversationParticipants, messages } from "../../db/schema";
+import { conversationParticipants, conversations, messages } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 
 export async function getMessages(userId: string, data: GetMessagesInput) {
@@ -38,35 +38,48 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
         where: and(
             eq(conversationParticipants.userId, userId),
             eq(conversationParticipants.conversationId, data.conversationId)
-        )
-    })
+        ),
+    });
 
     if (!participant) {
         throw new Error("You are not participant of this conversation");
     }
 
-    const [insertedMessage] = await db.insert(messages)
-        .values({
-            conversationId: data.conversationId,
-            senderId: userId,
-            content: data.content
-        }).returning();
+    const message = await db.transaction(async (tx) => {
+        const [insertedMessage] = await tx
+            .insert(messages)
+            .values({
+                conversationId: data.conversationId,
+                senderId: userId,
+                content: data.content,
+            })
+            .returning();
 
-    const message = await db.query.messages.findFirst({
-        where: eq(messages.id, insertedMessage.id),
-        with: {
-            sender: {
-                columns: {
-                    id: true,
-                    username: true,
+        await tx
+            .update(conversations)
+            .set({
+                updatedAt: new Date(),
+            })
+            .where(eq(conversations.id, data.conversationId));
+
+        const message = await tx.query.messages.findFirst({
+            where: eq(messages.id, insertedMessage.id),
+            with: {
+                sender: {
+                    columns: {
+                        id: true,
+                        username: true,
+                    },
                 },
             },
-        },
-    });
+        });
 
-    if (!message) {
-        throw new Error("Message not found");
-    }
+        if (!message) {
+            throw new Error("Failed to fetch message");
+        }
+
+        return message;
+    });
 
     return message;
 }
