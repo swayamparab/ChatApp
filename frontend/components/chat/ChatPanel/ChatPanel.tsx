@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import ChatHeader from "./ChatHeader";
@@ -20,6 +20,8 @@ export default function ChatPanel() {
     const queryClient = useQueryClient();
 
     const { socket } = useSocket();
+
+    const [isTyping, setIsTyping] = useState(false);
 
     useEffect(() => {
         if (!conversationId || !socket.connected) {
@@ -61,9 +63,27 @@ export default function ChatPanel() {
         };
     }, [socket, queryClient]);
 
+    useEffect(() => {
+        function handleTyping() {
+            setIsTyping(true);
+        }
+
+        function handleStopTyping() {
+            setIsTyping(false);
+        }
+
+        socket.on("user_typing", handleTyping);
+        socket.on("user_stop_typing", handleStopTyping);
+
+        return () => {
+            socket.off("user_typing", handleTyping);
+            socket.off("user_stop_typing", handleStopTyping);
+        };
+    }, [socket]);
+
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <ChatHeader />
+            <ChatHeader isTyping={isTyping} />
 
             <MessageList />
 

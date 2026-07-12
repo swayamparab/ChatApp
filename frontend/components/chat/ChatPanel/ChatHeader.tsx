@@ -6,7 +6,11 @@ import { MoreVertical } from "lucide-react";
 
 import { useConversations } from "@/hooks/useConversations";
 
-export default function ChatHeader() {
+type ChatHeaderProps = {
+    isTyping: boolean;
+};
+
+export default function ChatHeader({ isTyping }: ChatHeaderProps) {
 
     const { conversationId } = useParams<{ conversationId: string; }>();
 
@@ -55,8 +59,13 @@ export default function ChatHeader() {
                         {conversation.otherUser.username}
                     </h2>
 
-                    <p className="text-sm text-green-400">
-                        Online
+                    <p
+                        className={`text-sm ${isTyping
+                                ? "text-green-400 animate-pulse"
+                                : "text-slate-400"
+                            }`}
+                    >
+                        {isTyping ? "Typing..." : "Online"}
                     </p>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
+import { useEffect, useRef } from "react";
 
 
 export default function MessageList() {
@@ -15,6 +16,32 @@ export default function MessageList() {
     const { data: currentUser } = useCurrentUser();
 
     const { data, isLoading, isError, } = useMessages(conversationId);
+
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    //scroll auto to latest message when chat opens
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({
+            behavior: "auto",
+        });
+    }, [conversationId]);
+
+    //scroll smooth as new message arrives
+    const previousLengthRef = useRef(0);
+    useEffect(() => {
+        if (!data) return;
+
+        const previousLength = previousLengthRef.current;
+        const currentLength = data.messages.length;
+
+        if (currentLength > previousLength && previousLength !== 0) {
+            bottomRef.current?.scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+
+        previousLengthRef.current = currentLength;
+    }, [data?.messages.length]);
 
     if (isLoading) {
         return (
@@ -57,6 +84,8 @@ export default function MessageList() {
                     }
                 />
             ))}
+
+            <div ref={bottomRef} />
         </div>
     );
 }
