@@ -1,8 +1,9 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MoreVertical } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { useConversations } from "@/hooks/useConversations";
 
@@ -11,6 +12,8 @@ type ChatHeaderProps = {
 };
 
 export default function ChatHeader({ isTyping }: ChatHeaderProps) {
+
+    const router = useRouter();
 
     const { conversationId } = useParams<{ conversationId: string; }>();
 
@@ -45,7 +48,15 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
 
     return (
         <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-2">
+                <button
+                    onClick={() => router.push("/chat")}
+                    className="rounded-full p-2 transition-colors hover:bg-slate-800 lg:hidden"
+                    aria-label="Back"
+                >
+                    <ArrowLeft className="h-5 w-5 text-slate-300" />
+                </button>
+
                 <Avatar className="h-10 w-10">
                     <AvatarFallback>
                         {conversation.otherUser.username
@@ -54,15 +65,15 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
                     </AvatarFallback>
                 </Avatar>
 
-                <div>
-                    <h2 className="font-medium">
+                <div className="min-w-0">
+                    <h2 className="truncate font-medium">
                         {conversation.otherUser.username}
                     </h2>
 
                     <p
-                        className={`text-sm ${isTyping
-                                ? "text-green-400 animate-pulse"
-                                : "text-slate-400"
+                        className={`truncate text-sm ${isTyping
+                            ? "animate-pulse text-green-400"
+                            : "text-slate-400"
                             }`}
                     >
                         {isTyping ? "Typing..." : "Online"}
@@ -71,7 +82,7 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
             </div>
 
             <button
-                className="rounded-md p-2 transition-colors hover:bg-slate-800"
+                className="rounded-full p-2 transition-colors hover:bg-slate-800"
                 aria-label="Conversation options"
             >
                 <MoreVertical className="h-5 w-5 text-slate-400" />

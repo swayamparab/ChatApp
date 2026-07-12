@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 import Sidebar from "@/components/chat/SideBar/Sidebar";
 
 export default function ChatLayout({
@@ -5,11 +9,29 @@ export default function ChatLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return (
-        <main className="grid h-[100dvh] lg:grid-cols-[320px_1fr]">
-            <Sidebar />
+    const pathname = usePathname();
 
-            <section className="flex min-h-0 flex-col bg-slate-950">
+    const isConversationPage = pathname !== "/chat";
+
+    return (
+        <main className="h-dvh lg:grid lg:grid-cols-[320px_1fr]">
+            {/* Sidebar */}
+            <aside
+                className={`
+                    h-full border-r border-slate-800
+                    ${isConversationPage ? "hidden lg:block" : "block"}
+                `}
+            >
+                <Sidebar />
+            </aside>
+
+            {/* Chat */}
+            <section
+                className={`
+                    h-full min-h-0 flex-col overflow-hidden bg-slate-950
+                    ${isConversationPage ? "flex" : "hidden lg:flex"}
+                `}
+            >
                 {children}
             </section>
         </main>
