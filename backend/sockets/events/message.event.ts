@@ -44,7 +44,8 @@ export function registerMessageEvent(io: Server, socket: Socket) {
 
             io.to(deletedMessage.conversationId)
                 .emit("message_deleted", {
-                    messageId: deletedMessage.messageId
+                    messageId: deletedMessage.messageId,
+                    conversationId: deletedMessage.conversationId
                 })
 
             callback?.({

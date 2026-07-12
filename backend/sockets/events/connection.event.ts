@@ -12,6 +12,7 @@ export function handleConnection(io: Server, socket: Socket) {
     userId: socket.userId
   })
 
+  //get online users
   socket.emit("online_users", {
     userIds: getOnlineUserIds()
   })
@@ -22,8 +23,8 @@ export function handleConnection(io: Server, socket: Socket) {
   //send a message
   registerMessageEvent(io, socket);
 
+  //offline status as user disconnects
   socket.on("disconnect", () => {
-    //offline status as user disconnects
     onlineUsers.delete(socket.userId);
     io.emit("user_offline", {
       userId: socket.userId,

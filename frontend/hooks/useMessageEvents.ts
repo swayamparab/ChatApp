@@ -80,10 +80,82 @@ export function useMessageEvents() {
             );
         }
 
+        function handleMessageDeleted(data: {
+            conversationId: string;
+            messageId: string;
+        }) {
+            queryClient.setQueryData<GetMessagesResponse>(
+                queryKeys.messages(data.conversationId),
+                (old) => {
+                    if (!old) {
+                        return old;
+                    }
+
+                    const updatedMessages = old.messages.filter(
+                        (message) => message.id !== data.messageId
+                    );
+
+                    updateConversationPreview(
+                        data.conversationId,
+                        updatedMessages
+                    );
+
+                    return {
+                        ...old,
+                        messages: updatedMessages,
+                    };
+                }
+            );
+        }
+
+        function updateConversationPreview(
+            conversationId: string,
+            messages: Message[]
+        ) {
+            const lastMessage =
+                messages.length > 0
+                    ? messages[messages.length - 1]
+                    : null;
+
+            queryClient.setQueryData<GetConversationsResponse>(
+                queryKeys.conversations,
+                (old) => {
+                    if (!old) {
+                        return old;
+                    }
+
+                    const index = old.conversations.findIndex(
+                        (conversation) =>
+                            conversation.conversationId === conversationId
+                    );
+
+                    if (index === -1) {
+                        return old;
+                    }
+
+                    const updatedConversation = {
+                        ...old.conversations[index],
+                        lastMessage,
+                    };
+
+                    const conversations = [...old.conversations];
+
+                    conversations[index] = updatedConversation;
+
+                    return {
+                        ...old,
+                        conversations,
+                    };
+                }
+            );
+        }
+
         socket.on("new_message", handleNewMessage);
+        socket.on("message_deleted", handleMessageDeleted);
 
         return () => {
             socket.off("new_message", handleNewMessage);
+            socket.off("message_deleted", handleMessageDeleted);
         };
     }, [socket, queryClient]);
 }

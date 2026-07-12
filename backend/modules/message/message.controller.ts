@@ -42,6 +42,7 @@ export async function getMessagesController(req: Request, res: Response) {
     }
 }
 
+//never used in frontend since socket version is used
 export async function sendMessageController(req: Request, res: Response) {
     try {
 
