@@ -9,7 +9,7 @@ export default function ChatLayout({
         <main className="grid h-[100dvh] lg:grid-cols-[320px_1fr]">
             <Sidebar />
 
-            <section className="bg-slate-950">
+            <section className="flex min-h-0 flex-col bg-slate-950">
                 {children}
             </section>
         </main>
