@@ -1,17 +1,22 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import Sidebar from "@/components/chat/SideBar/Sidebar";
+import { useJoinConversations } from "@/hooks/useJoinConversations";
 
 export default function ChatLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const pathname = usePathname();
+    const { conversationId } = useParams<{
+        conversationId?: string;
+    }>();
 
-    const isConversationPage = pathname !== "/chat";
+    const isConversationPage = !!conversationId;
+
+    useJoinConversations();
 
     return (
         <main className="h-dvh lg:grid lg:grid-cols-[320px_1fr]">
