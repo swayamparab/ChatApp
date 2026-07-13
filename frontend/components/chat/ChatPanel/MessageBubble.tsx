@@ -115,12 +115,12 @@ export default function MessageBubble({
                             clearTimeout(longPressTimeout.current);
                         }
                     }}
-                    className={`max-w-[70%] rounded-2xl px-4 py-2 shadow ${isOwnMessage
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-800 text-white"
+                    className={`min-w-[140px] max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow ${isOwnMessage
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-800 text-white"
                         }`}
                 >
-                    <p className="break-words text-sm">
+                    <p className="break-words text-[15px] leading-6">
                         {message.content}
                     </p>
 
