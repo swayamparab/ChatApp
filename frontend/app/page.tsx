@@ -10,8 +10,7 @@ export default function HomePage() {
         </h1>
 
         <p className="mt-4 text-lg text-slate-400">
-          A modern real-time chat application built with Next.js,
-          Express, PostgreSQL, Drizzle ORM and Socket.IO.
+          A modern real-time chat application.
         </p>
 
         <div className="mt-10 flex justify-center gap-4">
