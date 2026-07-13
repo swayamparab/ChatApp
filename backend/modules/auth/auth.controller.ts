@@ -3,7 +3,6 @@ import { login, signup } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.validation";
 import { ZodError } from "zod";
 import { findUserById } from "../users/user.service";
-import { env } from "process";
 
 export async function signupController(req: Request, res: Response) {
     try {
@@ -54,9 +53,9 @@ export async function loginController(req: Request, res: Response) {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: env.NODE_ENV === "production",
+            secure: process.env.NODE_ENV === "production",
             sameSite:
-                env.NODE_ENV === "production"
+                process.env.NODE_ENV === "production"
                     ? "none"
                     : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
