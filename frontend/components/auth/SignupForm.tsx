@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +41,8 @@ export default function SignupForm() {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 setServerError(
-                    error.response?.data?.message ?? "Something went wrong"
+                    error.response?.data?.message ??
+                        "Something went wrong"
                 );
             } else {
                 setServerError("Something went wrong");
@@ -49,19 +51,23 @@ export default function SignupForm() {
     }
 
     return (
-        <div className="w-full max-w-md rounded-lg border bg-white p-6 shadow">
-            <h1 className="mb-6 text-center text-2xl font-bold">
+        <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
+            <h1 className="mb-2 text-center text-3xl font-bold text-white">
                 Create Account
             </h1>
 
+            <p className="mb-8 text-center text-sm text-slate-400">
+                Join ChatApp and start chatting instantly.
+            </p>
+
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-5"
+                className="space-y-6"
             >
                 <div>
                     <label
                         htmlFor="username"
-                        className="mb-2 block text-sm font-medium"
+                        className="mb-2 block text-sm font-medium text-slate-300"
                     >
                         Username
                     </label>
@@ -70,10 +76,11 @@ export default function SignupForm() {
                         id="username"
                         placeholder="Enter username"
                         {...register("username")}
+                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500"
                     />
 
                     {errors.username && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-red-400">
                             {errors.username.message}
                         </p>
                     )}
@@ -82,7 +89,7 @@ export default function SignupForm() {
                 <div>
                     <label
                         htmlFor="email"
-                        className="mb-2 block text-sm font-medium"
+                        className="mb-2 block text-sm font-medium text-slate-300"
                     >
                         Email
                     </label>
@@ -92,10 +99,11 @@ export default function SignupForm() {
                         type="email"
                         placeholder="Enter email"
                         {...register("email")}
+                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500"
                     />
 
                     {errors.email && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-red-400">
                             {errors.email.message}
                         </p>
                     )}
@@ -104,7 +112,7 @@ export default function SignupForm() {
                 <div>
                     <label
                         htmlFor="password"
-                        className="mb-2 block text-sm font-medium"
+                        className="mb-2 block text-sm font-medium text-slate-300"
                     >
                         Password
                     </label>
@@ -114,27 +122,30 @@ export default function SignupForm() {
                         type="password"
                         placeholder="Enter password"
                         {...register("password")}
+                        className="border-slate-700 bg-slate-800 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500"
                     />
 
                     {errors.password && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-red-400">
                             {errors.password.message}
                         </p>
                     )}
                 </div>
 
                 {serverError && (
-                    <p className="text-sm text-red-500">
+                    <div className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
                         {serverError}
-                    </p>
+                    </div>
                 )}
 
                 <Button
                     type="submit"
-                    className="w-full"
                     disabled={signupMutation.isPending}
+                    className="h-11 w-full bg-blue-600 text-white hover:bg-blue-700"
                 >
-                    {signupMutation.isPending ? "Creating Account..." : "Create Account"}
+                    {signupMutation.isPending
+                        ? "Creating Account..."
+                        : "Create Account"}
                 </Button>
             </form>
         </div>
