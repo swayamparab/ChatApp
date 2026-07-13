@@ -1,65 +1,103 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { MessageCircle, ShieldCheck, Zap } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6">
-      <div className="w-full max-w-2xl text-center">
-        <h1 className="text-5xl font-bold tracking-tight text-white">
-          ChatApp
-        </h1>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-6">
+      {/* Background glow */}
+      <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
 
-        <p className="mt-4 text-lg text-slate-400">
-          A modern real-time chat application.
-        </p>
+      <div className="relative z-10 w-full max-w-5xl">
+        <div className="text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-sm text-blue-300">
+            <MessageCircle className="h-4 w-4" />
+            Real-time Chat Application
+          </div>
 
-        <div className="mt-10 flex justify-center gap-4">
-          <Link href="/login">
-            <Button size="lg">
-              Login
-            </Button>
-          </Link>
+          <h1 className="text-6xl font-extrabold tracking-tight text-white">
+            Chat<span className="text-blue-500">App</span>
+          </h1>
 
-          <Link href="/signup">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-slate-700 bg-slate-900 text-white hover:bg-slate-800"
-            >
-              Sign Up
-            </Button>
-          </Link>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-400">
+            A modern one-to-one messaging platform built with
+            <span className="text-white"> Next.js</span>,
+            <span className="text-white"> Express</span>,
+            <span className="text-white"> PostgreSQL</span>,
+            <span className="text-white"> Drizzle ORM</span> and
+            <span className="text-white"> Socket.IO</span>.
+          </p>
+
+          <div className="mt-10 flex justify-center gap-4">
+            <Link href="/login">
+              <Button
+                size="lg"
+                className="bg-blue-600 px-8 hover:bg-blue-700"
+              >
+                Login
+              </Button>
+            </Link>
+
+            <Link href="/signup">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-slate-700 bg-slate-900 px-8 text-white hover:bg-slate-800"
+              >
+                Sign Up
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-16 rounded-xl border border-slate-800 bg-slate-900 p-6 text-left">
-          <h2 className="mb-4 text-lg font-semibold text-white">
-            Features
-          </h2>
+        {/* Features */}
+        <div className="mt-20 grid gap-6 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur">
+            <Zap className="mb-4 h-8 w-8 text-blue-500" />
+            <h3 className="mb-2 text-lg font-semibold text-white">
+              Real-Time Messaging
+            </h3>
+            <p className="text-sm text-slate-400">
+              Instant messaging powered by Socket.IO with typing indicators.
+            </p>
+          </div>
 
-          <ul className="space-y-2 text-slate-400">
-            <li>• Real-time messaging with Socket.IO</li>
-            <li>• Secure JWT authentication using HttpOnly cookies</li>
-            <li>• One-to-one conversations</li>
-            <li>• Typing indicators</li>
-            <li>• Delete messages</li>
-            <li>• PostgreSQL + Drizzle ORM</li>
-            <li>• Responsive interface</li>
-          </ul>
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur">
+            <ShieldCheck className="mb-4 h-8 w-8 text-emerald-400" />
+            <h3 className="mb-2 text-lg font-semibold text-white">
+              Secure Authentication
+            </h3>
+            <p className="text-sm text-slate-400">
+              JWT authentication with HttpOnly cookies for secure sessions.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur">
+            <MessageCircle className="mb-4 h-8 w-8 text-cyan-400" />
+            <h3 className="mb-2 text-lg font-semibold text-white">
+              Clean Experience
+            </h3>
+            <p className="text-sm text-slate-400">
+              Responsive UI with conversations, typing status and message deletion.
+            </p>
+          </div>
         </div>
 
-        <footer className="mt-12 border-t border-slate-800 pt-6 text-sm text-slate-500">
-          <p>Built with Next.js, Express, PostgreSQL, Drizzle ORM & Socket.IO.</p>
-
-          <div className="mt-4 flex flex-col items-center gap-2">
-            <p className="text-slate-400">
-              Created by <span className="font-medium text-white">Swayam Parab</span>
+        <footer className="mt-20 border-t border-slate-800 pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 text-sm text-slate-400 md:flex-row">
+            <p>
+              Built by{" "}
+              <span className="font-semibold text-white">
+                Swayam Parab
+              </span>
             </p>
 
             <a
               href="https://github.com/swayamparab"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 transition-colors hover:text-blue-300"
+              className="text-blue-400 transition hover:text-blue-300"
             >
               GitHub Repository →
             </a>
