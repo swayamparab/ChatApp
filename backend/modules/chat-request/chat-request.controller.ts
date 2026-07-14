@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ZodError } from "zod";
 
 import { acceptChatRequestSchema, sendChatRequestSchema } from "./chat-request.validation";
-import { acceptChatRequest, sendChatRequest } from "./chat-request.service";
+import { acceptChatRequest, getChatRequests, sendChatRequest } from "./chat-request.service";
 
 export async function sendChatRequestController(
   req: Request,
@@ -107,6 +107,25 @@ export async function acceptChatRequestController(
           });
       }
     }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
+
+export async function getChatRequestsController(req: Request, res: Response) {
+  try {
+    const requests = await getChatRequests(req.userId!);
+
+    return res.status(200).json({
+      success: true,
+      ...requests,
+    });
+
+  } catch (error) {
+    console.error(error);
 
     return res.status(500).json({
       success: false,

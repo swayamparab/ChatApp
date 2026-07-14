@@ -112,6 +112,59 @@ export async function acceptChatRequest(
   return conversation;
 }
 
+export async function getChatRequests(userId: string) {
+  const [incoming, outgoing] = await Promise.all([
+    db.query.chatRequests.findMany({
+      where: and(
+        eq(chatRequests.receiverId, userId),
+        eq(chatRequests.status, "PENDING")
+      ),
+
+      with: {
+        sender: {
+          columns: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+
+      orderBy: (chatRequests, { desc }) => [
+        desc(chatRequests.createdAt),
+      ],
+    }),
+
+    db.query.chatRequests.findMany({
+      where: and(
+        eq(chatRequests.senderId, userId),
+        eq(chatRequests.status, "PENDING")
+      ),
+
+      with: {
+        receiver: {
+          columns: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+
+      orderBy: (chatRequests, { desc }) => [
+        desc(chatRequests.createdAt),
+      ],
+    }),
+  ]);
+
+  return {
+    incoming,
+    outgoing,
+    incomingCount: incoming.length,
+    outgoingCount: outgoing.length,
+  };
+}
+
 export async function getRelationshipStatus(currentUserId: string, searchUserIds: string[]) {
   if (searchUserIds.length === 0) {
     return new Map();

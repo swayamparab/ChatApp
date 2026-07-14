@@ -5,4 +5,9 @@ export const queryKeys = {
 
   messages: (conversationId: string) =>
     ["messages", conversationId] as const,
+
+  chatRequests: ["chat-requests"] as const,
+
+  searchUsers: (query: string) =>
+    ["search-users", query] as const,
 };
