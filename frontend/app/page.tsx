@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ShieldCheck, Zap } from "lucide-react";
+import LoginButton from "@/components/auth/LoginButton";
 
 export default function HomePage() {
   return (
@@ -30,14 +31,7 @@ export default function HomePage() {
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
-            <Link href="/login">
-              <Button
-                size="lg"
-                className="bg-blue-600 px-8 hover:bg-blue-700"
-              >
-                Login
-              </Button>
-            </Link>
+            <LoginButton/>
 
             <Link href="/signup">
               <Button
