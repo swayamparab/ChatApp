@@ -37,25 +37,26 @@ export default function SidebarHeader() {
 
             queryClient.clear();
 
-            toast.success("Logged out!")
+            toast.success("Logged out!");
 
             router.replace("/login");
         } catch (error) {
             console.error(error);
+            toast.error("Failed to logout");
         }
     }
 
     return (
-        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-4">
-            <div className="flex items-center gap-3">
-                <Avatar className="h-11 w-11 border border-slate-700">
-                    <AvatarFallback className="bg-blue-600 text-white">
+        <div className="flex items-center justify-between bg-slate-900/95 px-5 py-4 shadow-sm">
+            <div className="flex min-w-0 items-center gap-3">
+                <Avatar className="h-12 w-12 ring-2 ring-slate-700/70 shadow-md">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 font-semibold text-white">
                         {data.user.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
                 <div className="min-w-0">
-                    <p className="truncate font-medium text-white">
+                    <p className="truncate text-lg font-semibold tracking-tight text-white">
                         {data.user.username}
                     </p>
 
@@ -66,14 +67,17 @@ export default function SidebarHeader() {
             </div>
 
             <DropdownMenu>
-                <DropdownMenuTrigger className="rounded-lg p-2 transition hover:bg-slate-800">
-                    <MoreVertical className="h-5 w-5 text-slate-400" />
+                <DropdownMenuTrigger className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-slate-800 hover:text-white focus:outline-none">
+                    <MoreVertical className="h-5 w-5" />
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuContent
+                    align="end"
+                    className="w-40 rounded-xl border border-slate-800 bg-slate-900 shadow-xl"
+                >
                     <DropdownMenuItem
                         onClick={handleLogout}
-                        className="text-red-500 focus:text-red-500"
+                        className="cursor-pointer rounded-md text-red-400 focus:bg-red-500/10 focus:text-red-400"
                     >
                         <LogOut className="mr-2 h-4 w-4" />
                         Logout

@@ -69,8 +69,18 @@ export default function MessageInput() {
     }, [conversationId, socket]);
 
     return (
-        <div className="border-t border-slate-800 bg-slate-950/90 px-5 py-4 backdrop-blur">
-            <div className="flex items-center rounded-full border border-slate-700 bg-slate-900 px-2 shadow-lg transition-colors focus-within:border-blue-500">
+        <div className="bg-slate-950/90 px-5 py-4 backdrop-blur-md">
+            <div
+                className="
+                    flex items-center
+                    rounded-full
+                    bg-slate-900
+                    pl-3
+                    pr-1.5
+                    shadow-lg
+                    ring-1 ring-slate-800/70
+                "
+            >
                 <Input
                     value={content}
                     onChange={(e) => {
@@ -103,18 +113,20 @@ export default function MessageInput() {
                             handleSend();
                         }
                     }}
-                    placeholder="Message..."
+                    placeholder="Type a message..."
                     className="
-                    h-12
-                    flex-1
-                    border-0
-                    bg-transparent
-                    text-white
-                    placeholder:text-slate-500
-                    shadow-none
-                    focus-visible:ring-0
-                    focus-visible:ring-offset-0
-                "
+                        h-12
+                        flex-1
+                        border-0
+                        bg-transparent
+                        px-2
+                        text-[15px]
+                        text-white
+                        placeholder:text-slate-500
+                        shadow-none
+                        focus-visible:ring-0
+                        focus-visible:ring-offset-0
+                    "
                 />
 
                 <Button
@@ -122,19 +134,25 @@ export default function MessageInput() {
                     onClick={handleSend}
                     disabled={!content.trim()}
                     className="
-                    h-8
-                    w-8
-                    rounded-full
-                    bg-blue-600
-                    transition-all
-                    hover:scale-105
-                    hover:bg-blue-700
-                    active:scale-95
-                    disabled:cursor-not-allowed
-                    disabled:bg-slate-700
-                "
+                        h-10
+                        w-10
+                        rounded-full
+                        bg-gradient-to-br
+                        from-blue-500
+                        to-blue-600
+                        shadow-md
+                        transition-all duration-200
+                        hover:scale-105
+                        hover:from-blue-400
+                        hover:to-blue-500
+                        active:scale-95
+                        disabled:scale-100
+                        disabled:bg-slate-700
+                        disabled:from-slate-700
+                        disabled:to-slate-700
+                    "
                 >
-                    <SendHorizontal className="h-5 w-5" />
+                    <SendHorizontal className="h-4 w-4" />
                 </Button>
             </div>
         </div>

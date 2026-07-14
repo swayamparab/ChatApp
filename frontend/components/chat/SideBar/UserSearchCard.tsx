@@ -72,12 +72,11 @@ export default function UserSearchCard({
             actionButton = (
                 <Button
                     size="sm"
+                    className="rounded-full bg-blue-600 px-4 hover:bg-blue-500"
                     disabled={mutation.isPending}
                     onClick={() => mutation.mutate(id)}
                 >
-                    {mutation.isPending
-                        ? "Sending..."
-                        : "Send Request"}
+                    {mutation.isPending ? "Sending..." : "Send"}
                 </Button>
             );
             break;
@@ -86,8 +85,14 @@ export default function UserSearchCard({
             actionButton = (
                 <Button
                     size="sm"
-                    variant="secondary"
                     disabled
+                    variant="secondary"
+                    className="
+                        rounded-full
+                        border-0
+                        bg-slate-800
+                        text-slate-300
+                    "
                 >
                     Pending
                 </Button>
@@ -99,7 +104,12 @@ export default function UserSearchCard({
                 <Button
                     size="sm"
                     disabled={acceptMutation.isPending}
-                    className="bg-emerald-600 hover:bg-emerald-700"
+                    className="
+                        rounded-full
+                        bg-emerald-600
+                        px-4
+                        hover:bg-emerald-500
+                    "
                     onClick={() => {
                         if (requestId) {
                             acceptMutation.mutate(requestId);
@@ -116,6 +126,12 @@ export default function UserSearchCard({
             actionButton = (
                 <Button
                     size="sm"
+                    className="
+                        rounded-full
+                        bg-blue-600
+                        px-4
+                        hover:bg-blue-500
+                    "
                     onClick={() => {
                         if (conversationId) {
                             router.push(`/chat/${conversationId}`);
@@ -129,16 +145,26 @@ export default function UserSearchCard({
     }
 
     return (
-        <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3 hover:bg-slate-800/50">
-            <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-blue-600 text-white">
+        <div
+            className="
+            mx-2 my-1
+            flex items-center justify-between
+            rounded-2xl
+            px-4 py-3
+            transition-all duration-200
+            hover:bg-slate-800/70
+            hover:shadow-sm
+        "
+        >
+            <div className="flex min-w-0 items-center gap-3">
+                <Avatar className="h-11 w-11 ring-1 ring-slate-700/60">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 font-semibold text-white">
                         {username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
                 <div className="min-w-0">
-                    <p className="truncate font-medium text-white">
+                    <p className="truncate text-[15px] font-semibold tracking-tight text-white">
                         {username}
                     </p>
 

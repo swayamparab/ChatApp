@@ -20,7 +20,7 @@ export default function Sidebar() {
 
 
     return (
-        <aside className="flex h-full flex-col border-r border-slate-800 bg-slate-900">
+        <aside className="flex h-full flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
             <SidebarHeader />
 
             {showRequests ? (
@@ -39,7 +39,7 @@ export default function Sidebar() {
                         onValueChange={setQuery}
                     />
 
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto px-1 pb-2">
                         {query.trim() ? (
                             <SearchResults query={query} />
                         ) : (

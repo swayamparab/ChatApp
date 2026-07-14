@@ -74,7 +74,17 @@ export default function MessageList() {
     }
 
     return (
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto bg-slate-950 p-4">
+        <div
+            className="
+                flex flex-1 flex-col gap-3
+                overflow-y-auto
+                bg-gradient-to-b
+                from-slate-950
+                to-[#030712]
+                px-5
+                py-4
+            "
+        >
             {data.messages.map((message) => (
                 <MessageBubble
                     key={message.id}

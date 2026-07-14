@@ -70,7 +70,7 @@ export default function MessageBubble({
                 }`}
         >
             <div
-                className={`flex items-start gap-2 ${isOwnMessage ? "flex-row-reverse" : ""
+                className={`flex items-end gap-2 ${isOwnMessage ? "flex-row-reverse" : ""
                     }`}
             >
                 {isOwnMessage && (
@@ -79,15 +79,29 @@ export default function MessageBubble({
                         onOpenChange={setMenuOpen}
                     >
                         <DropdownMenuTrigger
-                            className="hidden h-8 w-8 items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100 hover:bg-slate-700 lg:flex"
+                            className="
+                        hidden
+                        h-8 w-8
+                        items-center justify-center
+                        rounded-xl
+                        text-slate-400
+                        opacity-0
+                        transition-all duration-200
+                        group-hover:opacity-100
+                        hover:bg-slate-800
+                        hover:text-white
+                        lg:flex
+                    "
                         >
                             <EllipsisVertical className="h-4 w-4" />
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent
+                            align="end"
+                            className="rounded-xl border border-slate-800 bg-slate-900"
+                        >
                             <DropdownMenuItem
-                                className="text-red-500"
-                                variant="destructive"
+                                className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
                                 onClick={handleDelete}
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
@@ -115,19 +129,29 @@ export default function MessageBubble({
                             clearTimeout(longPressTimeout.current);
                         }
                     }}
-                    className={`min-w-[140px] max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow ${isOwnMessage
-                            ? "bg-blue-600 text-white"
-                            : "bg-slate-800 text-white"
-                        }`}
+                    className={`
+                        min-w-[140px]
+                        max-w-[85%]
+                        rounded-[20px]
+                        px-4
+                        py-2.5
+                        shadow-md
+                        transition-all duration-200
+                        md:max-w-[70%]
+                        ${isOwnMessage
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                            : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
+                        }
+                    `}
                 >
-                    <p className="break-words text-[15px] leading-6">
+                    <p className="break-words text-[15px] leading-5">
                         {message.content}
                     </p>
 
                     <p
-                        className={`mt-1 text-right text-xs ${isOwnMessage
-                            ? "text-blue-100"
-                            : "text-slate-400"
+                        className={`mt-1 text-right text-[10px] ${isOwnMessage
+                                ? "text-blue-100/80"
+                                : "text-slate-400"
                             }`}
                     >
                         {time}

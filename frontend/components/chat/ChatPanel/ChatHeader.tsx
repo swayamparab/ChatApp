@@ -26,7 +26,7 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
 
     if (isLoading) {
         return (
-            <header className="flex h-16 items-center border-b border-slate-800 bg-slate-900 px-4">
+            <header className="flex h-16 items-center bg-slate-900/95 px-5 shadow-sm">
                 <p className="text-slate-400">
                     Loading...
                 </p>
@@ -36,7 +36,7 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
 
     if (!conversation) {
         return (
-            <header className="flex h-16 items-center border-b border-slate-800 bg-slate-900 px-4">
+            <header className="flex h-16 items-center bg-slate-900/95 px-5 shadow-sm">
                 <p className="text-red-400">
                     Conversation not found
                 </p>
@@ -44,21 +44,19 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
         );
     }
 
-
-
     return (
-        <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4">
-            <div className="flex min-w-0 items-center gap-2">
+        <header className="flex h-16 items-center justify-between bg-slate-900/95 px-5 shadow-sm">
+            <div className="flex min-w-0 items-center gap-3">
                 <button
                     onClick={() => router.push("/chat")}
-                    className="rounded-full p-2 transition-colors hover:bg-slate-800 lg:hidden"
+                    className="rounded-xl p-2 transition-all duration-200 hover:bg-slate-800 lg:hidden"
                     aria-label="Back"
                 >
                     <ArrowLeft className="h-5 w-5 text-slate-300" />
                 </button>
 
-                <Avatar className="h-10 w-10">
-                    <AvatarFallback>
+                <Avatar className="h-11 w-11 ring-1 ring-slate-700/60 shadow-sm">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 font-semibold text-white">
                         {conversation.otherUser.username
                             .charAt(0)
                             .toUpperCase()}
@@ -66,26 +64,42 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
                 </Avatar>
 
                 <div className="min-w-0">
-                    <h2 className="truncate font-medium">
+                    <h2 className="truncate text-[15px] font-semibold tracking-tight text-white">
                         {conversation.otherUser.username}
                     </h2>
 
-                    <p
-                        className={`truncate text-sm ${isTyping
-                            ? "animate-pulse text-green-400"
-                            : "text-slate-400"
-                            }`}
-                    >
-                        {isTyping ? "Typing..." : "Online"}
-                    </p>
+                    <div className="mt-0.5 flex items-center gap-2">
+                        <span
+                            className={`h-2 w-2 rounded-full ${isTyping
+                                ? "bg-emerald-400 animate-pulse"
+                                : "bg-emerald-500"
+                                }`}
+                        />
+
+                        <p
+                            className={`truncate text-sm ${isTyping
+                                ? "text-emerald-400"
+                                : "text-slate-400"
+                                }`}
+                        >
+                            {isTyping ? "Typing..." : "Online"}
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <button
-                className="rounded-full p-2 transition-colors hover:bg-slate-800"
+                className="
+                rounded-xl
+                p-2
+                text-slate-400
+                transition-all duration-200
+                hover:bg-slate-800
+                hover:text-white
+            "
                 aria-label="Conversation options"
             >
-                <MoreVertical className="h-5 w-5 text-slate-400" />
+                <MoreVertical className="h-5 w-5" />
             </button>
         </header>
     );
