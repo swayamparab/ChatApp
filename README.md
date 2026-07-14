@@ -71,7 +71,7 @@ Backend
 ### Clone
 
 ```bash
-git clone https://github.com/<your-username>/chatapp.git
+git clone https://github.com/swayamparab/chatapp.git
 cd chatapp
 ```
 
