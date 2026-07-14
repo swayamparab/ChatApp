@@ -7,6 +7,59 @@ import { AcceptChatRequestInput, SendChatRequestInput } from "./chat-request.val
 import { and, eq, or, inArray } from "drizzle-orm";
 import { getConversationBetweenUsers } from "../conversation/conversation.service";
 
+export async function getChatRequests(userId: string) {
+  const [incoming, outgoing] = await Promise.all([
+    db.query.chatRequests.findMany({
+      where: and(
+        eq(chatRequests.receiverId, userId),
+        eq(chatRequests.status, "PENDING")
+      ),
+
+      with: {
+        sender: {
+          columns: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+
+      orderBy: (chatRequests, { desc }) => [
+        desc(chatRequests.createdAt),
+      ],
+    }),
+
+    db.query.chatRequests.findMany({
+      where: and(
+        eq(chatRequests.senderId, userId),
+        eq(chatRequests.status, "PENDING")
+      ),
+
+      with: {
+        receiver: {
+          columns: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+
+      orderBy: (chatRequests, { desc }) => [
+        desc(chatRequests.createdAt),
+      ],
+    }),
+  ]);
+
+  return {
+    incoming,
+    outgoing,
+    incomingCount: incoming.length,
+    outgoingCount: outgoing.length,
+  };
+}
+
 export async function sendChatRequest(senderId: string, data: SendChatRequestInput) {
 
   if (senderId === data.receiverId) {
@@ -62,10 +115,7 @@ export async function sendChatRequest(senderId: string, data: SendChatRequestInp
 
 }
 
-export async function acceptChatRequest(
-  userId: string,
-  data: AcceptChatRequestInput
-) {
+export async function acceptChatRequest(userId: string, data: AcceptChatRequestInput) {
   const request = await db.query.chatRequests.findFirst({
     where: eq(chatRequests.id, data.requestId),
   });
@@ -112,57 +162,51 @@ export async function acceptChatRequest(
   return conversation;
 }
 
-export async function getChatRequests(userId: string) {
-  const [incoming, outgoing] = await Promise.all([
-    db.query.chatRequests.findMany({
-      where: and(
-        eq(chatRequests.receiverId, userId),
-        eq(chatRequests.status, "PENDING")
-      ),
+export async function rejectChatRequest(userId: string, requestId: string) {
+  const request = await db.query.chatRequests.findFirst({
+    where: eq(chatRequests.id, requestId),
+  });
 
-      with: {
-        sender: {
-          columns: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
+  if (!request) {
+    throw new Error("Chat request not found");
+  }
 
-      orderBy: (chatRequests, { desc }) => [
-        desc(chatRequests.createdAt),
-      ],
-    }),
+  if (request.receiverId !== userId) {
+    throw new Error("You are not authorized to reject this request");
+  }
 
-    db.query.chatRequests.findMany({
-      where: and(
-        eq(chatRequests.senderId, userId),
-        eq(chatRequests.status, "PENDING")
-      ),
+  if (request.status !== "PENDING") {
+    throw new Error("Chat request already handled");
+  }
 
-      with: {
-        receiver: {
-          columns: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
+  await db
+    .update(chatRequests)
+    .set({
+      status: "REJECTED",
+    })
+    .where(eq(chatRequests.id, requestId));
+}
 
-      orderBy: (chatRequests, { desc }) => [
-        desc(chatRequests.createdAt),
-      ],
-    }),
-  ]);
+export async function cancelChatRequest(userId: string, requestId: string) {
+  const request = await db.query.chatRequests.findFirst({
+    where: eq(chatRequests.id, requestId),
+  });
 
-  return {
-    incoming,
-    outgoing,
-    incomingCount: incoming.length,
-    outgoingCount: outgoing.length,
-  };
+  if (!request) {
+    throw new Error("Chat request not found");
+  }
+
+  if (request.senderId !== userId) {
+    throw new Error("You are not authorized to cancel this request");
+  }
+
+  if (request.status !== "PENDING") {
+    throw new Error("Chat request already handled");
+  }
+
+  await db
+    .delete(chatRequests)
+    .where(eq(chatRequests.id, requestId));
 }
 
 export async function getRelationshipStatus(currentUserId: string, searchUserIds: string[]) {

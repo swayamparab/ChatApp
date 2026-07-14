@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { acceptChatRequest } from "@/services/chat-requests";
+import { acceptChatRequest, rejectChatRequest } from "@/services/chat-requests";
 import { queryKeys } from "@/lib/query-keys";
 
 type IncomingRequestCardProps = {
@@ -39,6 +39,20 @@ export default function IncomingRequestCard({
         },
     });
 
+    const rejectMutation = useMutation({
+        mutationFn: rejectChatRequest,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.chatRequests,
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["search-users"],
+            });
+        },
+    });
+
     return (
         <div className="flex items-center justify-between border-b border-slate-800 py-3">
             <div className="flex items-center gap-3">
@@ -59,17 +73,23 @@ export default function IncomingRequestCard({
                 </div>
             </div>
 
-            <Button
-                size="sm"
-                disabled={mutation.isPending}
-                onClick={() =>
-                    mutation.mutate(requestId)
-                }
-            >
-                {mutation.isPending
-                    ? "Accepting..."
-                    : "Accept"}
-            </Button>
+            <div className="flex gap-2">
+                <Button
+                    size="sm"
+                    onClick={() => mutation.mutate(requestId)}
+                >
+                    Accept
+                </Button>
+
+                <Button
+                    size="sm"
+                    onClick={() =>
+                        rejectMutation.mutate(requestId)
+                    }
+                >
+                    Reject
+                </Button>
+            </div>
         </div>
     );
 }

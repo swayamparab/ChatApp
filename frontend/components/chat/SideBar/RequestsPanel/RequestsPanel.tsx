@@ -82,6 +82,7 @@ export default function RequestsPanel({
                                 key={request.id}
                                 username={request.receiver.username}
                                 email={request.receiver.email}
+                                requestId={request.id}
                             />
                         ))}
                     </div>

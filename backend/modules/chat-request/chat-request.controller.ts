@@ -2,7 +2,26 @@ import { Request, Response } from "express";
 import { ZodError } from "zod";
 
 import { acceptChatRequestSchema, sendChatRequestSchema } from "./chat-request.validation";
-import { acceptChatRequest, getChatRequests, sendChatRequest } from "./chat-request.service";
+import { acceptChatRequest, cancelChatRequest, getChatRequests, rejectChatRequest, sendChatRequest } from "./chat-request.service";
+
+export async function getChatRequestsController(req: Request, res: Response) {
+  try {
+    const requests = await getChatRequests(req.userId!);
+
+    return res.status(200).json({
+      success: true,
+      ...requests,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
 
 export async function sendChatRequestController(
   req: Request,
@@ -115,15 +134,37 @@ export async function acceptChatRequestController(
   }
 }
 
-export async function getChatRequestsController(req: Request, res: Response) {
+export async function rejectChatRequestController(req: Request, res: Response) {
   try {
-    const requests = await getChatRequests(req.userId!);
+    const { requestId } = acceptChatRequestSchema.parse(req.params);
+
+    await rejectChatRequest(req.userId!, requestId);
 
     return res.status(200).json({
       success: true,
-      ...requests,
+      message: "Chat request rejected",
     });
 
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+}
+
+export async function cancelChatRequestController(req: Request, res: Response) {
+  try {
+    const { requestId } = acceptChatRequestSchema.parse(req.params);
+
+    await cancelChatRequest(req.userId!, requestId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Chat request cancelled",
+    });
   } catch (error) {
     console.error(error);
 
