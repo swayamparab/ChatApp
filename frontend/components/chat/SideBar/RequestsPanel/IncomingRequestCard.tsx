@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { acceptChatRequest, rejectChatRequest } from "@/services/chat-requests";
 import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 type IncomingRequestCardProps = {
     requestId: string;
@@ -36,6 +37,8 @@ export default function IncomingRequestCard({
             queryClient.invalidateQueries({
                 queryKey: ["search-users"],
             });
+
+            toast.success("Chat request accepted!");
         },
     });
 
@@ -50,6 +53,8 @@ export default function IncomingRequestCard({
             queryClient.invalidateQueries({
                 queryKey: ["search-users"],
             });
+
+            toast.success("Chat request rejected.");
         },
     });
 

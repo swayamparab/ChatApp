@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 
 import { signup } from "@/services/auth";
 import { signupSchema, type SignupRequest } from "@/schemas/auth";
+import { toast } from "sonner";
 
 export default function SignupForm() {
     const [serverError, setServerError] = useState("");
@@ -36,6 +37,8 @@ export default function SignupForm() {
 
         try {
             await signupMutation.mutateAsync(data);
+
+            toast.success("Sign up sucessfull!");
 
             router.push("/login");
         } catch (error) {

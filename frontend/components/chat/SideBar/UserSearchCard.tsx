@@ -9,6 +9,7 @@ import { acceptChatRequest, sendChatRequest } from "@/services/chat-requests";
 
 import { useRouter } from "next/navigation";
 import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 type UserSearchCardProps = {
     id: string;
@@ -43,6 +44,8 @@ export default function UserSearchCard({
             queryClient.invalidateQueries({
                 queryKey: ["search-users"],
             });
+
+            toast.success("Chat request sent!");
         },
     });
 
@@ -57,6 +60,8 @@ export default function UserSearchCard({
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
             });
+
+            toast.success("Chat request accepted!");
         },
     });
 

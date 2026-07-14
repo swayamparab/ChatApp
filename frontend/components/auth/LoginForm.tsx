@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { login } from "@/services/auth";
 import { loginSchema, type LoginRequest } from "@/schemas/auth";
 import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 export default function LoginForm() {
   const [serverError, setServerError] = useState("");
@@ -43,6 +44,8 @@ export default function LoginForm() {
         queryKeys.currentUser,
         response
       );
+
+      toast.success("Welcome back!");
 
       router.push("/chat");
     } catch (error) {

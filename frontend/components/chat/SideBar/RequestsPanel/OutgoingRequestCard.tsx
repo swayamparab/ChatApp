@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { queryKeys } from "@/lib/query-keys";
 import { cancelChatRequest } from "@/services/chat-requests";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 type Props = {
     username: string;
@@ -31,6 +32,8 @@ export default function OutgoingRequestCard({
             queryClient.invalidateQueries({
                 queryKey: ["search-users"],
             });
+
+            toast.success("Chat request deleted!");
         },
     });
 

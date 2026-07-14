@@ -6,6 +6,8 @@ import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import SocketProvider from "@/providers/SocketProvider";
 
+import { Toaster } from "sonner"
+
 const geist = Geist({
   subsets: ["latin"],
 });
@@ -29,6 +31,10 @@ export default function RootLayout({
         <QueryProvider>
           <SocketProvider>
             {children}
+            <Toaster
+            position="top-right"
+            richColors
+        />
           </SocketProvider>
         </QueryProvider>
       </body>

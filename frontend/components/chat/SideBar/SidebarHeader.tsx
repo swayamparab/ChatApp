@@ -15,6 +15,7 @@ import { MoreVertical, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "sonner";
 
 export default function SidebarHeader() {
     const { data } = useCurrentUser();
@@ -35,6 +36,8 @@ export default function SidebarHeader() {
             );
 
             queryClient.clear();
+
+            toast.success("Logged out!")
 
             router.replace("/login");
         } catch (error) {
