@@ -1,11 +1,12 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import healthRouter from './modules/health/health.route'
-import authRouter from "./modules/auth/auth.routes"
-import chatRequestRoutes from "./modules/chat-request/chat-request.routes"
-import conversationRoutes from "./modules/conversation/conversation.routes"
+import healthRouter from './modules/health/health.route';
+import authRouter from "./modules/auth/auth.routes";
+import chatRequestRoutes from "./modules/chat-request/chat-request.routes";
+import conversationRoutes from "./modules/conversation/conversation.routes";
 import messagesRoutes from "./modules/message/message.routes";
+import userRoutes from "./modules/users/user.routes";
 
 const app = express();
 
@@ -24,10 +25,12 @@ app.use("/health", healthRouter);
 
 app.use("/api/auth", authRouter);
 
-app.use("/api/chat-requests", chatRequestRoutes)
+app.use("/api/chat-requests", chatRequestRoutes);
 
 app.use("/api/conversations", conversationRoutes);
 
 app.use("/api/conversations", messagesRoutes);
+
+app.use("/api/users", userRoutes);
 
 export default app;

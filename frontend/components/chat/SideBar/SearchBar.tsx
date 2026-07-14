@@ -29,7 +29,7 @@ export default function SearchBar({
             <Input
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
-                placeholder="Search conversations..."
+                placeholder="Search users or conversations...."
                 className="pl-10"
             />
         </div>
