@@ -23,7 +23,7 @@ export default function ChatLayout({
             {/* Sidebar */}
             <aside
                 className={`
-                    h-full border-r border-slate-800
+                    h-full
                     ${isConversationPage ? "hidden lg:block" : "block"}
                 `}
             >
