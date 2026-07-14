@@ -2,15 +2,18 @@ export type Relationship =
     | "none"
     | "pending_sent"
     | "pending_received"
-    | "friends"
+    | "friends";
 
 export type SearchUser = {
     id: string;
     username: string;
     email: string;
+
     relationship: Relationship;
+
     requestId: string | null;
-    conversationId: string | null
+
+    conversationId: string | null;
 };
 
 export type SearchUsersResponse = {

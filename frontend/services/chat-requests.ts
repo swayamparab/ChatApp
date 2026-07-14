@@ -7,3 +7,9 @@ export async function sendChatRequest(receiverId: string) {
 
     return data;
 }
+
+export async function acceptChatRequest(requestId: string) {
+    const { data } = await api.patch(`/chat-requests/${requestId}/accept`);
+
+    return data;
+}

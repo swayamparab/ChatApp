@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { sendChatRequest } from "@/services/chat-requests";
+import { acceptChatRequest, sendChatRequest } from "@/services/chat-requests";
 
 import { useRouter } from "next/navigation";
+import { queryKeys } from "@/lib/query-keys";
 
 type UserSearchCardProps = {
     id: string;
@@ -17,8 +18,9 @@ type UserSearchCardProps = {
     | "none"
     | "pending_sent"
     | "pending_received"
-    | "friends"
-    conversationId: string | null
+    | "friends";
+    conversationId: string | null;
+    requestId: string | null;
 };
 
 export default function UserSearchCard({
@@ -26,7 +28,8 @@ export default function UserSearchCard({
     username,
     email,
     relationship,
-    conversationId
+    conversationId,
+    requestId
 }: UserSearchCardProps) {
 
     const router = useRouter();
@@ -39,6 +42,20 @@ export default function UserSearchCard({
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["search-users"],
+            });
+        },
+    });
+
+    const acceptMutation = useMutation({
+        mutationFn: acceptChatRequest,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["search-users"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.conversations,
             });
         },
     });
@@ -76,9 +93,17 @@ export default function UserSearchCard({
             actionButton = (
                 <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700"
+                    disabled={acceptMutation.isPending}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                    onClick={() => {
+                        if (requestId) {
+                            acceptMutation.mutate(requestId);
+                        }
+                    }}
                 >
-                    Accept
+                    {acceptMutation.isPending
+                        ? "Accepting..."
+                        : "Accept"}
                 </Button>
             );
             break;

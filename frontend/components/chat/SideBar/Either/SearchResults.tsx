@@ -46,6 +46,7 @@ export default function SearchResults({
                     email={user.email}
                     relationship={user.relationship}
                     conversationId={user.conversationId}
+                    requestId={user.requestId}
                 />
             ))}
         </div>
