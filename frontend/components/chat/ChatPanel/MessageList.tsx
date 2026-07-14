@@ -1,41 +1,61 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 
 import { useMessages } from "@/hooks/useMessages";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
-import { useEffect, useRef } from "react";
-
 
 export default function MessageList() {
-
-    const { conversationId } = useParams<{ conversationId: string; }>();
+    const { conversationId } = useParams<{
+        conversationId: string;
+    }>();
 
     const { data: currentUser } = useCurrentUser();
 
-    const { data, isLoading, isError, } = useMessages(conversationId);
+    const {
+        data,
+        isLoading,
+        isError,
+    } = useMessages(conversationId);
 
-    const bottomRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef =
+        useRef<HTMLDivElement>(null);
 
-    //scroll auto to latest message when chat opens
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({
-            behavior: "auto",
-        });
-    }, [conversationId]);
-
-    //scroll smooth as new message arrives
     const previousLengthRef = useRef(0);
+
+    // Scroll to bottom when opening a conversation
     useEffect(() => {
         if (!data) return;
 
-        const previousLength = previousLengthRef.current;
-        const currentLength = data.messages.length;
+        const id = setTimeout(() => {
+            messagesContainerRef.current?.scrollTo({
+                top: messagesContainerRef.current!.scrollHeight,
+                behavior: "auto",
+            });
+        }, 0);
 
-        if (currentLength > previousLength && previousLength !== 0) {
-            bottomRef.current?.scrollIntoView({
+        return () => clearTimeout(id);
+    }, [conversationId, data?.messages.length]);
+
+    // Smooth scroll when a new message arrives
+    useEffect(() => {
+        if (!data) return;
+
+        const previousLength =
+            previousLengthRef.current;
+
+        const currentLength =
+            data.messages.length;
+
+        if (
+            currentLength > previousLength &&
+            previousLength !== 0
+        ) {
+            messagesContainerRef.current?.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
                 behavior: "smooth",
             });
         }
@@ -75,8 +95,10 @@ export default function MessageList() {
 
     return (
         <div
+            ref={messagesContainerRef}
             className="
                 flex flex-1 flex-col gap-3
+                overflow-x-hidden
                 overflow-y-auto
                 bg-gradient-to-b
                 from-slate-950
@@ -90,12 +112,11 @@ export default function MessageList() {
                     key={message.id}
                     message={message}
                     isOwnMessage={
-                        message.sender.id === currentUser?.user.id
+                        message.sender.id ===
+                        currentUser?.user.id
                     }
                 />
             ))}
-
-            <div ref={bottomRef} />
         </div>
     );
 }

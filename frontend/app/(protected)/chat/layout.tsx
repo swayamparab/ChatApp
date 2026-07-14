@@ -19,7 +19,7 @@ export default function ChatLayout({
     useJoinConversations();
 
     return (
-        <main className="h-dvh lg:grid lg:grid-cols-[320px_1fr]">
+        <main className="flex h-[100dvh] overflow-hidden lg:grid lg:grid-cols-[320px_1fr]">
             {/* Sidebar */}
             <aside
                 className={`
