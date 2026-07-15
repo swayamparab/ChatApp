@@ -4,7 +4,7 @@ import { registerMessageEvent } from "./message.event";
 import { getOnlineUserIds, onlineUsers } from "../helpers/online-users";
 
 export function handleConnection(io: Server, socket: Socket) {
-  console.log(`User ${socket.userId} connected`);
+  // console.log(`User ${socket.userId} connected`);
 
   //online status as user connects
   onlineUsers.set(socket.userId, socket.id);
@@ -30,6 +30,6 @@ export function handleConnection(io: Server, socket: Socket) {
       userId: socket.userId,
     });   
 
-    console.log(`User ${socket.userId} disconnected`);
+    // console.log(`User ${socket.userId} disconnected`);
   });
 }

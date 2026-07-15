@@ -6,6 +6,7 @@ import { MoreVertical } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 
 import { useConversations } from "@/hooks/useConversations";
+import { useSocket } from "@/hooks/useSocket";
 
 type ChatHeaderProps = {
     isTyping: boolean;
@@ -19,10 +20,18 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
 
     const { data, isLoading } = useConversations();
 
+    const { onlineUsers } = useSocket();
+
     const conversation = data?.conversations.find(
         (conversation) =>
             conversation.conversationId === conversationId
     );
+
+    const isOnline = conversation
+        ? onlineUsers.includes(conversation.otherUser.id)
+        : false;
+
+
 
     if (isLoading) {
         return (
@@ -71,18 +80,26 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
                     <div className="mt-0.5 flex items-center gap-2">
                         <span
                             className={`h-2 w-2 rounded-full ${isTyping
-                                ? "bg-emerald-400 animate-pulse"
-                                : "bg-emerald-500"
+                                    ? "bg-emerald-400 animate-pulse"
+                                    : isOnline
+                                        ? "bg-emerald-500"
+                                        : "bg-slate-500"
                                 }`}
                         />
 
                         <p
                             className={`truncate text-sm ${isTyping
-                                ? "text-emerald-400"
-                                : "text-slate-400"
+                                ? "animate-pulse text-green-400"
+                                : isOnline
+                                    ? "text-emerald-400"
+                                    : "text-slate-500"
                                 }`}
                         >
-                            {isTyping ? "Typing..." : "Online"}
+                            {isTyping
+                                ? "Typing..."
+                                : isOnline
+                                    ? "Online"
+                                    : "Offline"}
                         </p>
                     </div>
                 </div>
