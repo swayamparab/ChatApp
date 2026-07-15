@@ -15,6 +15,10 @@ export const users = pgTable("users", {
 
   password: text("password").notNull(),
 
+  lastSeen: timestamp("last_seen", {
+    withTimezone: true,
+  }),
+
   createdAt: timestamp("created_at")
     .defaultNow()
     .notNull(),

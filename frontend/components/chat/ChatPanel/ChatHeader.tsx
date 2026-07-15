@@ -8,6 +8,8 @@ import { ArrowLeft } from "lucide-react";
 import { useConversations } from "@/hooks/useConversations";
 import { useSocket } from "@/hooks/useSocket";
 
+import { formatLastSeen } from "@/lib/formatLastSeen";
+
 type ChatHeaderProps = {
     isTyping: boolean;
 };
@@ -31,7 +33,9 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
         ? onlineUsers.includes(conversation.otherUser.id)
         : false;
 
-
+    const lastSeenText = conversation
+        ? formatLastSeen(conversation.otherUser.lastSeen)
+        : "";
 
     if (isLoading) {
         return (
@@ -80,26 +84,26 @@ export default function ChatHeader({ isTyping }: ChatHeaderProps) {
                     <div className="mt-0.5 flex items-center gap-2">
                         <span
                             className={`h-2 w-2 rounded-full ${isTyping
-                                    ? "bg-emerald-400 animate-pulse"
-                                    : isOnline
-                                        ? "bg-emerald-500"
-                                        : "bg-slate-500"
+                                ? "bg-emerald-400 animate-pulse"
+                                : isOnline
+                                    ? "bg-emerald-500"
+                                    : "bg-slate-500"
                                 }`}
                         />
 
                         <p
                             className={`truncate text-sm ${isTyping
-                                ? "animate-pulse text-green-400"
-                                : isOnline
-                                    ? "text-emerald-400"
-                                    : "text-slate-500"
+                                    ? "animate-pulse text-green-400"
+                                    : isOnline
+                                        ? "text-emerald-400"
+                                        : "text-slate-400"
                                 }`}
                         >
                             {isTyping
                                 ? "Typing..."
                                 : isOnline
                                     ? "Online"
-                                    : "Offline"}
+                                    : lastSeenText}
                         </p>
                     </div>
                 </div>

@@ -17,9 +17,7 @@ export function registerConversationEvents(io: Server, socket: Socket) {
 
         socket.join(conversationId);
 
-        console.log(
-            `User ${socket.userId} joined ${conversationId}`
-        );
+        // console.log(`User ${socket.userId} joined ${conversationId}`);
 
         callback({
             success: true,

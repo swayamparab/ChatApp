@@ -22,6 +22,7 @@ export async function getConversations(userId: string) {
                     id: true,
                     username: true,
                     email: true,
+                    lastSeen: true
                   },
                 },
               },

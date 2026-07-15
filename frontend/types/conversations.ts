@@ -7,6 +7,7 @@ export type Conversation = {
         id: string;
         username: string;
         email: string;
+        lastSeen: string | null;
     };
 
     lastMessage: {
