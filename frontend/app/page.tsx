@@ -5,7 +5,7 @@ import LoginButton from "@/components/auth/LoginButton";
 
 export default function HomePage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-6">
+    <main className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-slate-950 px-6">
       {/* Background glow */}
       <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
       <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -31,7 +31,7 @@ export default function HomePage() {
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
-            <LoginButton/>
+            <LoginButton />
 
             <Link href="/signup">
               <Button
