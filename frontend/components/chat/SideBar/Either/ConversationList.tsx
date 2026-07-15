@@ -40,6 +40,7 @@ export default function ConversationList() {
                 <ConversationItem
                     key={conversation.conversationId}
                     conversationId={conversation.conversationId}
+                    userId={conversation.otherUser.id}
                     username={conversation.otherUser.username}
                     lastMessage={
                         conversation.lastMessage?.content ?? null
