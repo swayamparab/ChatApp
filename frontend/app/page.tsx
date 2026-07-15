@@ -92,7 +92,7 @@ export default function HomePage() {
             </p>
 
             <a
-              href="https://github.com/swayamparab/realtime-chat"
+              href="https://github.com/swayamparab"
               target="_blank"
               rel="noopener noreferrer"
               className="
