@@ -1,19 +1,23 @@
 # ChatApp
 
-A modern real-time one-to-one chat application built with Next.js, Express, PostgreSQL, Drizzle ORM, and Socket.IO.
+A modern real-time one-to-one messaging application built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, and **Socket.IO**.
 
 ## Features
 
 - 🔐 JWT Authentication with HttpOnly Cookies
-- 💬 Real-time messaging using Socket.IO
-- 👥 One-to-one conversations
-- 📩 Chat requests (Send, Accept, Reject, Cancel)
-- 🟢 Typing indicators
-- 🗑️ Delete messages
-- 🔎 Search users
-- 📱 Responsive UI (Desktop & Mobile)
-- ⚡ React Query for server state management
-- 🎨 Modern UI built with Tailwind CSS & shadcn/ui
+- 💬 Real-time one-to-one messaging using Socket.IO
+- 🟢 Live online/offline presence
+- ⌨️ Real-time typing indicators
+- 🤝 Chat request system
+  - Send requests
+  - Accept requests
+  - Reject requests
+  - Cancel outgoing requests
+- 🗑️ Delete your own messages
+- 🔍 Search users
+- 📱 Responsive UI for desktop and mobile
+- ⚡ React Query caching and optimistic UI updates
+- 🎨 Modern UI built with Tailwind CSS and shadcn/ui
 
 ---
 
@@ -22,11 +26,13 @@ A modern real-time one-to-one chat application built with Next.js, Express, Post
 ### Frontend
 
 - Next.js 15
+- React
 - TypeScript
 - Tailwind CSS
 - shadcn/ui
-- TanStack Query
+- TanStack React Query
 - Socket.IO Client
+- Axios
 - React Hook Form
 - Zod
 - Sonner
@@ -43,89 +49,86 @@ A modern real-time one-to-one chat application built with Next.js, Express, Post
 
 ---
 
-## Project Structure
+## Screenshots
 
-```
-Frontend
-├── Next.js
-├── Components
-├── Hooks
-├── Services
-├── Providers
-└── React Query
-
-Backend
-├── Express
-├── Controllers
-├── Services
-├── Routes
-├── Socket Events
-├── Middleware
-└── Drizzle ORM
-```
+_Add screenshots here._
 
 ---
 
 ## Getting Started
 
-### Clone
+### Clone the repository
 
 ```bash
-git clone https://github.com/swayamparab/chatapp.git
-cd chatapp
+git clone https://github.com/swayamparab/ChatApp.git
+cd ChatApp
 ```
 
-### Backend
+### Install dependencies
+
+Frontend
 
 ```bash
-cd backend
-
 npm install
+```
 
+Backend
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Frontend
+
+```env
+NEXT_PUBLIC_API_URL=...
+```
+
+Backend
+
+```env
+DATABASE_URL=...
+JWT_SECRET=...
+CLIENT_URL=...
+```
+
+### Run
+
+Backend
+
+```bash
 npm run dev
 ```
 
-### Frontend
+Frontend
 
 ```bash
-cd frontend
-
-npm install
-
 npm run dev
 ```
 
 ---
 
-## Environment Variables
+## Real-Time Features
 
-### Backend
-
-```env
-DATABASE_URL=
-
-JWT_SECRET=
-
-CLIENT_URL=
-```
-
-### Frontend
-
-```env
-NEXT_PUBLIC_API_URL=
-```
+- Instant messaging
+- Typing indicators
+- Live online/offline status
+- Automatic conversation updates
+- Socket-based communication with a single persistent connection per browser tab
 
 ---
 
 ## Future Improvements
 
-- Read receipts
-- Online/offline presence
-- Image & file sharing
-- Emoji reactions
-- Group chats
-- Voice messages
-- Push notifications
+- Last Seen
+- Read Receipts
+- Unread Message Counts
+- Image/File Sharing
+- Message Reactions
+- Edit Messages
+- Emoji Picker
 
 ---
 
