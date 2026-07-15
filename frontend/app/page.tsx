@@ -78,8 +78,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <footer className="mt-20 border-t border-slate-800 pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 text-sm text-slate-400 md:flex-row">
+        <footer className="mt-24 border-t border-slate-800/80">
+          <div className="mx-auto flex max-w-7xl flex-col items-center py-8 text-center text-sm text-slate-400">
             <p>
               Built by{" "}
               <span className="font-semibold text-white">
@@ -87,13 +87,27 @@ export default function HomePage() {
               </span>
             </p>
 
+            <p className="mt-2 text-xs text-slate-500">
+              ChatApp • Real-Time One-to-One Messaging Platform
+            </p>
+
             <a
-              href="https://github.com/swayamparab"
+              href="https://github.com/swayamparab/realtime-chat"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 transition hover:text-blue-300"
+              className="
+                mt-5 inline-flex items-center rounded-lg
+                border border-slate-700
+                bg-slate-800/50
+                px-5 py-2.5
+                font-medium text-blue-400
+                transition-all
+                hover:border-slate-600
+                hover:bg-slate-800
+                hover:text-blue-300
+              "
             >
-              GitHub Repository →
+              View on GitHub →
             </a>
           </div>
         </footer>
