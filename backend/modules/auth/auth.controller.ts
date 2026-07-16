@@ -145,3 +145,13 @@ export async function getMeController(req: Request, res: Response) {
         });
     }
 }
+
+// GET /api/auth/debug
+export function debugController(req: Request, res: Response) {
+    console.log("Cookies:", req.cookies);
+    console.log("Token:", req.cookies.token);
+
+    return res.json({
+        success: true,
+    });
+}
