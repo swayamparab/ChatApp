@@ -2,10 +2,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ShieldCheck, Zap } from "lucide-react";
 import LoginButton from "@/components/auth/LoginButton";
+import BackendWarmup from "@/components/BackendWarmup";
 
 export default function HomePage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-y-auto bg-slate-950 px-6">
+      
+      {/* wake up backend */}
+      <BackendWarmup/>
+
       {/* Background glow */}
       <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
       <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />

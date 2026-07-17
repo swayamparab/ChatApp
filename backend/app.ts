@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use("/health", healthRouter);
+app.use("/api/health", healthRouter);
 
 app.use("/api/auth", authRouter);
 

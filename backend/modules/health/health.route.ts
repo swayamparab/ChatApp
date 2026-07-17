@@ -5,7 +5,7 @@ const router = Router();
 router.get("/", (_, res) => {
   res.status(200).json({
     success: true,
-    message: "Server is running",
+    message: "Backend is awake",
   });
 });
 

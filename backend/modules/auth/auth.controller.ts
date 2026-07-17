@@ -147,33 +147,33 @@ export async function getMeController(req: Request, res: Response) {
 }
 
 // GET /api/auth/debug
-export function debugController(req: Request, res: Response) {
-    try {
-        const token = req.cookies.token;
+// export function debugController(req: Request, res: Response) {
+//     try {
+//         const token = req.cookies.token;
 
-        let payload = null;
+//         let payload = null;
 
-        if (token) {
-            payload = verifyToken(token);
-        }
+//         if (token) {
+//             payload = verifyToken(token);
+//         }
 
-        return res.status(200).json({
-            success: true,
+//         return res.status(200).json({
+//             success: true,
 
-            headersCookie: req.headers.cookie,
+//             headersCookie: req.headers.cookie,
 
-            parsedCookies: req.cookies,
+//             parsedCookies: req.cookies,
 
-            tokenExists: !!token,
+//             tokenExists: !!token,
 
-            token,
+//             token,
 
-            payload,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error instanceof Error ? error.message : String(error),
-        });
-    }
-}
+//             payload,
+//         });
+//     } catch (error) {
+//         return res.status(500).json({
+//             success: false,
+//             error: error instanceof Error ? error.message : String(error),
+//         });
+//     }
+// }
