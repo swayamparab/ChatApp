@@ -2,26 +2,25 @@ import { verifyToken } from "../lib/jwt";
 import { Request, Response, NextFunction } from "express";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-    try {
-        const token = req.cookies.token;
+    console.log("Headers Cookie:", req.headers.cookie);
+    console.log("Parsed Cookies:", req.cookies);
 
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized"
-            })
-        }
+    const token = req.cookies.token;
 
-        const payload = verifyToken(token);
+    console.log("Token:", token);
 
-        req.userId = payload.userId;
-
-        next();
-    }
-    catch (error) {
+    if (!token) {
         return res.status(401).json({
             success: false,
             message: "Unauthorized",
         });
     }
+
+    const payload = verifyToken(token);
+
+    console.log("Payload:", payload);
+
+    req.userId = payload.userId;
+
+    next();
 }
