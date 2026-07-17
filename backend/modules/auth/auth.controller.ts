@@ -3,6 +3,7 @@ import { login, signup } from "./auth.service";
 import { loginSchema, signupSchema } from "./auth.validation";
 import { ZodError } from "zod";
 import { findUserById } from "../users/user.service";
+import { verifyToken } from "../../lib/jwt";
 
 export async function signupController(req: Request, res: Response) {
     try {
@@ -147,10 +148,32 @@ export async function getMeController(req: Request, res: Response) {
 
 // GET /api/auth/debug
 export function debugController(req: Request, res: Response) {
-    console.log("Cookies:", req.cookies);
-    console.log("Token:", req.cookies.token);
+    try {
+        const token = req.cookies.token;
 
-    return res.json({
-        success: true,
-    });
+        let payload = null;
+
+        if (token) {
+            payload = verifyToken(token);
+        }
+
+        return res.status(200).json({
+            success: true,
+
+            headersCookie: req.headers.cookie,
+
+            parsedCookies: req.cookies,
+
+            tokenExists: !!token,
+
+            token,
+
+            payload,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
 }
