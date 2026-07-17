@@ -7,11 +7,8 @@ export async function getConversationsController(req: Request, res: Response) {
         const conversations = await getConversations(req.userId);
 
         return res.status(200).json({
-            // success: true,
-            // conversations,
-            userId: req.userId,
-            cookies: req.cookies,
-            tokenExists: !!req.cookies.token,
+            success: true,
+            conversations
         })
     }
     catch (error) {
@@ -23,12 +20,3 @@ export async function getConversationsController(req: Request, res: Response) {
         });
     }
 }
-
-// export async function getConversationsController(req: Request, res: Response) {
-//     return res.json({
-//         success: true,
-//         userId: req.userId,
-//         cookies: req.cookies,
-//         tokenExists: !!req.cookies.token,
-//     });
-// }
