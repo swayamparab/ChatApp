@@ -9,12 +9,18 @@ import MessageInput from "./MessageInput";
 import { useSocket } from "@/hooks/useSocket";
 import { useMessageEvents } from "@/hooks/useMessageEvents";
 
+import { useParams } from "next/navigation";
+
 export default function ChatPanel() {
     const { socket } = useSocket();
 
+    const { conversationId } = useParams<{
+        conversationId: string;
+    }>();
+
     const [isTyping, setIsTyping] = useState(false);
 
-    useMessageEvents();
+    useMessageEvents(conversationId);
 
     useEffect(() => {
         function handleTyping() {

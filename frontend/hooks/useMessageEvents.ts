@@ -12,13 +12,24 @@ import type { Message, GetMessagesResponse, } from "@/types/message";
 
 import type { GetConversationsResponse, } from "@/types/conversations";
 
-export function useMessageEvents() {
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+
+export function useMessageEvents(activeConversationId?: string) {
     const { socket } = useSocket();
 
     const queryClient = useQueryClient();
 
+    const { data: currentUser } = useCurrentUser();
+
     useEffect(() => {
         function handleNewMessage(message: Message) {
+
+            const isOwnMessage =
+                message.senderId === currentUser?.user.id;
+
+            const isActiveConversation =
+                message.conversationId === activeConversationId;
+
             // Update messages cache
             queryClient.setQueryData<GetMessagesResponse>(
                 queryKeys.messages(message.conversationId),
@@ -55,8 +66,10 @@ export function useMessageEvents() {
                         return old;
                     }
 
+                    const conversation = old.conversations[index];
+
                     const updatedConversation = {
-                        ...old.conversations[index],
+                        ...conversation,
                         updatedAt: message.createdAt,
                         lastMessage: {
                             id: message.id,
@@ -64,6 +77,10 @@ export function useMessageEvents() {
                             createdAt: message.createdAt,
                             sender: message.sender,
                         },
+                        unreadCount:
+                            isOwnMessage || isActiveConversation
+                                ? conversation.unreadCount
+                                : conversation.unreadCount + 1,
                     };
 
                     const conversations = [...old.conversations];
@@ -157,5 +174,5 @@ export function useMessageEvents() {
             socket.off("new_message", handleNewMessage);
             socket.off("message_deleted", handleMessageDeleted);
         };
-    }, [socket, queryClient]);
+    }, [socket, queryClient, activeConversationId, currentUser]);
 }
