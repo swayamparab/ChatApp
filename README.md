@@ -7,6 +7,7 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 - 🔐 JWT Authentication with HttpOnly Cookies
 - 💬 Real-time one-to-one messaging using Socket.IO
 - 🟢 Live online/offline presence
+- Live Unread Count Marker
 - ⌨️ Real-time typing indicators
 - 🤝 Chat request system
   - Send requests
