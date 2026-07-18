@@ -45,6 +45,9 @@ export default function ConversationList() {
                     lastMessage={
                         conversation.lastMessage?.content ?? null
                     }
+                    unreadCount={
+                        conversation.unreadCount ?? null
+                    }
                 />
             ))}
         </>

@@ -43,6 +43,13 @@
       "when": 1784132032547,
       "tag": "0005_magical_green_goblin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784378480242,
+      "tag": "0006_cooing_lorna_dane",
+      "breakpoints": true
     }
   ]
 }

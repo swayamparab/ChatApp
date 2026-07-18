@@ -26,6 +26,9 @@ export const conversationParticipants = pgTable(
         joinedAt: timestamp()
             .defaultNow()
             .notNull(),
+        lastReadAt: timestamp()
+            .defaultNow()
+            .notNull()
     },
     (table) => ({
         pk: primaryKey({

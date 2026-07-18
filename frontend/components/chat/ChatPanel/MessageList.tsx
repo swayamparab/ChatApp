@@ -7,6 +7,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
+import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
 
 export default function MessageList() {
     const { conversationId } = useParams<{
@@ -21,10 +22,20 @@ export default function MessageList() {
         isError,
     } = useMessages(conversationId);
 
+
     const messagesContainerRef =
         useRef<HTMLDivElement>(null);
 
     const previousLengthRef = useRef(0);
+
+    const { mutate: markConversationAsRead } = useMarkConversationAsRead();
+
+    useEffect(() => {
+        if (!conversationId) return;
+        if (!data) return;
+
+        markConversationAsRead(conversationId);
+    }, [conversationId, data?.messages.length]);
 
     // Scroll to bottom when opening a conversation
     useEffect(() => {

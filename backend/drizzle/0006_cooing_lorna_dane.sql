@@ -1,0 +1,1 @@
+ALTER TABLE "conversation-participants" ADD COLUMN "lastReadAt" timestamp DEFAULT now() NOT NULL;

@@ -20,6 +20,8 @@ export type Conversation = {
             username: string;
         };
     } | null;
+
+    unreadCount: number;
 };
 
 export type GetConversationsResponse = {

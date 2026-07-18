@@ -9,6 +9,7 @@ type ConversationItemProps = {
     userId: string;
     username: string;
     lastMessage: string | null;
+    unreadCount: number;
 };
 
 export default function ConversationItem({
@@ -16,6 +17,7 @@ export default function ConversationItem({
     userId,
     username,
     lastMessage,
+    unreadCount
 }: ConversationItemProps) {
     const router = useRouter();
 
@@ -74,6 +76,12 @@ export default function ConversationItem({
                     {lastMessage ?? "No messages yet"}
                 </p>
             </div>
+
+            {unreadCount > 0 && (
+                <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1.5 text-xs font-semibold text-white">
+                    {unreadCount}
+                </div>
+            )}
         </button>
     );
 }

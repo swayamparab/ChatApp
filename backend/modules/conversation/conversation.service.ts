@@ -1,51 +1,91 @@
 import { db } from "../../db";
-import { conversationParticipants } from "../../db/schema";
-import { and, eq } from "drizzle-orm";
+import { conversationParticipants, messages } from "../../db/schema";
+import { and, count, eq, gt, ne } from "drizzle-orm";
 
 export async function getConversations(userId: string) {
-  const userConversations =
-    await db.query.conversationParticipants.findMany({
-      where: eq(conversationParticipants.userId, userId),
+  const userConversations = await db.query.conversationParticipants.findMany({
+    where: eq(conversationParticipants.userId, userId),
 
-      with: {
-        conversation: {
-          columns: {
-            id: true,
-            updatedAt: true,
-          },
+    columns: {
+      lastReadAt: true
+    },
 
-          with: {
-            participants: {
-              with: {
-                user: {
-                  columns: {
-                    id: true,
-                    username: true,
-                    email: true,
-                    lastSeen: true
-                  },
+    with: {
+      conversation: {
+        columns: {
+          id: true,
+          updatedAt: true,
+        },
+
+        with: {
+          participants: {
+            with: {
+              user: {
+                columns: {
+                  id: true,
+                  username: true,
+                  email: true,
+                  lastSeen: true
                 },
               },
             },
+          },
 
-            messages: {
-              orderBy: (messages, { desc }) => [
-                desc(messages.createdAt),
-              ],
-              limit: 1,
-              with: {
-                sender: {
-                  columns: {
-                    id: true,
-                    username: true,
-                  },
+          messages: {
+            orderBy: (messages, { desc }) => [
+              desc(messages.createdAt),
+            ],
+            limit: 1,
+            with: {
+              sender: {
+                columns: {
+                  id: true,
+                  username: true,
                 },
               },
             },
           },
         },
       },
-    });
+    },
+  });
+
+  const unreadCounts = await db
+    .select({
+      conversationId: messages.conversationId,
+      unreadCount: count(),
+    })
+    .from(messages)
+    .innerJoin(
+      conversationParticipants,
+      and(
+        eq(
+          messages.conversationId,
+          conversationParticipants.conversationId
+        ),
+        eq(
+          conversationParticipants.userId,
+          userId
+        )
+      )
+    )
+    .where(
+      and(
+        gt(
+          messages.createdAt,
+          conversationParticipants.lastReadAt
+        ),
+        ne(messages.senderId, userId)
+      )
+    )
+    .groupBy(messages.conversationId);
+
+  const unreadMap = new Map(
+    unreadCounts.map((item) => [
+      item.conversationId,
+      Number(item.unreadCount),
+    ])
+  );
 
   const conversations = userConversations.map((participant) => {
     const conversation = participant.conversation;
@@ -59,6 +99,7 @@ export async function getConversations(userId: string) {
       updatedAt: conversation.updatedAt,
       otherUser: otherParticipant?.user ?? null,
       lastMessage: conversation.messages[0] ?? null,
+      unreadCount: unreadMap.get(conversation.id) ?? 0
     };
   });
 
@@ -185,4 +226,47 @@ export async function getExistingConversations(
   }
 
   return conversationMap;
+}
+
+export async function markConversationAsRead(
+  conversationId: string,
+  userId: string
+) {
+  const participant =
+    await db.query.conversationParticipants.findFirst({
+      where: and(
+        eq(
+          conversationParticipants.conversationId,
+          conversationId
+        ),
+        eq(
+          conversationParticipants.userId,
+          userId
+        )
+      ),
+    });
+
+  if (!participant) {
+    throw new Error(
+      "Conversation not found"
+    );
+  }
+
+  await db
+    .update(conversationParticipants)
+    .set({
+      lastReadAt: new Date(),
+    })
+    .where(
+      and(
+        eq(
+          conversationParticipants.conversationId,
+          conversationId
+        ),
+        eq(
+          conversationParticipants.userId,
+          userId
+        )
+      )
+    );
 }
