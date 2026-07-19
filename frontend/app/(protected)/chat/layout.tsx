@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 
 import Sidebar from "@/components/chat/SideBar/Sidebar";
 import { useJoinConversations } from "@/hooks/useJoinConversations";
+import { useMessageEvents } from "@/hooks/useMessageEvents";
 
 export default function ChatLayout({
     children,
@@ -17,6 +18,7 @@ export default function ChatLayout({
     const isConversationPage = !!conversationId;
 
     useJoinConversations();
+    useMessageEvents(conversationId);
 
     return (
         <main className="flex h-[100dvh] flex-col overflow-hidden lg:grid lg:grid-cols-[320px_1fr]">

@@ -20,8 +20,6 @@ export default function ChatPanel() {
 
     const [isTyping, setIsTyping] = useState(false);
 
-    useMessageEvents(conversationId);
-
     useEffect(() => {
         function handleTyping() {
             setIsTyping(true);
