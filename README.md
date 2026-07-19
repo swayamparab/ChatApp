@@ -2,6 +2,13 @@
 
 A modern real-time one-to-one messaging application built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, and **Socket.IO**.
 
+## Architecture
+
+- Next.js frontend deployed on Vercel
+- Express + Socket.IO backend deployed on Render
+- API and WebSocket traffic are proxied through Vercel rewrites (`/api` and `/socket.io`)
+- Same-origin architecture for improved HttpOnly cookie handling and cross-browser compatibility
+
 ## Features
 
 - 🔐 JWT Authentication with HttpOnly Cookies
@@ -118,14 +125,14 @@ npm run dev
 - Live online/offline status
 - Automatic conversation updates
 - Socket-based communication with a single persistent connection per browser tab
+- Last Seen
+- Unread Message Counts
 
 ---
 
 ## Future Improvements
 
-- Last Seen
 - Read Receipts
-- Unread Message Counts
 - Image/File Sharing
 - Message Reactions
 - Edit Messages
