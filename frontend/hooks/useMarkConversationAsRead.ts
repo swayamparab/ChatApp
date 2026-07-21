@@ -1,18 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { markConversationAsRead } from "@/services/conversations";
-import { queryKeys } from "@/lib/query-keys";
+"use client";
+
+import { useSocket } from "./useSocket";
 
 export function useMarkConversationAsRead() {
+    const { socket } = useSocket();
 
-    const queryClient = useQueryClient();
+    function markConversationAsRead(conversationId: string) {
+        socket.emit(
+            "mark_conversation_read",
+            { conversationId },
+            (response: {
+                success: boolean;
+                message?: string;
+            }) => {
+                if (!response.success) {
+                    console.error(response.message);
+                }
+            }
+        );
+    }
 
-    return useMutation({
-        mutationFn: markConversationAsRead,
-
-        onSuccess: ()=>{
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.conversations
-            })
-        }
-    });
+    return {
+        markConversationAsRead,
+    };
 }

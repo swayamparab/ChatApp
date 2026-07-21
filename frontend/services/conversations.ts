@@ -6,11 +6,3 @@ export async function getConversations() {
 
     return response.data;
 }
-
-export async function markConversationAsRead(
-    conversationId: string
-) {
-    const response = await api.patch(`/conversations/${conversationId}/read`);
-
-    return response.data;
-}

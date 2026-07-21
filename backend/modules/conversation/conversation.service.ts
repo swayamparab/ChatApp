@@ -235,38 +235,28 @@ export async function markConversationAsRead(
   const participant =
     await db.query.conversationParticipants.findFirst({
       where: and(
-        eq(
-          conversationParticipants.conversationId,
-          conversationId
-        ),
-        eq(
-          conversationParticipants.userId,
-          userId
-        )
+        eq(conversationParticipants.conversationId, conversationId),
+        eq(conversationParticipants.userId, userId)
       ),
     });
 
   if (!participant) {
-    throw new Error(
-      "Conversation not found"
-    );
+    throw new Error("Conversation not found");
   }
+
+  const lastReadAt = new Date();
 
   await db
     .update(conversationParticipants)
     .set({
-      lastReadAt: new Date(),
+      lastReadAt,
     })
     .where(
       and(
-        eq(
-          conversationParticipants.conversationId,
-          conversationId
-        ),
-        eq(
-          conversationParticipants.userId,
-          userId
-        )
+        eq(conversationParticipants.conversationId, conversationId),
+        eq(conversationParticipants.userId, userId)
       )
     );
+
+  return lastReadAt;
 }

@@ -38,6 +38,7 @@ export function useMessageEvents(activeConversationId?: string) {
                         return {
                             success: true,
                             messages: [message],
+                            lastReadAt: null
                         };
                     }
 
@@ -125,6 +126,27 @@ export function useMessageEvents(activeConversationId?: string) {
             );
         }
 
+        function handleMessagesSeen(data: {
+            conversationId: string;
+            lastReadAt: string;
+        }) {
+
+            console.log("message seen", data);
+            queryClient.setQueryData<GetMessagesResponse>(
+                queryKeys.messages(data.conversationId),
+                (old) => {
+                    if (!old) {
+                        return old;
+                    }
+
+                    return {
+                        ...old,
+                        lastReadAt: data.lastReadAt,
+                    };
+                }
+            );
+        }
+
         function updateConversationPreview(
             conversationId: string,
             messages: Message[]
@@ -169,10 +191,12 @@ export function useMessageEvents(activeConversationId?: string) {
 
         socket.on("new_message", handleNewMessage);
         socket.on("message_deleted", handleMessageDeleted);
+        socket.on("messages_seen", handleMessagesSeen);
 
         return () => {
             socket.off("new_message", handleNewMessage);
             socket.off("message_deleted", handleMessageDeleted);
+            socket.off("messages_seen", handleMessagesSeen);
         };
     }, [socket, queryClient, activeConversationId, currentUser]);
 }

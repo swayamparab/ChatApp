@@ -1,36 +1,70 @@
 import { db } from "../../db";
 import { deleteMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, conversations, messages } from "../../db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
-export async function getMessages(userId: string, data: GetMessagesInput) {
-
-    const participant = await db.query.conversationParticipants.findFirst({
-        where: and(
-            eq(conversationParticipants.conversationId, data.conversationId),
-            eq(conversationParticipants.userId, userId)
-        )
-    })
+export async function getMessages(
+    userId: string,
+    data: GetMessagesInput
+) {
+    const participant =
+        await db.query.conversationParticipants.findFirst({
+            where: and(
+                eq(
+                    conversationParticipants.conversationId,
+                    data.conversationId
+                ),
+                eq(
+                    conversationParticipants.userId,
+                    userId
+                )
+            )
+        });
 
     if (!participant) {
         throw new Error("Unauthorized");
     }
 
-    return db.query.messages.findMany({
-        where: eq(messages.conversationId, data.conversationId),
-        with: {
-            sender: {
-                columns: {
-                    id: true,
-                    username: true
-                }
-            }
-        },
+    const otherParticipant =
+        await db.query.conversationParticipants.findFirst({
+            where: and(
+                eq(
+                    conversationParticipants.conversationId,
+                    data.conversationId
+                ),
+                ne(
+                    conversationParticipants.userId,
+                    userId
+                )
+            ),
+            columns: {
+                lastReadAt: true,
+            },
+        });
 
-        orderBy: (messages, { asc }) => [
-            asc(messages.createdAt)
-        ]
-    })
+    const conversationMessages =
+        await db.query.messages.findMany({
+            where: eq(
+                messages.conversationId,
+                data.conversationId
+            ),
+            with: {
+                sender: {
+                    columns: {
+                        id: true,
+                        username: true,
+                    },
+                },
+            },
+            orderBy: (messages, { asc }) => [
+                asc(messages.createdAt),
+            ],
+        });
+
+    return {
+        messages: conversationMessages,
+        otherUserLastReadAt: otherParticipant?.lastReadAt ?? null,
+    };
 }
 
 export async function sendMessage(userId: string, data: SendMessageInput) {

@@ -8,11 +8,12 @@ export async function getMessagesController(req: Request, res: Response) {
     try {
         const data = getMessagesSchema.parse(req.params);
 
-        const messages = await getMessages(req.userId, data);
+        const result = await getMessages(req.userId, data);
 
         return res.status(200).json({
             success: true,
-            messages,
+            messages: result.messages,
+            otherUserLastReadAt: result.otherUserLastReadAt
         });
     }
     catch (error) {

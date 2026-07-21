@@ -14,4 +14,5 @@ export type Message = {
 export type GetMessagesResponse = {
     success: boolean;
     messages: Message[];
+    lastReadAt: string | null;
 };

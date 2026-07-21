@@ -28,14 +28,27 @@ export default function MessageList() {
 
     const previousLengthRef = useRef(0);
 
-    const { mutate: markConversationAsRead } = useMarkConversationAsRead();
+    const { markConversationAsRead } = useMarkConversationAsRead();
 
+    const lastMessage = data?.messages[data.messages.length - 1];
+
+    // Only mark as read if the latest message was sent by the other user.
     useEffect(() => {
-        if (!conversationId) return;
-        if (!data) return;
+        if (!conversationId || !currentUser || !lastMessage) {
+            return;
+        }
+
+        if (lastMessage.senderId === currentUser.user.id) {
+            return;
+        }
 
         markConversationAsRead(conversationId);
-    }, [conversationId, data?.messages.length]);
+    }, [
+        conversationId,
+        currentUser,
+        lastMessage?.id,
+        markConversationAsRead,
+    ]);
 
     // Scroll to bottom when opening a conversation
     useEffect(() => {
@@ -104,6 +117,11 @@ export default function MessageList() {
         );
     }
 
+    const lastOwnMessage = data.messages.findLast(
+        (message) =>
+            message.sender.id === currentUser?.user.id
+    );
+
     return (
         <div
             ref={messagesContainerRef}
@@ -126,6 +144,10 @@ export default function MessageList() {
                         message.sender.id ===
                         currentUser?.user.id
                     }
+                    isLastOwnMessage={
+                        message.id === lastOwnMessage?.id
+                    }
+                    lastReadAt={data.lastReadAt}
                 />
             ))}
         </div>

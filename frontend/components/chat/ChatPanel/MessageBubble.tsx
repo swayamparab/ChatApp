@@ -17,17 +17,26 @@ import { useSocket } from "@/hooks/useSocket";
 type MessageBubbleProps = {
     message: Message;
     isOwnMessage: boolean;
+    isLastOwnMessage: boolean;
+    lastReadAt: string | null;
 };
 
 export default function MessageBubble({
     message,
     isOwnMessage,
+    isLastOwnMessage,
+    lastReadAt
 }: MessageBubbleProps) {
 
     const time = new Date(message.createdAt).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
     });
+
+    const isSeen =
+        isOwnMessage &&
+        lastReadAt !== null &&
+        new Date(message.createdAt) <= new Date(lastReadAt);
 
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -148,14 +157,20 @@ export default function MessageBubble({
                         {message.content}
                     </p>
 
-                    <p
-                        className={`mt-1 text-right text-[10px] ${isOwnMessage
+                    <div
+                        className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${isOwnMessage
                                 ? "text-blue-100/80"
                                 : "text-slate-400"
                             }`}
                     >
-                        {time}
-                    </p>
+                        <span>{time}</span>
+
+                        {isOwnMessage && isLastOwnMessage && (
+                            <span>
+                                {isSeen ? "Seen" : "Sent"}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
