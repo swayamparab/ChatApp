@@ -35,11 +35,7 @@ export function useMessageEvents(activeConversationId?: string) {
                 queryKeys.messages(message.conversationId),
                 (old) => {
                     if (!old) {
-                        return {
-                            success: true,
-                            messages: [message],
-                            lastReadAt: null
-                        };
+                        return old;
                     }
 
                     return {
@@ -130,18 +126,33 @@ export function useMessageEvents(activeConversationId?: string) {
             conversationId: string;
             lastReadAt: string;
         }) {
-
-            console.log("message seen", data);
             queryClient.setQueryData<GetMessagesResponse>(
                 queryKeys.messages(data.conversationId),
                 (old) => {
-                    if (!old) {
-                        return old;
-                    }
+                    if (!old) return old;
 
                     return {
                         ...old,
                         lastReadAt: data.lastReadAt,
+                    };
+                }
+            );
+
+            queryClient.setQueryData<GetConversationsResponse>(
+                queryKeys.conversations,
+                (old) => {
+                    if (!old) return old;
+
+                    return {
+                        ...old,
+                        conversations: old.conversations.map((conversation) =>
+                            conversation.conversationId === data.conversationId
+                                ? {
+                                    ...conversation,
+                                    unreadCount: 0,
+                                }
+                                : conversation
+                        ),
                     };
                 }
             );
