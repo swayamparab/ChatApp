@@ -138,24 +138,9 @@ export function useMessageEvents(activeConversationId?: string) {
                 }
             );
 
-            queryClient.setQueryData<GetConversationsResponse>(
-                queryKeys.conversations,
-                (old) => {
-                    if (!old) return old;
-
-                    return {
-                        ...old,
-                        conversations: old.conversations.map((conversation) =>
-                            conversation.conversationId === data.conversationId
-                                ? {
-                                    ...conversation,
-                                    unreadCount: 0,
-                                }
-                                : conversation
-                        ),
-                    };
-                }
-            );
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.conversations,
+            });
         }
 
         function updateConversationPreview(
