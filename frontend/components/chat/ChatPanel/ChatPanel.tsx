@@ -28,11 +28,21 @@ export default function ChatPanel() {
     }, [conversationId, markConversationAsRead]);
 
     useEffect(() => {
-        function handleTyping() {
+        function handleTyping(data: {
+            conversationId: string;
+            userId: string;
+        }) {
+            if (data.conversationId !== conversationId) return;
+
             setIsTyping(true);
         }
 
-        function handleStopTyping() {
+        function handleStopTyping(data: {
+            conversationId: string;
+            userId: string;
+        }) {
+            if (data.conversationId !== conversationId) return;
+
             setIsTyping(false);
         }
 
