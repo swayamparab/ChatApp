@@ -63,7 +63,7 @@ export async function getMessages(
 
     return {
         messages: conversationMessages,
-        otherUserLastReadAt: otherParticipant?.lastReadAt ?? null,
+        lastReadAt: otherParticipant?.lastReadAt ?? null,
     };
 }
 
@@ -76,7 +76,7 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
     });
 
     if (!participant) {
-        throw new Error("You are not participant of this conversation");
+        throw new Error("You are not a participant of this conversation");
     }
 
     const message = await db.transaction(async (tx) => {

@@ -8,6 +8,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
 import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
+import { useSocket } from "@/hooks/useSocket";
 
 export default function MessageList() {
     const { conversationId } = useParams<{
@@ -30,10 +31,14 @@ export default function MessageList() {
 
     const { markConversationAsRead } = useMarkConversationAsRead();
 
-    const lastMessage = data?.messages[data.messages.length - 1];
+    const lastMessage = data?.messages.at(-1);
+
+    const { socket, isConnected } = useSocket();
 
     // Only mark as read if the latest message was sent by the other user.
     useEffect(() => {
+        if (!isConnected) return;
+
         if (!conversationId || !currentUser || !lastMessage) {
             return;
         }
@@ -44,6 +49,7 @@ export default function MessageList() {
 
         markConversationAsRead(conversationId);
     }, [
+        isConnected,
         conversationId,
         currentUser,
         lastMessage?.id,

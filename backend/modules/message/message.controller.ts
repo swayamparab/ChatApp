@@ -13,7 +13,7 @@ export async function getMessagesController(req: Request, res: Response) {
         return res.status(200).json({
             success: true,
             messages: result.messages,
-            otherUserLastReadAt: result.otherUserLastReadAt
+            lastReadAt: result.lastReadAt,
         });
     }
     catch (error) {

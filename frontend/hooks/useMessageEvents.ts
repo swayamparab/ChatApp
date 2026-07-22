@@ -27,6 +27,20 @@ export function useMessageEvents(activeConversationId?: string) {
             const isOwnMessage =
                 message.senderId === currentUser?.user.id;
 
+            if (isOwnMessage) {
+                queryClient.setQueryData<GetMessagesResponse>(
+                    queryKeys.messages(message.conversationId),
+                    (old) => {
+                        if (!old) return old;
+
+                        return {
+                            ...old,
+                            lastReadAt: null,
+                        };
+                    }
+                );
+            }
+
             const isActiveConversation =
                 message.conversationId === activeConversationId;
 
@@ -124,6 +138,7 @@ export function useMessageEvents(activeConversationId?: string) {
 
         function handleMessagesSeen(data: {
             conversationId: string;
+            userId: string;
             lastReadAt: string;
         }) {
             queryClient.setQueryData<GetMessagesResponse>(
@@ -138,9 +153,24 @@ export function useMessageEvents(activeConversationId?: string) {
                 }
             );
 
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.conversations,
-            });
+            queryClient.setQueryData<GetConversationsResponse>(
+                queryKeys.conversations,
+                (old) => {
+                    if (!old) return old;
+
+                    return {
+                        ...old,
+                        conversations: old.conversations.map((conversation) =>
+                            conversation.conversationId === data.conversationId
+                                ? {
+                                    ...conversation,
+                                    unreadCount: 0,
+                                }
+                                : conversation
+                        ),
+                    };
+                }
+            );
         }
 
         function updateConversationPreview(

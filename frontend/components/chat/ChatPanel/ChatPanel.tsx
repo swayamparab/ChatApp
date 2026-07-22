@@ -7,17 +7,25 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 
 import { useSocket } from "@/hooks/useSocket";
+import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
 
 import { useParams } from "next/navigation";
 
 export default function ChatPanel() {
     const { socket } = useSocket();
 
+    const { markConversationAsRead } =
+        useMarkConversationAsRead();
+
     const { conversationId } = useParams<{
         conversationId: string;
     }>();
 
     const [isTyping, setIsTyping] = useState(false);
+
+    useEffect(() => {
+        markConversationAsRead(conversationId);
+    }, [conversationId, markConversationAsRead]);
 
     useEffect(() => {
         function handleTyping() {
