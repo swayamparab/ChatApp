@@ -17,7 +17,7 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash2, Copy } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
@@ -165,6 +165,17 @@ export default function MessageBubble({
                             >
                                 <DropdownMenuItem
                                     className="text-white"
+                                    onClick={async () => {
+                                        await navigator.clipboard.writeText(message.content);
+                                        toast.success("Message Copied!");
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    Copy
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="text-white"
                                     onClick={() => {
                                         setIsEditing(true);
                                         setEditedContent(message.content);
@@ -199,6 +210,17 @@ export default function MessageBubble({
                             </DrawerHeader>
 
                             <div className="space-y-2 px-4 pb-6">
+                                <button
+                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                    onClick={async () => {
+                                        await navigator.clipboard.writeText(message.content);
+                                        toast.success("Message copied!");
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    <Copy className="h-5 w-5" />
+                                    Copy
+                                </button>
                                 <button
                                     className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
                                     onClick={() => {
@@ -260,9 +282,9 @@ export default function MessageBubble({
                                             touch-manipulation
                                             md:max-w-[70%]
                                             ${isOwnMessage
-                                                ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
-                                                : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
-                                            }
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                            : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
+                        }
                     `}
                 >
                     {isEditing ? (
