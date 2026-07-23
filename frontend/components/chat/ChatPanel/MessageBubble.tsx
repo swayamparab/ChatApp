@@ -257,7 +257,7 @@ export default function MessageBubble({
 
                         longPressTimeout.current = setTimeout(() => {
                             setMobileMenuOpen(true);
-                        }, 500);
+                        }, 350);
                     }}
                     onTouchEnd={() => {
                         if (longPressTimeout.current) {
