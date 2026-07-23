@@ -10,6 +10,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+} from "@/components/ui/drawer";
+
 import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
@@ -40,6 +47,7 @@ export default function MessageBubble({
         new Date(message.createdAt) <= new Date(lastReadAt);
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(message.content);
@@ -128,12 +136,13 @@ export default function MessageBubble({
                     }`}
             >
                 {isOwnMessage && (
-                    <DropdownMenu
-                        open={menuOpen}
-                        onOpenChange={setMenuOpen}
-                    >
-                        <DropdownMenuTrigger
-                            className="
+                    <div className="hidden lg:block">
+                        <DropdownMenu
+                            open={menuOpen}
+                            onOpenChange={setMenuOpen}
+                        >
+                            <DropdownMenuTrigger
+                                className="
                                 hidden
                                 h-8 w-8
                                 items-center justify-center
@@ -146,34 +155,75 @@ export default function MessageBubble({
                                 hover:text-white
                                 lg:flex
                             "
-                        >
-                            <EllipsisVertical className="h-4 w-4" />
-                        </DropdownMenuTrigger>
+                            >
+                                <EllipsisVertical className="h-4 w-4" />
+                            </DropdownMenuTrigger>
 
-                        <DropdownMenuContent
-                            align="end"
-                            className="rounded-xl border border-slate-800 bg-slate-900"
-                        >
-                            <DropdownMenuItem
-                                className="text-white"
-                                onClick={() => {
-                                    setIsEditing(true);
-                                    setEditedContent(message.content);
-                                    setMenuOpen(false);
-                                }}
+                            <DropdownMenuContent
+                                align="end"
+                                className="rounded-xl border border-slate-800 bg-slate-900"
                             >
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
-                                onClick={handleDelete}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <DropdownMenuItem
+                                    className="text-white"
+                                    onClick={() => {
+                                        setIsEditing(true);
+                                        setEditedContent(message.content);
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
+                                    onClick={handleDelete}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                )}
+
+                {isOwnMessage && (
+                    <Drawer
+                        open={mobileMenuOpen}
+                        onOpenChange={setMobileMenuOpen}
+                    >
+                        <DrawerContent className="border-slate-800 bg-slate-900">
+                            <DrawerHeader>
+                                <DrawerTitle className="text-white">
+                                    Message
+                                </DrawerTitle>
+                            </DrawerHeader>
+
+                            <div className="space-y-2 px-4 pb-6">
+                                <button
+                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                    onClick={() => {
+                                        setIsEditing(true);
+                                        setEditedContent(message.content);
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    <Pencil className="h-5 w-5" />
+                                    Edit
+                                </button>
+
+                                <button
+                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-red-400 hover:bg-red-500/10"
+                                    onClick={() => {
+                                        handleDelete();
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    <Trash2 className="h-5 w-5" />
+                                    Delete
+                                </button>
+                            </div>
+                        </DrawerContent>
+                    </Drawer>
                 )}
 
                 <div
@@ -181,7 +231,7 @@ export default function MessageBubble({
                         if (!isOwnMessage || isEditing) return;
 
                         longPressTimeout.current = setTimeout(() => {
-                            setMenuOpen(true);
+                            setMobileMenuOpen(true);
                         }, 500);
                     }}
                     onTouchEnd={() => {
@@ -279,11 +329,11 @@ export default function MessageBubble({
                             {message.editedAt && (
                                 <div
                                     className={`mb-1 text-[11px] font-medium ${isOwnMessage
-                                            ? "text-blue-100/80"
-                                            : "text-slate-400"
+                                        ? "text-blue-100/80"
+                                        : "text-slate-400"
                                         }`}
                                 >
-                                (edited)
+                                    (edited)
                                 </div>
                             )}
 
@@ -293,8 +343,8 @@ export default function MessageBubble({
 
                             <div
                                 className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${isOwnMessage
-                                        ? "text-blue-100/80"
-                                        : "text-slate-400"
+                                    ? "text-blue-100/80"
+                                    : "text-slate-400"
                                     }`}
                             >
                                 <span>{time}</span>
