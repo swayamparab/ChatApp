@@ -244,19 +244,25 @@ export default function MessageBubble({
                             clearTimeout(longPressTimeout.current);
                         }
                     }}
+                    style={{
+                        WebkitUserSelect: "none",
+                        WebkitTouchCallout: "none",
+                    }}
                     className={`
-                        min-w-[140px]
-                        max-w-[85%]
-                        rounded-[20px]
-                        px-4
-                        py-2.5
-                        shadow-md
-                        transition-all duration-200
-                        md:max-w-[70%]
-                        ${isOwnMessage
-                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
-                            : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
-                        }
+                                            min-w-[140px]
+                                            max-w-[85%]
+                                            rounded-[20px]
+                                            px-4
+                                            py-2.5
+                                            shadow-md
+                                            transition-all duration-200
+                                            select-none
+                                            touch-manipulation
+                                            md:max-w-[70%]
+                                            ${isOwnMessage
+                                                ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                                                : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
+                                            }
                     `}
                 >
                     {isEditing ? (
@@ -265,18 +271,18 @@ export default function MessageBubble({
                                 value={editedContent}
                                 onChange={(e) => setEditedContent(e.target.value)}
                                 className="
-                w-full
-                resize-none
-                rounded-md
-                border
-                border-white/20
-                bg-transparent
-                p-2
-                text-[15px]
-                leading-5
-                outline-none
-                focus:border-white/40
-            "
+                                    w-full
+                                    resize-none
+                                    rounded-md
+                                    border
+                                    border-white/20
+                                    bg-transparent
+                                    p-2
+                                    text-[15px]
+                                    leading-5
+                                    outline-none
+                                    focus:border-white/40
+                                "
                                 rows={2}
                                 autoFocus
                                 onKeyDown={(e) => {
