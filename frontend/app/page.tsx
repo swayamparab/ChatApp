@@ -17,7 +17,7 @@ export default function HomePage() {
 
       <div className="relative z-10 w-full max-w-5xl">
         <div className="text-center">
-          <h1 className="text-6xl font-extrabold tracking-tight text-white">
+          <h1 className="text-6xl font-extrabold tracking-tight text-white mt-10">
             Chat<span className="text-blue-500">App</span>
           </h1>
 
