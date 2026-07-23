@@ -50,6 +50,13 @@
       "when": 1784378480242,
       "tag": "0006_cooing_lorna_dane",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784817347244,
+      "tag": "0007_cooing_goliath",
+      "breakpoints": true
     }
   ]
 }

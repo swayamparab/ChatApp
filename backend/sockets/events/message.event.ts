@@ -1,7 +1,7 @@
-import { sendMessageSchema, typingSchema, deleteMessageSchema } from "../../modules/message/message.validation";
+import { sendMessageSchema, typingSchema, deleteMessageSchema, editMessageSchema } from "../../modules/message/message.validation";
 import { Server, Socket } from "socket.io";
-import { sendMessage, deleteMessage } from "../../modules/message/message.service";
-import { ZodError } from "zod";
+import { sendMessage, deleteMessage, editMessage } from "../../modules/message/message.service";
+import { success, ZodError } from "zod";
 import { isParticipant } from "../../modules/conversation/conversation.service";
 
 export function registerMessageEvent(io: Server, socket: Socket) {
@@ -51,6 +51,36 @@ export function registerMessageEvent(io: Server, socket: Socket) {
             callback?.({
                 success: true,
             });
+        }
+        catch (error) {
+            if (error instanceof ZodError) {
+                return callback?.({
+                    success: false,
+                    errors: error.issues,
+                });
+            }
+
+            callback?.({
+                success: false,
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Internal Server Error",
+            });
+        }
+    })
+
+    socket.on("edit_message", async (data, callback) => {
+        try {
+            const validatedData = editMessageSchema.parse(data);
+
+            const updatedMessage = await editMessage(socket.userId, validatedData);
+
+            io.to(updatedMessage.conversationId).emit("message_edited", updatedMessage);
+
+            callback?.({
+                success: true
+            })
         }
         catch (error) {
             if (error instanceof ZodError) {

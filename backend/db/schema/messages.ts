@@ -33,4 +33,5 @@ export const messages = pgTable("messages", {
         .$onUpdate(() => new Date())
         .defaultNow()
         .notNull(),
+    editedAt: timestamp(),
 });

@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { deleteMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
+import { deleteMessageInput, EditMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, conversations, messages } from "../../db/schema";
 import { and, eq, ne } from "drizzle-orm";
 
@@ -137,4 +137,45 @@ export async function deleteMessage(userId: string, data: deleteMessageInput) {
         messageId: message.id,
         conversationId: message.conversationId
     }
+}
+
+export async function editMessage(userId: string, data: EditMessageInput) {
+
+    const message = await db.query.messages.findFirst({
+        where: eq(messages.id, data.messageId)
+    })
+
+    if (!message) {
+        throw new Error("Message not found");
+    }
+
+    if (message.senderId !== userId) {
+        throw new Error("Unauthorized");
+    }
+
+    const [updatedMessage] = await db.update(messages).set({
+        content: data.content,
+        editedAt: new Date()
+    })
+        .where(eq(messages.id, data.messageId))
+        .returning()
+
+    const fullMessage = await db.query.messages.findFirst({
+        where: eq(messages.id, updatedMessage.id),
+        with: {
+            sender: {
+                columns: {
+                    id: true,
+                    username: true
+                }
+            }
+        }
+    })
+
+    if (!fullMessage) {
+        throw new Error("Failed to fetch updated message");
+    }
+
+    return fullMessage;
+
 }

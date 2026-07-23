@@ -4,6 +4,7 @@ export type Message = {
     senderId: string;
     content: string;
     createdAt: string;
+    editedAt: string | null;
 
     sender: {
         id: string;
