@@ -135,14 +135,13 @@ export default function MessageBubble({
                 className={`flex items-end gap-2 ${isOwnMessage ? "flex-row-reverse" : ""
                     }`}
             >
-                {isOwnMessage && (
-                    <div className="hidden lg:block">
-                        <DropdownMenu
-                            open={menuOpen}
-                            onOpenChange={setMenuOpen}
-                        >
-                            <DropdownMenuTrigger
-                                className="
+                <div className="hidden lg:block">
+                    <DropdownMenu
+                        open={menuOpen}
+                        onOpenChange={setMenuOpen}
+                    >
+                        <DropdownMenuTrigger
+                            className="
                                 hidden
                                 h-8 w-8
                                 items-center justify-center
@@ -155,102 +154,106 @@ export default function MessageBubble({
                                 hover:text-white
                                 lg:flex
                             "
+                        >
+                            <EllipsisVertical className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                            align="end"
+                            className="rounded-xl border border-slate-800 bg-slate-900"
+                        >
+                            <DropdownMenuItem
+                                className="text-white"
+                                onClick={async () => {
+                                    await navigator.clipboard.writeText(message.content);
+                                    toast.success("Message Copied!");
+                                    setMenuOpen(false);
+                                }}
                             >
-                                <EllipsisVertical className="h-4 w-4" />
-                            </DropdownMenuTrigger>
+                                <Copy className="mr-2 h-4 w-4" />
+                                Copy
+                            </DropdownMenuItem>
+                            {isOwnMessage && (
+                                <>
+                                    <DropdownMenuItem
+                                        className="text-white"
+                                        onClick={() => {
+                                            setIsEditing(true);
+                                            setEditedContent(message.content);
+                                            setMenuOpen(false);
+                                        }}
+                                    >
+                                        <Pencil className="mr-2 h-4 w-4" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
+                                        onClick={handleDelete}
+                                    >
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                <Drawer
+                    open={mobileMenuOpen}
+                    onOpenChange={setMobileMenuOpen}
+                >
+                    <DrawerContent className="border-slate-800 bg-slate-900">
+                        <DrawerHeader>
+                            <DrawerTitle className="text-white">
+                                Message
+                            </DrawerTitle>
+                        </DrawerHeader>
 
-                            <DropdownMenuContent
-                                align="end"
-                                className="rounded-xl border border-slate-800 bg-slate-900"
+                        <div className="space-y-2 px-4 pb-6">
+                            <button
+                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                onClick={async () => {
+                                    await navigator.clipboard.writeText(message.content);
+                                    toast.success("Message copied!");
+                                    setMobileMenuOpen(false);
+                                }}
                             >
-                                <DropdownMenuItem
-                                    className="text-white"
-                                    onClick={async () => {
-                                        await navigator.clipboard.writeText(message.content);
-                                        toast.success("Message Copied!");
-                                        setMenuOpen(false);
-                                    }}
-                                >
-                                    <Copy className="mr-2 h-4 w-4" />
-                                    Copy
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="text-white"
-                                    onClick={() => {
-                                        setIsEditing(true);
-                                        setEditedContent(message.content);
-                                        setMenuOpen(false);
-                                    }}
-                                >
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
-                                    onClick={handleDelete}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                )}
+                                <Copy className="h-5 w-5" />
+                                Copy
+                            </button>
+                            {isOwnMessage && (
+                                <>
+                                    <button
+                                        className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                        onClick={() => {
+                                            setIsEditing(true);
+                                            setEditedContent(message.content);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                    >
+                                        <Pencil className="h-5 w-5" />
+                                        Edit
+                                    </button>
 
-                {isOwnMessage && (
-                    <Drawer
-                        open={mobileMenuOpen}
-                        onOpenChange={setMobileMenuOpen}
-                    >
-                        <DrawerContent className="border-slate-800 bg-slate-900">
-                            <DrawerHeader>
-                                <DrawerTitle className="text-white">
-                                    Message
-                                </DrawerTitle>
-                            </DrawerHeader>
-
-                            <div className="space-y-2 px-4 pb-6">
-                                <button
-                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
-                                    onClick={async () => {
-                                        await navigator.clipboard.writeText(message.content);
-                                        toast.success("Message copied!");
-                                        setMobileMenuOpen(false);
-                                    }}
-                                >
-                                    <Copy className="h-5 w-5" />
-                                    Copy
-                                </button>
-                                <button
-                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
-                                    onClick={() => {
-                                        setIsEditing(true);
-                                        setEditedContent(message.content);
-                                        setMobileMenuOpen(false);
-                                    }}
-                                >
-                                    <Pencil className="h-5 w-5" />
-                                    Edit
-                                </button>
-
-                                <button
-                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-red-400 hover:bg-red-500/10"
-                                    onClick={() => {
-                                        handleDelete();
-                                        setMobileMenuOpen(false);
-                                    }}
-                                >
-                                    <Trash2 className="h-5 w-5" />
-                                    Delete
-                                </button>
-                            </div>
-                        </DrawerContent>
-                    </Drawer>
-                )}
+                                    <button
+                                        className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-red-400 hover:bg-red-500/10"
+                                        onClick={() => {
+                                            handleDelete();
+                                            setMobileMenuOpen(false);
+                                        }}
+                                    >
+                                        <Trash2 className="h-5 w-5" />
+                                        Delete
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </DrawerContent>
+                </Drawer>
 
                 <div
                     onTouchStart={() => {
-                        if (!isOwnMessage || isEditing) return;
+                        if (isEditing) return;
 
                         longPressTimeout.current = setTimeout(() => {
                             setMobileMenuOpen(true);
