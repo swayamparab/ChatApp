@@ -11,21 +11,22 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 
 ## Features
 
-- 🔐 JWT Authentication with HttpOnly Cookies
-- 💬 Real-time one-to-one messaging using Socket.IO
-- 🟢 Live online/offline presence
+- JWT Authentication with HttpOnly Cookies
+- Real-time one-to-one messaging using Socket.IO
+- Live online/offline presence
 - Live Unread Count Marker
-- ⌨️ Real-time typing indicators
-- 🤝 Chat request system
+- Real-time typing indicators
+- Chat request system
   - Send requests
   - Accept requests
   - Reject requests
   - Cancel outgoing requests
-- 🗑️ Delete your own messages
-- 🔍 Search users
-- 📱 Responsive UI for desktop and mobile
-- ⚡ React Query caching and optimistic UI updates
-- 🎨 Modern UI built with Tailwind CSS and shadcn/ui
+- Delete your own messages
+- Edit your own messages
+- Search users
+- Responsive UI for desktop and mobile
+- React Query caching and optimistic UI updates
+- Modern UI built with Tailwind CSS and shadcn/ui
 
 ---
 
