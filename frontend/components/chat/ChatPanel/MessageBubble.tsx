@@ -37,6 +37,7 @@ export default function MessageBubble({
     isLastOwnMessage,
     lastReadAt,
 }: MessageBubbleProps) {
+    const { socket } = useSocket();
 
     const time = new Date(message.createdAt).toLocaleTimeString([], {
         hour: "2-digit",
@@ -61,7 +62,17 @@ export default function MessageBubble({
 
     const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    const { socket } = useSocket();
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    // when editing initiated, move caret to end
+    useEffect(() => {
+        if (isEditing && textareaRef.current) {
+            const length = textareaRef.current.value.length;
+
+            textareaRef.current.focus();
+            textareaRef.current.setSelectionRange(length, length);
+        }
+    }, [isEditing]);
 
     function handleDelete() {
         socket.emit(
@@ -315,6 +326,7 @@ export default function MessageBubble({
                     {isEditing ? (
                         <div className="space-y-2">
                             <textarea
+                                ref={textareaRef}
                                 value={editedContent}
                                 onChange={(e) => setEditedContent(e.target.value)}
                                 className="
@@ -331,7 +343,6 @@ export default function MessageBubble({
                                     focus:border-white/40
                                 "
                                 rows={2}
-                                autoFocus
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" && !e.shiftKey) {
                                         e.preventDefault();
@@ -391,8 +402,8 @@ export default function MessageBubble({
                                 >
                                     <p
                                         className={`text-xs font-semibold ${isOwnMessage
-                                                ? "text-blue-100"
-                                                : "text-blue-400"
+                                            ? "text-blue-100"
+                                            : "text-blue-400"
                                             }`}
                                     >
                                         {message.replyTo.sender.username}
@@ -400,8 +411,8 @@ export default function MessageBubble({
 
                                     <p
                                         className={`mt-1 line-clamp-2 text-xs ${isOwnMessage
-                                                ? "text-blue-50/90"
-                                                : "text-slate-300"
+                                            ? "text-blue-50/90"
+                                            : "text-slate-300"
                                             }`}
                                     >
                                         {message.replyTo.content}
