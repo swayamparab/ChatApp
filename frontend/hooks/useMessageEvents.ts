@@ -25,7 +25,7 @@ export function useMessageEvents(activeConversationId?: string) {
         function handleNewMessage(message: Message) {
 
             const isOwnMessage =
-                message.senderId === currentUser?.user.id;
+                message.sender.id === currentUser?.user.id;
 
             if (isOwnMessage) {
                 queryClient.setQueryData<GetMessagesResponse>(
