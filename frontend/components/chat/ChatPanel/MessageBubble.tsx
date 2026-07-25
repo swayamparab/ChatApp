@@ -17,13 +17,14 @@ import {
     DrawerTitle,
 } from "@/components/ui/drawer";
 
-import { EllipsisVertical, Pencil, Trash2, Copy } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash2, Copy, Reply } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 
 type MessageBubbleProps = {
     message: Message;
+    onReply: (message: Message) => void;
     isOwnMessage: boolean;
     isLastOwnMessage: boolean;
     lastReadAt: string | null;
@@ -31,9 +32,10 @@ type MessageBubbleProps = {
 
 export default function MessageBubble({
     message,
+    onReply,
     isOwnMessage,
     isLastOwnMessage,
-    lastReadAt
+    lastReadAt,
 }: MessageBubbleProps) {
 
     const time = new Date(message.createdAt).toLocaleTimeString([], {
@@ -164,6 +166,16 @@ export default function MessageBubble({
                         >
                             <DropdownMenuItem
                                 className="text-white"
+                                onClick={() => {
+                                    onReply(message);
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                <Reply className="mr-2 h-4 w-4" />
+                                Reply
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-white"
                                 onClick={async () => {
                                     await navigator.clipboard.writeText(message.content);
                                     toast.success("Message Copied!");
@@ -210,6 +222,16 @@ export default function MessageBubble({
                         </DrawerHeader>
 
                         <div className="space-y-2 px-4 pb-6">
+                            <button
+                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                onClick={() => {
+                                    onReply(message);
+                                    setMobileMenuOpen(false);
+                                }}
+                            >
+                                <Reply className="h-5 w-5" />
+                                Reply
+                            </button>
                             <button
                                 className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
                                 onClick={async () => {
@@ -357,6 +379,35 @@ export default function MessageBubble({
                         </div>
                     ) : (
                         <>
+                            {message.replyTo && (
+                                <div
+                                    className={`
+                mb-2 rounded-lg border-l-4 px-3 py-2
+                ${isOwnMessage
+                                            ? "border-blue-200 bg-blue-400/20"
+                                            : "border-blue-500 bg-slate-700/60"
+                                        }
+            `}
+                                >
+                                    <p
+                                        className={`text-xs font-semibold ${isOwnMessage
+                                                ? "text-blue-100"
+                                                : "text-blue-400"
+                                            }`}
+                                    >
+                                        {message.replyTo.sender.username}
+                                    </p>
+
+                                    <p
+                                        className={`mt-1 line-clamp-2 text-xs ${isOwnMessage
+                                                ? "text-blue-50/90"
+                                                : "text-slate-300"
+                                            }`}
+                                    >
+                                        {message.replyTo.content}
+                                    </p>
+                                </div>
+                            )}
                             {message.editedAt && (
                                 <div
                                     className={`mb-1 text-[11px] font-medium ${isOwnMessage

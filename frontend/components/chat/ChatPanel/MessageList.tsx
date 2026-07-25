@@ -10,7 +10,14 @@ import MessageBubble from "./MessageBubble";
 import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
 import { useSocket } from "@/hooks/useSocket";
 
-export default function MessageList() {
+import type { Message } from "@/types/message";
+interface MessageListProps {
+    onReply: (message: Message) => void;
+}
+
+export default function MessageList({
+    onReply,
+}: MessageListProps) {
     const { conversationId } = useParams<{
         conversationId: string;
     }>();
@@ -43,7 +50,7 @@ export default function MessageList() {
             return;
         }
 
-        if (lastMessage.senderId === currentUser.user.id) {
+        if (lastMessage.sender.id === currentUser.user.id) {
             return;
         }
 
@@ -146,6 +153,7 @@ export default function MessageList() {
                 <MessageBubble
                     key={message.id}
                     message={message}
+                    onReply={onReply}
                     isOwnMessage={
                         message.sender.id ===
                         currentUser?.user.id

@@ -9,7 +9,17 @@ import { SendHorizontal } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
 
-export default function MessageInput() {
+import type { Message } from "@/types/message";
+
+interface MessageInputProps {
+    replyingTo: Message | null;
+    clearReply: () => void;
+}
+
+export default function MessageInput({
+    replyingTo,
+    clearReply
+}: MessageInputProps) {
     const [content, setContent] = useState("");
 
     const { conversationId } = useParams<{ conversationId: string; }>();
@@ -28,12 +38,14 @@ export default function MessageInput() {
 
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
         }
 
         socket.emit("send_message",
             {
                 conversationId,
                 content: message,
+                replyToMessageId: replyingTo?.id,
             },
             (response: {
                 success: boolean;
@@ -45,6 +57,8 @@ export default function MessageInput() {
                 }
 
                 setContent("");
+                clearReply();
+
                 socket.emit("stop_typing", {
                     conversationId,
                 });
@@ -58,6 +72,7 @@ export default function MessageInput() {
         return () => {
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = null;
             }
 
             if (socket.connected && isTypingRef.current) {
@@ -70,16 +85,39 @@ export default function MessageInput() {
 
     return (
         <div className="bg-slate-950/90 px-5 py-4 backdrop-blur-md">
+            {replyingTo && (
+                <div className="mb-3 rounded-xl border border-slate-800 bg-slate-900 p-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1 border-l-4 border-blue-500 pl-3">
+                            <p className="text-xs font-semibold text-blue-400">
+                                Replying to {replyingTo.sender.username}
+                            </p>
+
+                            <p className="truncate text-sm text-slate-300">
+                                {replyingTo.content}
+                            </p>
+                        </div>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={clearReply}
+                        >
+                            ✕
+                        </Button>
+                    </div>
+                </div>
+            )}
             <div
                 className="
-                    flex items-center
-                    rounded-full
-                    bg-slate-900
-                    pl-3
-                    pr-1.5
-                    shadow-lg
-                    ring-1 ring-slate-800/70
-                "
+                        flex items-center
+                        rounded-full
+                        bg-slate-900
+                        pl-3
+                        pr-1.5
+                        shadow-lg
+                        ring-1 ring-slate-800/70
+                    "
             >
                 <Input
                     value={content}
@@ -111,6 +149,10 @@ export default function MessageInput() {
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             handleSend();
+                        }
+                        if (e.key === "Escape" && replyingTo) {
+                            clearReply();
+                            return;
                         }
                     }}
                     placeholder="Type a message..."

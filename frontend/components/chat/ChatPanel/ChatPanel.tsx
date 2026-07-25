@@ -11,17 +11,18 @@ import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
 
 import { useParams } from "next/navigation";
 
+import type { Message } from "@/types/message";
+
 export default function ChatPanel() {
     const { socket } = useSocket();
 
-    const { markConversationAsRead } =
-        useMarkConversationAsRead();
+    const { markConversationAsRead } = useMarkConversationAsRead();
 
-    const { conversationId } = useParams<{
-        conversationId: string;
-    }>();
+    const { conversationId } = useParams<{ conversationId: string; }>();
 
     const [isTyping, setIsTyping] = useState(false);
+
+    const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
     useEffect(() => {
         markConversationAsRead(conversationId);
@@ -59,9 +60,14 @@ export default function ChatPanel() {
         <div className="flex h-full min-h-0 flex-col">
             <ChatHeader isTyping={isTyping} />
 
-            <MessageList />
+            <MessageList
+                onReply={setReplyingTo}
+            />
 
-            <MessageInput />
+            <MessageInput
+                replyingTo={replyingTo}
+                clearReply={() => setReplyingTo(null)}
+            />
         </div>
     );
 }

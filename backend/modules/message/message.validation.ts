@@ -8,6 +8,7 @@ export type GetMessagesInput = z.infer<typeof getMessagesSchema>;
 export const sendMessageSchema = z.object({
   conversationId: z.uuid(),
   content: z.string().trim().min(1).max(1000),
+  replyToMessageId: z.uuid().optional(),
 });
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 

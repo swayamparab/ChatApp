@@ -55,6 +55,20 @@ export async function getMessages(
                         username: true,
                     },
                 },
+                replyTo: {
+                    columns: {
+                        id: true,
+                        content: true,
+                    },
+                    with: {
+                        sender: {
+                            columns: {
+                                id: true,
+                                username: true,
+                            }
+                        }
+                    }
+                }
             },
             orderBy: (messages, { asc }) => [
                 asc(messages.createdAt),
@@ -79,6 +93,26 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
         throw new Error("You are not a participant of this conversation");
     }
 
+    const repliedMessage = data.replyToMessageId
+        ? await db.query.messages.findFirst({
+            where: eq(messages.id, data.replyToMessageId),
+            columns: {
+                id: true,
+                conversationId: true,
+            },
+        })
+        : undefined;
+
+    if (data.replyToMessageId) {
+        if (!repliedMessage) {
+            throw new Error("Reply message not found");
+        }
+
+        if (repliedMessage.conversationId !== data.conversationId) {
+            throw new Error("Cannot reply to a message from another conversation");
+        }
+    }
+
     const message = await db.transaction(async (tx) => {
         const [insertedMessage] = await tx
             .insert(messages)
@@ -86,6 +120,7 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
                 conversationId: data.conversationId,
                 senderId: userId,
                 content: data.content,
+                replyToMessageId: data.replyToMessageId,
             })
             .returning();
 
@@ -105,6 +140,20 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
                         username: true,
                     },
                 },
+                replyTo: {
+                    columns: {
+                        id: true,
+                        content: true,
+                    },
+                    with: {
+                        sender: {
+                            columns: {
+                                id: true,
+                                username: true,
+                            }
+                        }
+                    }
+                }
             },
         });
 
@@ -166,10 +215,24 @@ export async function editMessage(userId: string, data: EditMessageInput) {
             sender: {
                 columns: {
                     id: true,
-                    username: true
-                }
-            }
-        }
+                    username: true,
+                },
+            },
+            replyTo: {
+                columns: {
+                    id: true,
+                    content: true,
+                },
+                with: {
+                    sender: {
+                        columns: {
+                            id: true,
+                            username: true,
+                        },
+                    },
+                },
+            },
+        },
     })
 
     if (!fullMessage) {

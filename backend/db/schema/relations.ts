@@ -73,14 +73,29 @@ export const chatRequestsRelations = relations(
 
 //every message belongs to exactly ONE conversation.
 //every message has exactly one sender.
-export const messagesRelations = relations(messages, ({ one }) => ({
-    conversation: one(conversations, {
-        fields: [messages.conversationId],
-        references: [conversations.id],
-    }),
+//a message can reply to one message
+//a message can have many replies
+export const messagesRelations = relations(
+    messages,
+    ({ one, many }) => ({
+        conversation: one(conversations, {
+            fields: [messages.conversationId],
+            references: [conversations.id],
+        }),
 
-    sender: one(users, {
-        fields: [messages.senderId],
-        references: [users.id],
-    }),
-}));
+        sender: one(users, {
+            fields: [messages.senderId],
+            references: [users.id],
+        }),
+
+        replyTo: one(messages, {
+            fields: [messages.replyToMessageId],
+            references: [messages.id],
+            relationName: "messageReplies",
+        }),
+
+        replies: many(messages, {
+            relationName: "messageReplies",
+        }),
+    })
+);
