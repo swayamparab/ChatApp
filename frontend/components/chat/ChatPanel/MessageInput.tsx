@@ -29,6 +29,15 @@ export default function MessageInput({
     const isTypingRef = useRef(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    //focus input box
+    const inputRef = useRef<HTMLInputElement>(null);
+    //when a conversation is opened or reply to message is initiated
+    useEffect(() => {
+        inputRef.current?.focus({
+            preventScroll: true,
+        });
+    }, [conversationId, replyingTo]);
+
     function handleSend() {
         const message = content.trim();
 
@@ -120,6 +129,7 @@ export default function MessageInput({
                     "
             >
                 <Input
+                    ref={inputRef}
                     value={content}
                     onChange={(e) => {
                         setContent(e.target.value);
