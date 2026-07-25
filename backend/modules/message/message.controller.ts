@@ -6,7 +6,11 @@ import { ZodError } from "zod";
 export async function getMessagesController(req: Request, res: Response) {
 
     try {
-        const data = getMessagesSchema.parse(req.params);
+        const data = getMessagesSchema.parse({
+            conversationId: req.params.conversationId,
+            before: req.query.before,
+            limit: req.query.limit
+        });
 
         const result = await getMessages(req.userId, data);
 
@@ -14,6 +18,8 @@ export async function getMessagesController(req: Request, res: Response) {
             success: true,
             messages: result.messages,
             lastReadAt: result.lastReadAt,
+            nextCursor: result.nextCursor,
+            hasMore: result.hasMore,
         });
     }
     catch (error) {

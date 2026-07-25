@@ -14,6 +14,8 @@ import type { GetConversationsResponse, } from "@/types/conversations";
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
+import type { InfiniteData } from "@tanstack/react-query";
+
 export function useMessageEvents(activeConversationId?: string) {
     const { socket } = useSocket();
 
@@ -22,39 +24,58 @@ export function useMessageEvents(activeConversationId?: string) {
     const { data: currentUser } = useCurrentUser();
 
     useEffect(() => {
-        function handleNewMessage(message: Message) {
 
+        function updateMessagePages(
+            old: InfiniteData<GetMessagesResponse> | undefined,
+            updater: (messages: Message[]) => Message[]
+        ) {
+            if (!old) return old;
+
+            return {
+                ...old,
+                pages: old.pages.map((page) => ({
+                    ...page,
+                    messages: updater(page.messages),
+                })),
+            };
+        }
+
+        function handleNewMessage(message: Message) {
             const isOwnMessage =
                 message.sender.id === currentUser?.user.id;
-
-            if (isOwnMessage) {
-                queryClient.setQueryData<GetMessagesResponse>(
-                    queryKeys.messages(message.conversationId),
-                    (old) => {
-                        if (!old) return old;
-
-                        return {
-                            ...old,
-                            lastReadAt: null,
-                        };
-                    }
-                );
-            }
 
             const isActiveConversation =
                 message.conversationId === activeConversationId;
 
             // Update messages cache
-            queryClient.setQueryData<GetMessagesResponse>(
+            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
                 queryKeys.messages(message.conversationId),
                 (old) => {
-                    if (!old) {
-                        return old;
-                    }
+                    if (!old) return old;
+
+                    const lastPageIndex = old.pages.length - 1;
 
                     return {
                         ...old,
-                        messages: [...old.messages, message],
+                        pages: old.pages.map((page, index) =>
+                            index === lastPageIndex
+                                ? {
+                                    ...page,
+                                    lastReadAt: isOwnMessage
+                                        ? null
+                                        : page.lastReadAt,
+                                    messages: [
+                                        ...page.messages,
+                                        message,
+                                    ],
+                                }
+                                : {
+                                    ...page,
+                                    lastReadAt: isOwnMessage
+                                        ? null
+                                        : page.lastReadAt,
+                                }
+                        ),
                     };
                 }
             );
@@ -97,7 +118,6 @@ export function useMessageEvents(activeConversationId?: string) {
                     const conversations = [...old.conversations];
 
                     conversations.splice(index, 1);
-
                     conversations.unshift(updatedConversation);
 
                     return {
@@ -112,50 +132,55 @@ export function useMessageEvents(activeConversationId?: string) {
             conversationId: string;
             messageId: string;
         }) {
-            queryClient.setQueryData<GetMessagesResponse>(
+            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
                 queryKeys.messages(data.conversationId),
                 (old) => {
-                    if (!old) {
-                        return old;
-                    }
+                    if (!old) return old;
 
-                    const updatedMessages = old.messages.filter(
-                        (message) => message.id !== data.messageId
+                    const updated = updateMessagePages(
+                        old,
+                        (messages) =>
+                            messages.filter(
+                                (message) => message.id !== data.messageId
+                            )
                     );
+
+                    if (!updated) return updated;
 
                     updateConversationPreview(
                         data.conversationId,
-                        updatedMessages
+                        updated.pages.flatMap((page) => page.messages)
                     );
 
-                    return {
-                        ...old,
-                        messages: updatedMessages,
-                    };
+                    return updated;
                 }
             );
         }
 
         function handleMessageEdited(message: Message) {
-            queryClient.setQueryData<GetMessagesResponse>(
+            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
                 queryKeys.messages(message.conversationId),
                 (old) => {
-                    if (!old) {
-                        return old;
-                    }
+                    if (!old) return old;
 
-                    const updatedMessages = old.messages.map((m) =>
-                        m.id === message.id ? message : m
+                    const updated = updateMessagePages(
+                        old,
+                        (messages) =>
+                            messages.map((m) =>
+                                m.id === message.id ? message : m
+                            )
                     );
 
-                    updateConversationPreview(message.conversationId, updatedMessages);
+                    if (!updated) return updated;
 
-                    return {
-                        ...old,
-                        messages: updatedMessages
-                    }
+                    updateConversationPreview(
+                        message.conversationId,
+                        updated.pages.flatMap((page) => page.messages)
+                    );
+
+                    return updated;
                 }
-            )
+            );
         }
 
         function handleMessagesSeen(data: {
@@ -163,14 +188,17 @@ export function useMessageEvents(activeConversationId?: string) {
             userId: string;
             lastReadAt: string;
         }) {
-            queryClient.setQueryData<GetMessagesResponse>(
+            queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
                 queryKeys.messages(data.conversationId),
                 (old) => {
                     if (!old) return old;
 
                     return {
                         ...old,
-                        lastReadAt: data.lastReadAt,
+                        pages: old.pages.map((page) => ({
+                            ...page,
+                            lastReadAt: data.lastReadAt,
+                        })),
                     };
                 }
             );

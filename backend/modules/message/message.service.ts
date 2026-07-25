@@ -1,7 +1,7 @@
 import { db } from "../../db";
 import { deleteMessageInput, EditMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, conversations, messages } from "../../db/schema";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, lt, ne } from "drizzle-orm";
 
 export async function getMessages(
     userId: string,
@@ -42,12 +42,27 @@ export async function getMessages(
             },
         });
 
+    const beforeMessage = data.before
+        ? await db.query.messages.findFirst({
+            where: and(
+                eq(messages.id, data.before),
+                eq(messages.conversationId, data.conversationId)
+            ),
+            columns: {
+                createdAt: true,
+            },
+        })
+        : null;
+
     const conversationMessages =
         await db.query.messages.findMany({
-            where: eq(
-                messages.conversationId,
-                data.conversationId
+            where: and(
+                eq(messages.conversationId, data.conversationId),
+                beforeMessage
+                    ? lt(messages.createdAt, beforeMessage.createdAt)
+                    : undefined
             ),
+
             with: {
                 sender: {
                     columns: {
@@ -65,19 +80,37 @@ export async function getMessages(
                             columns: {
                                 id: true,
                                 username: true,
-                            }
-                        }
-                    }
-                }
+                            },
+                        },
+                    },
+                },
             },
-            orderBy: (messages, { asc }) => [
-                asc(messages.createdAt),
+
+            orderBy: (messages, { desc }) => [
+                desc(messages.createdAt),
             ],
+
+            limit: data.limit + 1,
         });
+
+    const hasMore = conversationMessages.length > data.limit;
+
+    if (hasMore) {
+        conversationMessages.pop();
+    }
+
+    const nextCursor =
+        conversationMessages.length > 0
+            ? conversationMessages[conversationMessages.length - 1].id
+            : null;
+
+    conversationMessages.reverse();
 
     return {
         messages: conversationMessages,
         lastReadAt: otherParticipant?.lastReadAt ?? null,
+        nextCursor,
+        hasMore,
     };
 }
 

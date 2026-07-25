@@ -26,4 +26,7 @@ export type GetMessagesResponse = {
     success: boolean;
     messages: Message[];
     lastReadAt: string | null;
+
+    nextCursor: string | null;
+    hasMore: boolean;
 };

@@ -2,7 +2,10 @@ import { z } from "zod";
 
 export const getMessagesSchema = z.object({
   conversationId: z.uuid(),
+  before: z.uuid().optional(),
+  limit: z.coerce.number().min(1).max(100).default(20),
 });
+
 export type GetMessagesInput = z.infer<typeof getMessagesSchema>;
 
 export const sendMessageSchema = z.object({

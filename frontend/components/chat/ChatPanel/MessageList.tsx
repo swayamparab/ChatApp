@@ -28,8 +28,19 @@ export default function MessageList({
         data,
         isLoading,
         isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
     } = useMessages(conversationId);
 
+    const messages =
+        data?.pages
+            .slice()
+            .reverse()
+            .flatMap((page) => page.messages) ?? [];
+
+    const lastReadAt =
+        data?.pages[0]?.lastReadAt ?? null;
 
     const messagesContainerRef =
         useRef<HTMLDivElement>(null);
@@ -38,9 +49,44 @@ export default function MessageList({
 
     const { markConversationAsRead } = useMarkConversationAsRead();
 
-    const lastMessage = data?.messages.at(-1);
+    const lastMessage = messages.at(-1);
 
     const { socket, isConnected } = useSocket();
+
+    const previousScrollHeightRef = useRef(0);
+    const loadingMoreRef = useRef(false);
+    const initialScrollDoneRef = useRef(false);
+
+    useEffect(() => {
+        initialScrollDoneRef.current = false;
+    }, [conversationId]);
+
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+
+        console.log({
+            scrollTop: messagesContainerRef.current.scrollTop,
+            hasNextPage,
+            isFetchingNextPage,
+            loadingMore: loadingMoreRef.current,
+        });
+
+        if (
+            messagesContainerRef.current.scrollTop <= 50 &&
+            hasNextPage &&
+            !isFetchingNextPage &&
+            !loadingMoreRef.current
+        ) {
+            console.log("FETCH NEXT PAGE");
+
+            loadingMoreRef.current = true;
+
+            previousScrollHeightRef.current =
+                messagesContainerRef.current.scrollHeight;
+
+            fetchNextPage();
+        }
+    };
 
     // Only mark as read if the latest message was sent by the other user.
     useEffect(() => {
@@ -67,15 +113,19 @@ export default function MessageList({
     useEffect(() => {
         if (!data) return;
 
+        if (initialScrollDoneRef.current) return;
+
         const id = setTimeout(() => {
             messagesContainerRef.current?.scrollTo({
-                top: messagesContainerRef.current!.scrollHeight,
+                top: messagesContainerRef.current.scrollHeight,
                 behavior: "auto",
             });
+
+            initialScrollDoneRef.current = true;
         }, 0);
 
         return () => clearTimeout(id);
-    }, [conversationId, data?.messages.length]);
+    }, [data, conversationId]);
 
     // Smooth scroll when a new message arrives
     useEffect(() => {
@@ -85,7 +135,7 @@ export default function MessageList({
             previousLengthRef.current;
 
         const currentLength =
-            data.messages.length;
+            messages.length;
 
         if (
             currentLength > previousLength &&
@@ -98,7 +148,29 @@ export default function MessageList({
         }
 
         previousLengthRef.current = currentLength;
-    }, [data?.messages.length]);
+    }, [messages.length]);
+
+    // scroll restoration effect
+    useEffect(() => {
+        if (
+            !loadingMoreRef.current ||
+            !messagesContainerRef.current
+        ) {
+            return;
+        }
+
+        const newScrollHeight =
+            messagesContainerRef.current.scrollHeight;
+
+        const heightDifference =
+            newScrollHeight -
+            previousScrollHeightRef.current;
+
+        messagesContainerRef.current.scrollTop +=
+            heightDifference;
+
+        loadingMoreRef.current = false;
+    }, [messages.length]);
 
     if (isLoading) {
         return (
@@ -120,7 +192,7 @@ export default function MessageList({
         );
     }
 
-    if (!data || data.messages.length === 0) {
+    if (!data || messages.length === 0) {
         return (
             <div className="flex flex-1 items-center justify-center">
                 <p className="text-slate-400">
@@ -130,7 +202,7 @@ export default function MessageList({
         );
     }
 
-    const lastOwnMessage = data.messages.findLast(
+    const lastOwnMessage = messages.findLast(
         (message) =>
             message.sender.id === currentUser?.user.id
     );
@@ -138,6 +210,7 @@ export default function MessageList({
     return (
         <div
             ref={messagesContainerRef}
+            onScroll={handleScroll}
             className="
                 flex flex-1 flex-col gap-3
                 overflow-x-hidden
@@ -149,7 +222,12 @@ export default function MessageList({
                 py-4
             "
         >
-            {data.messages.map((message) => (
+            {isFetchingNextPage && (
+                <div className="py-2 text-center text-sm text-slate-400">
+                    Loading older messages...
+                </div>
+            )}
+            {messages.map((message) => (
                 <MessageBubble
                     key={message.id}
                     message={message}
@@ -161,7 +239,7 @@ export default function MessageList({
                     isLastOwnMessage={
                         message.id === lastOwnMessage?.id
                     }
-                    lastReadAt={data.lastReadAt}
+                    lastReadAt={lastReadAt}
                 />
             ))}
         </div>
