@@ -8,24 +8,49 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 - Express + Socket.IO backend deployed on Render
 - API and WebSocket traffic are proxied through Vercel rewrites (`/api` and `/socket.io`)
 - Same-origin architecture for improved HttpOnly cookie handling and cross-browser compatibility
+- Cursor-based message pagination for scalable conversations
+
+---
 
 ## Features
 
+### Authentication
+
 - JWT Authentication with HttpOnly Cookies
-- Real-time one-to-one messaging using Socket.IO
-- Live online/offline presence
-- Live Unread Count Marker
-- Real-time typing indicators
-- Chat request system
-  - Send requests
-  - Accept requests
-  - Reject requests
-  - Cancel outgoing requests
-- Delete your own messages
+- Secure protected routes
+- Persistent login sessions
+
+### Messaging
+
+- Real-time one-to-one messaging
+- Reply to messages
 - Edit your own messages
+- Delete your own messages
+- Cursor-based infinite message pagination
+- Automatic scroll restoration while loading older messages
+- Optimistic UI updates
+
+### Real-Time
+
+- Live online/offline presence
+- Last seen status
+- Typing indicators
+- Live unread message counts
+- Automatic conversation preview updates
+- Single persistent Socket.IO connection per browser tab
+
+### Chat Requests
+
+- Send chat requests
+- Accept requests
+- Reject requests
+- Cancel outgoing requests
+
+### User Experience
+
 - Search users
 - Responsive UI for desktop and mobile
-- React Query caching and optimistic UI updates
+- React Query caching
 - Modern UI built with Tailwind CSS and shadcn/ui
 
 ---
@@ -103,7 +128,7 @@ JWT_SECRET=...
 CLIENT_URL=...
 ```
 
-### Run
+### Run the application
 
 Backend
 
@@ -123,21 +148,39 @@ npm run dev
 
 - Instant messaging
 - Typing indicators
-- Live online/offline status
-- Automatic conversation updates
+- Online/offline presence
+- Last seen updates
+- Live unread message counts
+- Automatic conversation reordering
+- Live message editing
+- Live message deletion
 - Socket-based communication with a single persistent connection per browser tab
-- Last Seen
-- Unread Message Counts
+
+---
+
+## Technical Highlights
+
+- Layered backend architecture (Routes → Controllers → Services → Database)
+- Socket.IO room-based messaging
+- Cursor-based infinite scrolling
+- React Query cache synchronization with WebSocket events
+- Optimistic UI updates
+- Secure HttpOnly cookie authentication
+- Type-safe API validation with Zod
+- Fully typed codebase using TypeScript
 
 ---
 
 ## Future Improvements
 
-- Read Receipts
-- Image/File Sharing
-- Message Reactions
-- Edit Messages
-- Emoji Picker
+- Read receipts (Delivered / Seen)
+- Image & file sharing
+- Emoji reactions
+- Message search
+- Voice messages
+- Group chats
+- Push notifications
+- End-to-end encryption
 
 ---
 
@@ -145,4 +188,4 @@ npm run dev
 
 **Swayam Parab**
 
-GitHub: https://github.com/swayamparab
+GitHub: https://github.com/swayamparab/ChatApp

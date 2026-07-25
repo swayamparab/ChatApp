@@ -31,11 +31,15 @@ export default function MessageInput({
 
     //focus input box
     const inputRef = useRef<HTMLInputElement>(null);
-    //when a conversation is opened or reply to message is initiated
+    //when a conversation is opened or reply to message is initiated only for desktop
     useEffect(() => {
-        inputRef.current?.focus({
-            preventScroll: true,
-        });
+        const isDesktop = window.matchMedia("(pointer: fine)").matches;
+
+        if (isDesktop) {
+            inputRef.current?.focus({
+                preventScroll: true,
+            });
+        }
     }, [conversationId, replyingTo]);
 
     function handleSend() {
