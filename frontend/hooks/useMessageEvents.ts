@@ -229,10 +229,21 @@ export function useMessageEvents(activeConversationId?: string) {
             conversationId: string,
             messages: Message[]
         ) {
-            const lastMessage =
+            const latestMessage =
                 messages.length > 0
                     ? messages[messages.length - 1]
                     : null;
+
+            const lastMessage = latestMessage
+                ? {
+                    id: latestMessage.id,
+                    type: latestMessage.type,
+                    content: latestMessage.content,
+                    attachmentUrl: latestMessage.attachmentUrl,
+                    createdAt: latestMessage.createdAt,
+                    sender: latestMessage.sender,
+                }
+                : null;
 
             queryClient.setQueryData<GetConversationsResponse>(
                 queryKeys.conversations,
