@@ -23,8 +23,8 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 ### Messaging
 
 - Real-time one-to-one messaging with Socket.IO
-- Text and image messaging
-- Image uploads with Cloudinary integration
+- Text, Image and Video messaging
+- Images and Videos upload with Cloudinary integration
 - Reply to messages
 - Edit your own text messages
 - Delete your own messages
