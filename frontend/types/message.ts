@@ -52,4 +52,6 @@ export type UploadImageResponse = {
     attachmentMimeType: string;
 
     attachmentSize: number;
+
+    attachmentPublicId: string;
 };

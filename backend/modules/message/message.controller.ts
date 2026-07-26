@@ -67,6 +67,7 @@ export async function uploadImageController(
         return res.status(200).json({
             success: true,
             attachmentUrl: upload.secure_url,
+            attachmentPublicId: upload.public_id,
             attachmentMimeType: req.file.mimetype,
             attachmentSize: upload.bytes,
         });

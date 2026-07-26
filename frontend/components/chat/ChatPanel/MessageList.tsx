@@ -64,20 +64,12 @@ export default function MessageList({
     const handleScroll = () => {
         if (!messagesContainerRef.current) return;
 
-        console.log({
-            scrollTop: messagesContainerRef.current.scrollTop,
-            hasNextPage,
-            isFetchingNextPage,
-            loadingMore: loadingMoreRef.current,
-        });
-
         if (
             messagesContainerRef.current.scrollTop <= 50 &&
             hasNextPage &&
             !isFetchingNextPage &&
             !loadingMoreRef.current
         ) {
-            console.log("FETCH NEXT PAGE");
 
             loadingMoreRef.current = true;
 

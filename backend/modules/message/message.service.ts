@@ -2,6 +2,7 @@ import { db } from "../../db";
 import { CreateMessageInput, deleteMessageInput, EditMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, conversations, messages } from "../../db/schema";
 import { and, eq, lt, ne } from "drizzle-orm";
+import cloudinary from "../../lib/cloudinary";
 
 export async function getMessages(
     userId: string,
@@ -162,6 +163,8 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
 
                 attachmentUrl: data.attachmentUrl,
 
+                attachmentPublicId: data.attachmentPublicId,
+
                 attachmentMimeType: data.attachmentMimeType,
 
                 attachmentSize: data.attachmentSize,
@@ -215,25 +218,44 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
     return message;
 }
 
-export async function deleteMessage(userId: string, data: deleteMessageInput) {
+export async function deleteMessage(
+    userId: string,
+    data: deleteMessageInput
+) {
     const message = await db.query.messages.findFirst({
-        where: eq(messages.id, data.messageId)
-    })
+        where: eq(messages.id, data.messageId),
+    });
 
     if (!message) {
-        throw new Error("Message not found")
+        throw new Error("Message not found");
     }
 
     if (message.senderId !== userId) {
-        throw new Error("Unauthorized")
+        throw new Error("Unauthorized");
+    }
+
+    if (
+        message.type === "image" &&
+        message.attachmentPublicId
+    ) {
+        try {
+            await cloudinary.uploader.destroy(
+                message.attachmentPublicId
+            );
+        } catch (error) {
+            console.error(
+                "Failed to delete image from Cloudinary:",
+                error
+            );
+        }
     }
 
     await db.delete(messages).where(eq(messages.id, data.messageId));
 
     return {
         messageId: message.id,
-        conversationId: message.conversationId
-    }
+        conversationId: message.conversationId,
+    };
 }
 
 export async function editMessage(userId: string, data: EditMessageInput) {

@@ -18,6 +18,7 @@ export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 export const sendImageSchema = z.object({
   conversationId: z.uuid(),
   attachmentUrl: z.url(),
+  attachmentPublicId: z.string(),
   attachmentMimeType: z.string(),
   attachmentSize: z.number().positive(),
   replyToMessageId: z.uuid().optional(),
@@ -34,6 +35,8 @@ export type CreateMessageInput = {
   type: "text" | "image";
 
   attachmentUrl?: string;
+
+  attachmentPublicId?: string;
 
   attachmentMimeType?: string;
 

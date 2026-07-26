@@ -78,6 +78,13 @@
       "when": 1785054719432,
       "tag": "0010_sparkling_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1785068788157,
+      "tag": "0011_fine_moon_knight",
+      "breakpoints": true
     }
   ]
 }

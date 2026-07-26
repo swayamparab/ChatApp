@@ -105,6 +105,7 @@ export default function MessageInput({
                 {
                     conversationId,
                     attachmentUrl: upload.attachmentUrl,
+                    attachmentPublicId: upload.attachmentPublicId,
                     attachmentMimeType: upload.attachmentMimeType,
                     attachmentSize: upload.attachmentSize,
                     replyToMessageId: replyingTo?.id,

@@ -43,6 +43,8 @@ export const messages = pgTable(
 
         attachmentUrl: text("attachment_url"),
 
+        attachmentPublicId: text("attachment_public_id"),
+
         attachmentMimeType: text("attachment_mime_type"),
 
         attachmentSize: integer("attachment_size"),
