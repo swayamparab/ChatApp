@@ -6,8 +6,10 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SendHorizontal } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
+import { useUploadImage } from "@/hooks/useUploadImage";
 
 import type { Message } from "@/types/message";
 
@@ -28,6 +30,10 @@ export default function MessageInput({
 
     const isTypingRef = useRef(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const uploadImageMutation = useUploadImage();
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     //focus input box
     const inputRef = useRef<HTMLInputElement>(null);
@@ -78,6 +84,58 @@ export default function MessageInput({
                 isTypingRef.current = false;
             }
         );
+    }
+
+    async function handleImageSelect(
+        e: React.ChangeEvent<HTMLInputElement>
+    ) {
+        const file = e.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        try {
+            const upload = await uploadImageMutation.mutateAsync(file);
+
+            socket.emit(
+                "send_image",
+                {
+                    conversationId,
+                    attachmentUrl: upload.attachmentUrl,
+                    attachmentMimeType: upload.attachmentMimeType,
+                    attachmentSize: upload.attachmentSize,
+                    replyToMessageId: replyingTo?.id,
+                },
+                (response: {
+                    success: boolean;
+                    message?: string;
+                }) => {
+                    if (!response.success) {
+                        console.error(response.message);
+                        return;
+                    }
+
+                    clearReply();
+
+                    socket.emit("stop_typing", {
+                        conversationId,
+                    });
+
+                    isTypingRef.current = false;
+
+                    if (typingTimeoutRef.current) {
+                        clearTimeout(typingTimeoutRef.current);
+                        typingTimeoutRef.current = null;
+                    }
+                }
+            );
+        } catch (error) {
+            console.error(error);
+        } finally {
+            // Allow selecting the same image again
+            e.target.value = "";
+        }
     }
 
     //clean up timeout when user switches
@@ -132,6 +190,22 @@ export default function MessageInput({
                         ring-1 ring-slate-800/70
                     "
             >
+                <input
+                    onChange={handleImageSelect}
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                />
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    disabled={uploadImageMutation.isPending}
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    <ImageIcon className="h-5 w-5" />
+                </Button>
                 <Input
                     ref={inputRef}
                     value={content}

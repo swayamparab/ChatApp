@@ -1,7 +1,15 @@
 export interface Message {
     id: string;
     conversationId: string;
-    content: string;
+
+    type: "text" | "image";
+
+    content: string | null;
+
+    attachmentUrl: string | null;
+    attachmentMimeType: string | null;
+    attachmentSize: number | null;
+
     createdAt: string;
     updatedAt: string;
     editedAt: string | null;
@@ -13,7 +21,12 @@ export interface Message {
 
     replyTo: {
         id: string;
-        content: string;
+
+        type: "text" | "image";
+
+        content: string | null;
+
+        attachmentUrl: string | null;
 
         sender: {
             id: string;
@@ -29,4 +42,14 @@ export type GetMessagesResponse = {
 
     nextCursor: string | null;
     hasMore: boolean;
+};
+
+export type UploadImageResponse = {
+    success: boolean;
+
+    attachmentUrl: string;
+
+    attachmentMimeType: string;
+
+    attachmentSize: number;
 };

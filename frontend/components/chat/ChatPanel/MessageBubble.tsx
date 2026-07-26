@@ -22,6 +22,8 @@ import { EllipsisVertical, Pencil, Trash2, Copy, Reply } from "lucide-react";
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 
+import Image from "next/image";
+
 type MessageBubbleProps = {
     message: Message;
     onReply: (message: Message) => void;
@@ -53,11 +55,11 @@ export default function MessageBubble({
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editedContent, setEditedContent] = useState(message.content);
+    const [editedContent, setEditedContent] = useState(message.content ?? "");
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        setEditedContent(message.content);
+        setEditedContent(message.content ?? "");
     }, [message.content]);
 
     const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -102,8 +104,8 @@ export default function MessageBubble({
             return;
         }
 
-        if (content === message.content) {
-            setEditedContent(message.content);
+        if (content === (message.content ?? "")) {
+            setEditedContent(message.content ?? "");
             setIsEditing(false);
             return;
         }
@@ -185,30 +187,34 @@ export default function MessageBubble({
                                 <Reply className="mr-2 h-4 w-4" />
                                 Reply
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-white"
-                                onClick={async () => {
-                                    await navigator.clipboard.writeText(message.content);
-                                    toast.success("Message Copied!");
-                                    setMenuOpen(false);
-                                }}
-                            >
-                                <Copy className="mr-2 h-4 w-4" />
-                                Copy
-                            </DropdownMenuItem>
+                            {message.type === "text" && (
+                                <DropdownMenuItem
+                                    className="text-white"
+                                    onClick={async () => {
+                                        await navigator.clipboard.writeText(message.content ?? "");
+                                        toast.success("Message Copied!");
+                                        setMenuOpen(false);
+                                    }}
+                                >
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    Copy
+                                </DropdownMenuItem>
+                            )}
                             {isOwnMessage && (
                                 <>
-                                    <DropdownMenuItem
-                                        className="text-white"
-                                        onClick={() => {
-                                            setIsEditing(true);
-                                            setEditedContent(message.content);
-                                            setMenuOpen(false);
-                                        }}
-                                    >
-                                        <Pencil className="mr-2 h-4 w-4" />
-                                        Edit
-                                    </DropdownMenuItem>
+                                    {message.type === "text" && (
+                                        <DropdownMenuItem
+                                            className="text-white"
+                                            onClick={() => {
+                                                setIsEditing(true);
+                                                setEditedContent(message.content ?? "");
+                                                setMenuOpen(false);
+                                            }}
+                                        >
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Edit
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem
                                         className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
                                         onClick={handleDelete}
@@ -243,30 +249,34 @@ export default function MessageBubble({
                                 <Reply className="h-5 w-5" />
                                 Reply
                             </button>
-                            <button
-                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
-                                onClick={async () => {
-                                    await navigator.clipboard.writeText(message.content);
-                                    toast.success("Message copied!");
-                                    setMobileMenuOpen(false);
-                                }}
-                            >
-                                <Copy className="h-5 w-5" />
-                                Copy
-                            </button>
+                            {message.type === "text" && (
+                                <button
+                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                    onClick={async () => {
+                                        await navigator.clipboard.writeText(message.content ?? "");
+                                        toast.success("Message copied!");
+                                        setMobileMenuOpen(false);
+                                    }}
+                                >
+                                    <Copy className="h-5 w-5" />
+                                    Copy
+                                </button>
+                            )}
                             {isOwnMessage && (
                                 <>
-                                    <button
-                                        className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
-                                        onClick={() => {
-                                            setIsEditing(true);
-                                            setEditedContent(message.content);
-                                            setMobileMenuOpen(false);
-                                        }}
-                                    >
-                                        <Pencil className="h-5 w-5" />
-                                        Edit
-                                    </button>
+                                    {message.type === "text" && (
+                                        <button
+                                            className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                            onClick={() => {
+                                                setIsEditing(true);
+                                                setEditedContent(message.content ?? "");
+                                                setMobileMenuOpen(false);
+                                            }}
+                                        >
+                                            <Pencil className="h-5 w-5" />
+                                            Edit
+                                        </button>
+                                    )}
 
                                     <button
                                         className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-red-400 hover:bg-red-500/10"
@@ -307,17 +317,24 @@ export default function MessageBubble({
                         WebkitTouchCallout: "none",
                     }}
                     className={`
-                                            min-w-[140px]
-                                            max-w-[85%]
-                                            rounded-[20px]
-                                            px-4
-                                            py-2.5
-                                            shadow-md
-                                            transition-all duration-200
-                                            select-none
-                                            touch-manipulation
-                                            md:max-w-[70%]
-                                            ${isOwnMessage
+                        ${message.type === "text" ? "min-w-[140px]" : ""}
+                        max-w-[85%]
+                        ${message.type === "image"
+                            ? "rounded-xl"
+                            : "rounded-[20px]"
+                        }
+                        shadow-md
+                        transition-all
+                        duration-200
+                        select-none
+                        touch-manipulation
+                        md:max-w-[70%]
+
+                        ${message.type === "image"
+                            ? "p-1"
+                            : "px-4 py-2.5"}
+
+                        ${isOwnMessage
                             ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
                             : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
                         }
@@ -350,7 +367,7 @@ export default function MessageBubble({
                                     }
 
                                     if (e.key === "Escape") {
-                                        setEditedContent(message.content);
+                                        setEditedContent(message.content ?? "");
                                         setIsEditing(false);
                                     }
                                 }}
@@ -360,16 +377,16 @@ export default function MessageBubble({
                                 <button
                                     disabled={isSaving}
                                     onClick={() => {
-                                        setEditedContent(message.content);
+                                        setEditedContent(message.content ?? "");
                                         setIsEditing(false);
                                     }}
                                     className="
-                    text-xs
-                    opacity-80
-                    hover:opacity-100
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                "
+                                        text-xs
+                                        opacity-80
+                                        hover:opacity-100
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50
+                                    "
                                 >
                                     Cancel
                                 </button>
@@ -378,11 +395,11 @@ export default function MessageBubble({
                                     onClick={handleEdit}
                                     disabled={isSaving}
                                     className="
-                    text-xs
-                    font-medium
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                "
+                                        text-xs
+                                        font-medium
+                                        disabled:cursor-not-allowed
+                                        disabled:opacity-50
+                                    "
                                 >
                                     {isSaving ? "Saving..." : "Save"}
                                 </button>
@@ -393,12 +410,12 @@ export default function MessageBubble({
                             {message.replyTo && (
                                 <div
                                     className={`
-                mb-2 rounded-lg border-l-4 px-3 py-2
-                ${isOwnMessage
+                                        mb-2 rounded-lg border-l-4 px-3 py-2
+                                        ${isOwnMessage
                                             ? "border-blue-200 bg-blue-400/20"
                                             : "border-blue-500 bg-slate-700/60"
                                         }
-            `}
+                                    `}
                                 >
                                     <p
                                         className={`text-xs font-semibold ${isOwnMessage
@@ -415,7 +432,9 @@ export default function MessageBubble({
                                             : "text-slate-300"
                                             }`}
                                     >
-                                        {message.replyTo.content}
+                                        {message.replyTo.type === "text"
+                                            ? message.replyTo.content
+                                            : "📷 Image"}
                                     </p>
                                 </div>
                             )}
@@ -430,9 +449,23 @@ export default function MessageBubble({
                                 </div>
                             )}
 
-                            <p className="break-words text-[15px] leading-5">
-                                {message.content}
-                            </p>
+                            {message.type === "text" && (
+                                <p className="break-words text-[15px] leading-5">
+                                    {message.content}
+                                </p>
+                            )}
+
+                            {message.type === "image" && message.attachmentUrl && (
+                                <div className="max-w-[320px] overflow-hidden rounded-2xl">
+                                    <Image
+                                        src={message.attachmentUrl!}
+                                        alt="Image"
+                                        width={800}
+                                        height={800}
+                                        className="block w-full h-auto rounded-[16px] object-cover"
+                                    />
+                                </div>
+                            )}
 
                             <div
                                 className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${isOwnMessage

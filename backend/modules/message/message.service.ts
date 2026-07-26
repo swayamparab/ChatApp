@@ -73,7 +73,9 @@ export async function getMessages(
                 replyTo: {
                     columns: {
                         id: true,
+                        type: true,
                         content: true,
+                        attachmentUrl: true,
                     },
                     with: {
                         sender: {
@@ -154,7 +156,7 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
 
                 senderId: userId,
 
-                type: data.type ?? "text",
+                type: data.type,
 
                 content: data.content ?? null,
 
@@ -187,17 +189,19 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
                 replyTo: {
                     columns: {
                         id: true,
+                        type: true,
                         content: true,
+                        attachmentUrl: true,
                     },
                     with: {
                         sender: {
                             columns: {
                                 id: true,
                                 username: true,
-                            }
-                        }
-                    }
-                }
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -265,7 +269,9 @@ export async function editMessage(userId: string, data: EditMessageInput) {
             replyTo: {
                 columns: {
                     id: true,
+                    type: true,
                     content: true,
+                    attachmentUrl: true,
                 },
                 with: {
                     sender: {
