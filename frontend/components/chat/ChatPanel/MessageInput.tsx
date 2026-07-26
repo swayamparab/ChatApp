@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizontal } from "lucide-react";
+import { SendHorizontal, Loader2 } from "lucide-react";
 import { Image as ImageIcon } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
@@ -34,6 +34,8 @@ export default function MessageInput({
     const uploadImageMutation = useUploadImage();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [isUploading, setIsUploading] = useState(false);
 
     //focus input box
     const inputRef = useRef<HTMLInputElement>(null);
@@ -91,11 +93,11 @@ export default function MessageInput({
     ) {
         const file = e.target.files?.[0];
 
-        if (!file) {
-            return;
-        }
+        if (!file) return;
 
         try {
+            setIsUploading(true);
+
             const upload = await uploadImageMutation.mutateAsync(file);
 
             socket.emit(
@@ -133,7 +135,7 @@ export default function MessageInput({
         } catch (error) {
             console.error(error);
         } finally {
-            // Allow selecting the same image again
+            setIsUploading(false);
             e.target.value = "";
         }
     }
@@ -201,10 +203,14 @@ export default function MessageInput({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    disabled={uploadImageMutation.isPending}
+                    disabled={isUploading}
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    <ImageIcon className="h-5 w-5" />
+                    {isUploading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        <ImageIcon className="h-5 w-5" />
+                    )}
                 </Button>
                 <Input
                     ref={inputRef}
