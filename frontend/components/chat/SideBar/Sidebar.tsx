@@ -17,8 +17,6 @@ export default function Sidebar() {
 
     const { data: requests } = useChatRequests();
 
-
-
     return (
         <aside className="flex h-full flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
             <SidebarHeader />

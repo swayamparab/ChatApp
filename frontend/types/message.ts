@@ -2,7 +2,7 @@ export interface Message {
     id: string;
     conversationId: string;
 
-    type: "text" | "image";
+    type: "text" | "image" | "video";
 
     content: string | null;
 
@@ -22,7 +22,7 @@ export interface Message {
     replyTo: {
         id: string;
 
-        type: "text" | "image";
+        type: "text" | "image" | "video";
 
         content: string | null;
 

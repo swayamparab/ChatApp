@@ -10,7 +10,7 @@ type ConversationItemProps = {
     username: string;
 
     lastMessage: {
-        type: "text" | "image";
+        type: "text" | "image" | "video";
         content: string | null;
     } | null;
 
@@ -82,7 +82,11 @@ export default function ConversationItem({
                         ? "No messages yet"
                         : lastMessage.type === "text"
                             ? lastMessage.content
-                            : "📷 Image"}
+                            : lastMessage.type === "image"
+                                ? "📷 Image"
+                                : lastMessage.type === "video"
+                                    ? "🎥 Video"
+                                    : ""}
                 </p>
             </div>
 

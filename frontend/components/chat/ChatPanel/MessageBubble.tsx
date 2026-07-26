@@ -434,7 +434,11 @@ export default function MessageBubble({
                                     >
                                         {message.replyTo.type === "text"
                                             ? message.replyTo.content
-                                            : "📷 Image"}
+                                            : message.replyTo.type === "image"
+                                                ? "📷 Image"
+                                                : message.replyTo.type === "video"
+                                                    ? "🎥 Video"
+                                                    : ""}
                                     </p>
                                 </div>
                             )}
@@ -468,6 +472,14 @@ export default function MessageBubble({
                                         }}
                                     />
                                 </div>
+                            )}
+                            {message.type === "video" && (
+                                <video
+                                    src={message.attachmentUrl!}
+                                    controls
+                                    preload="metadata"
+                                    className="max-h-96 rounded-lg"
+                                />
                             )}
 
                             <div

@@ -10,7 +10,7 @@ export async function uploadImage(
         const uploadStream = cloudinary.uploader.upload_stream(
             {
                 folder: "chatapp/messages",
-                resource_type: "image",
+                resource_type: "auto",
             },
             (error, result) => {
                 if (error) {

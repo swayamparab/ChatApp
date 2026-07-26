@@ -93,6 +93,11 @@ export default function MessageInput({
     ) {
         const file = e.target.files?.[0];
 
+        if(!file) return;
+
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+
         if (!file) return;
 
         try {
@@ -104,6 +109,7 @@ export default function MessageInput({
                 "send_image",
                 {
                     conversationId,
+                    type: isImage ? "image" : "video",
                     attachmentUrl: upload.attachmentUrl,
                     attachmentPublicId: upload.attachmentPublicId,
                     attachmentMimeType: upload.attachmentMimeType,
@@ -197,7 +203,7 @@ export default function MessageInput({
                     onChange={handleImageSelect}
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     className="hidden"
                 />
                 <Button

@@ -235,13 +235,20 @@ export async function deleteMessage(
     }
 
     if (
-        message.type === "image" &&
+        (message.type === "image" || message.type === "video") &&
         message.attachmentPublicId
     ) {
         try {
+
+            const resourceType = message.type === "video" ? "video" : "image";
+
             await cloudinary.uploader.destroy(
-                message.attachmentPublicId
+                message.attachmentPublicId,
+                {
+                    resource_type: resourceType,
+                }
             );
+
         } catch (error) {
             console.error(
                 "Failed to delete image from Cloudinary:",

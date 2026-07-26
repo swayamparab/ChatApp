@@ -14,6 +14,7 @@ import { users } from "./users";
 export const messageTypeEnum = pgEnum("message_type", [
     "text",
     "image",
+    "video",
     "voice",
     "file",
 ]);

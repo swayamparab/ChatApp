@@ -45,7 +45,7 @@ export function registerMessageEvent(io: Server, socket: Socket) {
 
             const message = await sendMessage(socket.userId, {
                 ...validatedData,
-                type: "image",
+                type: validatedData.type
             });
 
             io.to(validatedData.conversationId).emit(
