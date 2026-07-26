@@ -8,7 +8,12 @@ type ConversationItemProps = {
     conversationId: string;
     userId: string;
     username: string;
-    lastMessage: string | null;
+
+    lastMessage: {
+        type: "text" | "image";
+        content: string | null;
+    } | null;
+
     unreadCount: number;
 };
 
@@ -73,7 +78,11 @@ export default function ConversationItem({
                 </p>
 
                 <p className="mt-0.5 truncate text-sm text-slate-400">
-                    {lastMessage ?? "No messages yet"}
+                    {!lastMessage
+                        ? "No messages yet"
+                        : lastMessage.type === "text"
+                            ? lastMessage.content
+                            : "📷 Image"}
                 </p>
             </div>
 

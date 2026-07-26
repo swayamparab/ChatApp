@@ -42,9 +42,7 @@ export default function ConversationList() {
                     conversationId={conversation.conversationId}
                     userId={conversation.otherUser.id}
                     username={conversation.otherUser.username}
-                    lastMessage={
-                        conversation.lastMessage?.content ?? null
-                    }
+                    lastMessage={conversation.lastMessage}
                     unreadCount={
                         conversation.unreadCount ?? null
                     }

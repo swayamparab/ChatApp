@@ -172,6 +172,20 @@ export default function MessageList({
         loadingMoreRef.current = false;
     }, [messages.length]);
 
+    useEffect(() => {
+        function handleImageLoaded() {
+            messagesContainerRef.current?.scrollTo({
+                top: messagesContainerRef.current.scrollHeight,
+                behavior: "auto",
+            });
+        }
+
+        window.addEventListener("message-image-loaded", handleImageLoaded);
+
+        return () =>
+            window.removeEventListener("message-image-loaded", handleImageLoaded);
+    }, []);
+
     if (isLoading) {
         return (
             <div className="flex flex-1 items-center justify-center">

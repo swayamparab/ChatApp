@@ -463,6 +463,9 @@ export default function MessageBubble({
                                         width={800}
                                         height={800}
                                         className="block w-full h-auto rounded-[16px] object-cover"
+                                        onLoadingComplete={() => {
+                                            window.dispatchEvent(new Event("message-image-loaded"));
+                                        }}
                                     />
                                 </div>
                             )}
