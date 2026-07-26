@@ -22,13 +22,18 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 
 ### Messaging
 
-- Real-time one-to-one messaging
+- Real-time one-to-one messaging with Socket.IO
+- Text and image messaging
+- Image uploads with Cloudinary integration
 - Reply to messages
-- Edit your own messages
+- Edit your own text messages
 - Delete your own messages
+- Typing indicators
+- Read receipts
+- Unread message counts
 - Cursor-based infinite message pagination
 - Automatic scroll restoration while loading older messages
-- Optimistic UI updates
+- Optimistic UI updates for seamless real-time messaging
 
 ### Real-Time
 
@@ -173,8 +178,7 @@ npm run dev
 
 ## Future Improvements
 
-- Read receipts (Delivered / Seen)
-- Image & file sharing
+- file sharing
 - Emoji reactions
 - Message search
 - Voice messages
