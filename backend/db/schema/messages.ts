@@ -3,11 +3,20 @@ import {
     uuid,
     text,
     timestamp,
-    foreignKey
+    foreignKey,
+    pgEnum,
+    integer,
 } from "drizzle-orm/pg-core";
 
 import { conversations } from "./conversations";
 import { users } from "./users";
+
+export const messageTypeEnum = pgEnum("message_type", [
+    "text",
+    "image",
+    "voice",
+    "file",
+]);
 
 export const messages = pgTable(
     "messages",
@@ -26,7 +35,19 @@ export const messages = pgTable(
                 onDelete: "cascade",
             }),
 
-        content: text().notNull(),
+        type: messageTypeEnum()
+            .default("text")
+            .notNull(),
+
+        content: text(),
+
+        attachmentUrl: text("attachment_url"),
+
+        attachmentMimeType: text("attachment_mime_type"),
+
+        attachmentSize: integer("attachment_size"),
+
+        duration: integer(),
 
         replyToMessageId: uuid("reply_to_message_id"),
 
