@@ -105,7 +105,9 @@ export function useMessageEvents(activeConversationId?: string) {
                         updatedAt: message.createdAt,
                         lastMessage: {
                             id: message.id,
+                            type: message.type,
                             content: message.content,
+                            attachmentUrl: message.attachmentUrl,
                             createdAt: message.createdAt,
                             sender: message.sender,
                         },

@@ -12,7 +12,13 @@ export type Conversation = {
 
     lastMessage: {
         id: string;
-        content: string;
+
+        type: "text" | "image";
+
+        content: string | null;
+
+        attachmentUrl: string | null;
+
         createdAt: string;
 
         sender: {
