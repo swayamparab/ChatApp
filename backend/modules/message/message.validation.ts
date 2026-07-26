@@ -15,6 +15,31 @@ export const sendMessageSchema = z.object({
 });
 export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 
+export const sendImageSchema = z.object({
+  conversationId: z.uuid(),
+  attachmentUrl: z.url(),
+  attachmentMimeType: z.string(),
+  attachmentSize: z.number().positive(),
+  replyToMessageId: z.uuid().optional(),
+});
+export type SendImageInput = z.infer<typeof sendImageSchema>;
+
+export type CreateMessageInput = {
+  conversationId: string;
+
+  content?: string;
+
+  replyToMessageId?: string;
+
+  type: "text" | "image";
+
+  attachmentUrl?: string;
+
+  attachmentMimeType?: string;
+
+  attachmentSize?: number;
+};
+
 export const typingSchema = z.object({
   conversationId: z.uuid(),
 });

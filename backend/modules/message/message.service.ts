@@ -1,5 +1,5 @@
 import { db } from "../../db";
-import { deleteMessageInput, EditMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
+import { CreateMessageInput, deleteMessageInput, EditMessageInput, GetMessagesInput, SendMessageInput } from "./message.validation";
 import { conversationParticipants, conversations, messages } from "../../db/schema";
 import { and, eq, lt, ne } from "drizzle-orm";
 
@@ -114,7 +114,7 @@ export async function getMessages(
     };
 }
 
-export async function sendMessage(userId: string, data: SendMessageInput) {
+export async function sendMessage(userId: string, data: CreateMessageInput) {
     const participant = await db.query.conversationParticipants.findFirst({
         where: and(
             eq(conversationParticipants.userId, userId),
@@ -151,8 +151,19 @@ export async function sendMessage(userId: string, data: SendMessageInput) {
             .insert(messages)
             .values({
                 conversationId: data.conversationId,
+
                 senderId: userId,
-                content: data.content,
+
+                type: data.type ?? "text",
+
+                content: data.content ?? null,
+
+                attachmentUrl: data.attachmentUrl,
+
+                attachmentMimeType: data.attachmentMimeType,
+
+                attachmentSize: data.attachmentSize,
+
                 replyToMessageId: data.replyToMessageId,
             })
             .returning();

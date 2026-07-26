@@ -1,7 +1,7 @@
-import { sendMessageSchema, typingSchema, deleteMessageSchema, editMessageSchema } from "../../modules/message/message.validation";
+import { sendMessageSchema, typingSchema, deleteMessageSchema, editMessageSchema, sendImageSchema } from "../../modules/message/message.validation";
 import { Server, Socket } from "socket.io";
 import { sendMessage, deleteMessage, editMessage } from "../../modules/message/message.service";
-import { success, ZodError } from "zod";
+import { ZodError } from "zod";
 import { isParticipant } from "../../modules/conversation/conversation.service";
 
 export function registerMessageEvent(io: Server, socket: Socket) {
@@ -9,7 +9,10 @@ export function registerMessageEvent(io: Server, socket: Socket) {
         try {
             const validatedData = sendMessageSchema.parse(data);
 
-            const message = await sendMessage(socket.userId, validatedData);
+            const message = await sendMessage(socket.userId, {
+                ...validatedData,
+                type: "text",
+            });
 
             io.to(validatedData.conversationId).emit("new_message", message);
 
@@ -35,6 +38,42 @@ export function registerMessageEvent(io: Server, socket: Socket) {
             });
         }
     })
+
+    socket.on("send_image", async (data, callback) => {
+        try {
+            const validatedData = sendImageSchema.parse(data);
+
+            const message = await sendMessage(socket.userId, {
+                ...validatedData,
+                type: "image",
+            });
+
+            io.to(validatedData.conversationId).emit(
+                "new_message",
+                message
+            );
+
+            callback({
+                success: true,
+                message,
+            });
+        } catch (error) {
+            if (error instanceof ZodError) {
+                return callback?.({
+                    success: false,
+                    errors: error.issues,
+                });
+            }
+
+            callback?.({
+                success: false,
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Internal Server Error",
+            });
+        }
+    });
 
     socket.on("delete_message", async (data, callback) => {
         try {
