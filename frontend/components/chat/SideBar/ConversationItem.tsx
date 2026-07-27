@@ -88,7 +88,9 @@ export default function ConversationItem({
                                     ? "🎥 Video"
                                     : lastMessage.type === "file"
                                         ? "📄 File"
-                                        : ""}
+                                        : lastMessage.type === "voice"
+                                            ? "🎤 Voice message"
+                                            : ""}
                 </p>
             </div>
 

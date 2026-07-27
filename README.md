@@ -35,6 +35,30 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 - Automatic scroll restoration while loading older messages
 - Optimistic UI updates for seamless real-time messaging
 
+### Media Sharing
+
+- Image sharing
+- Video sharing
+- PDF and document sharing
+- Voice message recording and playback
+
+### Voice Messages
+
+- Record voice messages directly in chat
+- Custom audio player
+- Play/Pause controls
+- Seek through recordings
+- Playback speed (1×, 1.5×, 2×)
+- Recording timer
+- Automatic pause when another voice message starts playing
+
+### Media Preview
+
+- Image viewer
+- Video player
+- File preview and download
+- Voice message player
+
 ### Real-Time
 
 - Live online/offline presence
