@@ -27,6 +27,7 @@ import Image from "next/image";
 import ImageViewer from "@/components/chat/Viewers/ImageViewer";
 import VideoViewer from "@/components/chat/Viewers/VideoViewer";
 import FileViewer from "@/components/chat/Viewers/FileViewer";
+import VoiceMessage from "../VoiceMessage";
 
 type MessageBubbleProps = {
     message: Message;
@@ -330,23 +331,29 @@ export default function MessageBubble({
                     }}
                     className={`
                         ${message.type === "text" ? "min-w-[140px]" : ""}
+
                         max-w-[85%]
+                        md:max-w-[70%]
+
                         ${message.type === "image" || message.type === "file"
                             ? "rounded-xl"
                             : "rounded-[20px]"
                         }
-                        shadow-md
-                        transition-all
-                        duration-200
-                        select-none
-                        touch-manipulation
-                        md:max-w-[70%]
 
                         ${message.type === "image"
                             ? "p-1"
                             : message.type === "file"
                                 ? "p-2"
-                                : "px-4 py-2.5"}
+                                : message.type === "voice"
+                                    ? "px-3 py-2"
+                                    : "px-4 py-2.5"
+                        }
+
+                        shadow-md
+                        transition-all
+                        duration-200
+                        select-none
+                        touch-manipulation
 
                         ${isOwnMessage
                             ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
@@ -452,9 +459,11 @@ export default function MessageBubble({
                                                 ? "📷 Image"
                                                 : message.replyTo.type === "video"
                                                     ? "🎥 Video"
-                                                    : message.replyTo.type === "file"
-                                                        ? "📄 File"
-                                                        : ""}
+                                                    : message.replyTo.type === "voice"
+                                                        ? "🎤 Voice message"
+                                                        : message.replyTo.type === "file"
+                                                            ? "📄 File"
+                                                            : ""}
                                     </p>
                                 </div>
                             )}
@@ -526,6 +535,11 @@ export default function MessageBubble({
                                         {message.attachmentMimeType}
                                     </div>
                                 </button>
+                            )}
+                            {message.type === "voice" && (
+                                <VoiceMessage
+                                    url={message.attachmentUrl!}
+                                />
                             )}
 
                             <div

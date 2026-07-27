@@ -5,11 +5,11 @@ import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizontal, Loader2 } from "lucide-react";
+import { SendHorizontal, Loader2, Mic } from "lucide-react";
 import { Image as ImageIcon } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
-import { useUploadImage } from "@/hooks/useUploadImage";
+import { useUploadAttachment } from "@/hooks/useUploadAttachment";
 
 import type { Message } from "@/types/message";
 
@@ -31,11 +31,38 @@ export default function MessageInput({
     const isTypingRef = useRef(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const uploadImageMutation = useUploadImage();
+    const uploadImageMutation = useUploadAttachment();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [isUploading, setIsUploading] = useState(false);
+
+    const [isRecording, setIsRecording] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const streamRef = useRef<MediaStream | null>(null);
+
+    const [recordingTime, setRecordingTime] = useState(0);
+
+    useEffect(() => {
+        if (!isRecording) {
+            setRecordingTime(0);
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setRecordingTime((prev) => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isRecording]);
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+
+        return `${mins}:${secs.toString().padStart(2, "0")}`;
+    };
 
     //focus input box
     const inputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +76,126 @@ export default function MessageInput({
             });
         }
     }, [conversationId, replyingTo]);
+
+    function getSupportedAudioMimeType() {
+
+        if (!window.MediaRecorder) {
+            throw new Error("MediaRecorder is not supported in this browser.");
+        }
+
+        const mimeTypes = [
+            "audio/webm;codecs=opus",
+            "audio/webm",
+            "audio/ogg;codecs=opus",
+            "audio/ogg",
+            "audio/mp4",
+        ];
+
+        return (
+            mimeTypes.find((type) => MediaRecorder.isTypeSupported(type)) ?? ""
+        );
+    }
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+            });
+
+            const mimeType = getSupportedAudioMimeType();
+
+            const recorder = mimeType
+                ? new MediaRecorder(stream, { mimeType })
+                : new MediaRecorder(stream);
+
+            streamRef.current = stream;
+
+            mediaRecorderRef.current = recorder;
+
+            audioChunksRef.current = [];
+
+            recorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            recorder.start(1000);
+
+            setIsRecording(true);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function stopRecording() {
+        const recorder = mediaRecorderRef.current;
+
+        if (!recorder) return;
+
+        recorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunksRef.current, {
+                type: recorder.mimeType,
+            });
+
+            function getExtension(mimeType: string) {
+                if (mimeType.includes("webm")) return "webm";
+                if (mimeType.includes("ogg")) return "ogg";
+                if (mimeType.includes("mp4")) return "m4a";
+
+                return "webm";
+            }
+
+            const extension = getExtension(audioBlob.type);
+
+            const audioFile = new File(
+                [audioBlob],
+                `voice-${Date.now()}.${extension}`,
+                {
+                    type: audioBlob.type,
+                }
+            );
+
+            const upload = await uploadImageMutation.mutateAsync(audioFile);
+
+            socket.emit(
+                "send_image",
+                {
+                    conversationId,
+                    type: "voice",
+
+                    attachmentUrl: upload.attachmentUrl,
+                    attachmentPublicId: upload.attachmentPublicId,
+                    attachmentMimeType: upload.attachmentMimeType,
+                    attachmentName: audioFile.name,
+                    attachmentSize: upload.attachmentSize,
+
+                    replyToMessageId: replyingTo?.id,
+                },
+                (response: {
+                    success: true,
+                    message?: string
+                }) => {
+                    if (!response.success) {
+                        console.error(response.message);
+                        return;
+                    }
+
+                    clearReply();
+                }
+            );
+
+            // Stop using the microphone
+            streamRef.current?.getTracks().forEach((track) => track.stop());
+
+            mediaRecorderRef.current = null;
+            streamRef.current = null;
+            audioChunksRef.current = [];
+
+            setIsRecording(false);
+        };
+
+        recorder.stop();
+    }
 
     function handleSend() {
         const message = content.trim();
@@ -280,10 +427,42 @@ export default function MessageInput({
                     "
                 />
 
+                {!isRecording ? (
+                    <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={startRecording}
+                        className="mr-2 h-10 w-10 rounded-full"
+                    >
+                        <Mic className="h-5 w-5" />
+                    </Button>
+                ) : (
+                    <div className="flex items-center gap-3">
+                        <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={stopRecording}
+                            className="
+                            h-10
+                            w-10
+                            mr-2
+                            rounded-full
+                            animate-pulse
+                        "
+                        >
+                            Stop
+                        </Button>
+                        <span className="text-sm font-medium text-muted-foreground tabular-nums">
+                            {formatTime(recordingTime)}
+                        </span>
+                    </div>
+                )}
                 <Button
                     size="icon"
                     onClick={handleSend}
-                    disabled={!content.trim()}
+                    disabled={!content.trim() || isRecording}
                     className="
                         h-10
                         w-10

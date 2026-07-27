@@ -237,27 +237,34 @@ export async function deleteMessage(
     }
 
     if (
-        (message.type === "image" || message.type === "video" || message.type === "file") &&
+        (message.type === "image" || message.type === "video" || message.type === "file" || message.type === "voice") &&
         message.attachmentPublicId
     ) {
         try {
 
             let resourceType: "image" | "video" | "raw";
 
-            if (message.type === "video") {
+            if (
+                message.type === "video" ||
+                message.type === "voice"
+            ) {
                 resourceType = "video";
-            } else if (message.type === "file") {
-                resourceType = "raw";
             } else {
                 resourceType = "image";
             }
 
-            await cloudinary.uploader.destroy(
+            const result = await cloudinary.uploader.destroy(
                 message.attachmentPublicId,
                 {
                     resource_type: resourceType,
                 }
             );
+
+            if (result.result !== "ok") {
+                throw new Error(
+                    `Cloudinary delete failed: ${result.result}`
+                );
+            }
 
         } catch (error) {
             console.error(

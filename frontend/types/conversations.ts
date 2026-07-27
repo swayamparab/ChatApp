@@ -13,7 +13,7 @@ export type Conversation = {
     lastMessage: {
         id: string;
 
-        type: "text" | "image" | "video" | "file";
+        type: "text" | "image" | "video" | "file" | "voice";
 
         content: string | null;
 

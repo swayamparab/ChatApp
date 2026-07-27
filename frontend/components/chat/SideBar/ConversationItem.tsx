@@ -10,7 +10,7 @@ type ConversationItemProps = {
     username: string;
 
     lastMessage: {
-        type: "text" | "image" | "video" | "file";
+        type: "text" | "image" | "video" | "file" | "voice";
         content: string | null;
     } | null;
 

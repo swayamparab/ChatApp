@@ -36,9 +36,10 @@ const upload = multer({
     fileFilter(req, file, cb) {
         const isImage = file.mimetype.startsWith("image/");
         const isVideo = file.mimetype.startsWith("video/");
+        const isAudio = file.mimetype.startsWith("audio/");
         const isDocument = allowedMimeTypes.includes(file.mimetype);
 
-        if (isImage || isVideo || isDocument) {
+        if (isImage || isVideo || isAudio || isDocument) {
             cb(null, true);
         } else {
             cb(new Error("Unsupported file type."));
