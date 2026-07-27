@@ -2,11 +2,12 @@ export interface Message {
     id: string;
     conversationId: string;
 
-    type: "text" | "image" | "video";
+    type: "text" | "image" | "video" | "file";
 
     content: string | null;
 
     attachmentUrl: string | null;
+    attachmentName: string | null;
     attachmentMimeType: string | null;
     attachmentSize: number | null;
 
@@ -22,11 +23,12 @@ export interface Message {
     replyTo: {
         id: string;
 
-        type: "text" | "image" | "video";
+        type: "text" | "image" | "video" | "file";
 
         content: string | null;
 
         attachmentUrl: string | null;
+        attachmentName: string | null;
 
         sender: {
             id: string;

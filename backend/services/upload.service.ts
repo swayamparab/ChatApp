@@ -22,8 +22,10 @@ export async function uploadImage(
                     reject(new Error("Image upload failed."));
                     return;
                 }
+                console.log(result)
 
                 resolve(result);
+
             }
         );
 

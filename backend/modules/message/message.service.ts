@@ -167,6 +167,8 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
 
                 attachmentMimeType: data.attachmentMimeType,
 
+                attachmentName: data.attachmentName,
+
                 attachmentSize: data.attachmentSize,
 
                 replyToMessageId: data.replyToMessageId,
@@ -235,12 +237,20 @@ export async function deleteMessage(
     }
 
     if (
-        (message.type === "image" || message.type === "video") &&
+        (message.type === "image" || message.type === "video" || message.type === "file") &&
         message.attachmentPublicId
     ) {
         try {
 
-            const resourceType = message.type === "video" ? "video" : "image";
+            let resourceType: "image" | "video" | "raw";
+
+            if (message.type === "video") {
+                resourceType = "video";
+            } else if (message.type === "file") {
+                resourceType = "raw";
+            } else {
+                resourceType = "image";
+            }
 
             await cloudinary.uploader.destroy(
                 message.attachmentPublicId,

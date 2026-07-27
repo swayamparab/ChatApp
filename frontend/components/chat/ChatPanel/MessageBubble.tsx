@@ -319,7 +319,7 @@ export default function MessageBubble({
                     className={`
                         ${message.type === "text" ? "min-w-[140px]" : ""}
                         max-w-[85%]
-                        ${message.type === "image"
+                        ${message.type === "image" || message.type === "file"
                             ? "rounded-xl"
                             : "rounded-[20px]"
                         }
@@ -332,7 +332,9 @@ export default function MessageBubble({
 
                         ${message.type === "image"
                             ? "p-1"
-                            : "px-4 py-2.5"}
+                            : message.type === "file"
+                                ? "p-2"
+                                : "px-4 py-2.5"}
 
                         ${isOwnMessage
                             ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
@@ -438,7 +440,9 @@ export default function MessageBubble({
                                                 ? "📷 Image"
                                                 : message.replyTo.type === "video"
                                                     ? "🎥 Video"
-                                                    : ""}
+                                                    : message.replyTo.type === "file"
+                                                        ? "📄 File"
+                                                        : ""}
                                     </p>
                                 </div>
                             )}
@@ -480,6 +484,39 @@ export default function MessageBubble({
                                     preload="metadata"
                                     className="max-h-96 rounded-lg"
                                 />
+                            )}
+                            {message.type === "file" && message.attachmentUrl && (
+                                <a
+                                    href={message.attachmentUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`
+                                        flex items-center gap-3 rounded-xl p-3 transition-colors
+                                        ${isOwnMessage
+                                            ? "bg-blue-400/20 hover:bg-blue-400/30"
+                                            : "bg-slate-700 hover:bg-slate-600"
+                                        }
+                                    `}
+                                >
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500 text-2xl">
+                                        📄
+                                    </div>
+
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-medium">
+                                            {message.attachmentName}
+                                        </p>
+
+                                        <p
+                                            className={`text-xs ${isOwnMessage
+                                                ? "text-blue-100/80"
+                                                : "text-slate-400"
+                                                }`}
+                                        >
+                                            {message.attachmentMimeType}
+                                        </p>
+                                    </div>
+                                </a>
                             )}
 
                             <div

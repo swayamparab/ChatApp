@@ -17,10 +17,11 @@ export type SendMessageInput = z.infer<typeof sendMessageSchema>;
 
 export const sendImageSchema = z.object({
   conversationId: z.uuid(),
-  type: z.enum(["image", "video"]),
+  type: z.enum(["image", "video", "file"]),
   attachmentUrl: z.url(),
   attachmentPublicId: z.string(),
   attachmentMimeType: z.string(),
+  attachmentName: z.string(),
   attachmentSize: z.number().positive(),
   replyToMessageId: z.uuid().optional(),
 });
@@ -33,13 +34,15 @@ export type CreateMessageInput = {
 
   replyToMessageId?: string;
 
-  type: "text" | "image" | "video";
+  type: "text" | "image" | "video" | "file";
 
   attachmentUrl?: string;
 
   attachmentPublicId?: string;
 
   attachmentMimeType?: string;
+
+  attachmentName?: string;
 
   attachmentSize?: number;
 };
