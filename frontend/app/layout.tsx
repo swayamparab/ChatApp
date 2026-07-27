@@ -18,6 +18,11 @@ export const metadata: Metadata = {
     template: "%s | ChatApp",
   },
   description: "Real-time one-to-one chat application",
+
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -32,9 +37,9 @@ export default function RootLayout({
           <SocketProvider>
             {children}
             <Toaster
-            position="top-right"
-            richColors
-        />
+              position="top-right"
+              richColors
+            />
           </SocketProvider>
         </QueryProvider>
       </body>
