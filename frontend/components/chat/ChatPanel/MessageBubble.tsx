@@ -24,6 +24,10 @@ import { toast } from "sonner";
 
 import Image from "next/image";
 
+import ImageViewer from "@/components/chat/Viewers/ImageViewer";
+import VideoViewer from "@/components/chat/Viewers/VideoViewer";
+import FileViewer from "@/components/chat/Viewers/FileViewer";
+
 type MessageBubbleProps = {
     message: Message;
     onReply: (message: Message) => void;
@@ -57,6 +61,14 @@ export default function MessageBubble({
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(message.content ?? "");
     const [isSaving, setIsSaving] = useState(false);
+
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<{
+        url: string;
+        name: string;
+        mimeType: string;
+    } | null>(null);
 
     useEffect(() => {
         setEditedContent(message.content ?? "");
@@ -466,11 +478,12 @@ export default function MessageBubble({
                             {message.type === "image" && message.attachmentUrl && (
                                 <div className="max-w-[320px] overflow-hidden rounded-2xl">
                                     <Image
+                                        onClick={() => setSelectedImage(message.attachmentUrl!)}
                                         src={message.attachmentUrl!}
                                         alt="Image"
                                         width={800}
                                         height={800}
-                                        className="block w-full h-auto rounded-[16px] object-cover"
+                                        className=" cursor-pointer block w-full h-auto rounded-[16px] object-cover"
                                         onLoadingComplete={() => {
                                             window.dispatchEvent(new Event("message-image-loaded"));
                                         }}
@@ -478,45 +491,41 @@ export default function MessageBubble({
                                 </div>
                             )}
                             {message.type === "video" && (
-                                <video
-                                    src={message.attachmentUrl!}
-                                    controls
-                                    preload="metadata"
-                                    className="max-h-96 rounded-lg"
-                                />
+                                <div className="relative w-fit">
+                                    <video
+                                        src={message.attachmentUrl!}
+                                        controls
+                                        preload="metadata"
+                                        className="max-h-96 rounded-lg"
+                                    />
+
+                                    <button
+                                        onClick={() => setSelectedVideo(message.attachmentUrl!)}
+                                        className="absolute bottom-3 right-3 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
+                                    >
+                                        ⛶
+                                    </button>
+                                </div>
                             )}
-                            {message.type === "file" && message.attachmentUrl && (
-                                <a
-                                    href={message.attachmentUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`
-                                        flex items-center gap-3 rounded-xl p-3 transition-colors
-                                        ${isOwnMessage
-                                            ? "bg-blue-400/20 hover:bg-blue-400/30"
-                                            : "bg-slate-700 hover:bg-slate-600"
-                                        }
-                                    `}
+                            {message.type === "file" && (
+                                <button
+                                    onClick={() =>
+                                        setSelectedFile({
+                                            url: message.attachmentUrl!,
+                                            name: message.attachmentName!,
+                                            mimeType: message.attachmentMimeType!,
+                                        })
+                                    }
+                                    className="w-full rounded-lg border p-4 text-left hover:bg-muted"
                                 >
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500 text-2xl">
-                                        📄
+                                    <div className="font-medium">
+                                        📄 {message.attachmentName}
                                     </div>
 
-                                    <div className="min-w-0 flex-1">
-                                        <p className="truncate text-sm font-medium">
-                                            {message.attachmentName}
-                                        </p>
-
-                                        <p
-                                            className={`text-xs ${isOwnMessage
-                                                ? "text-blue-100/80"
-                                                : "text-slate-400"
-                                                }`}
-                                        >
-                                            {message.attachmentMimeType}
-                                        </p>
+                                    <div className="text-sm text-muted-foreground">
+                                        {message.attachmentMimeType}
                                     </div>
-                                </a>
+                                </button>
                             )}
 
                             <div
@@ -535,6 +544,27 @@ export default function MessageBubble({
                     )}
                 </div>
             </div>
+            {selectedImage && (
+                <ImageViewer
+                    imageUrl={selectedImage}
+                    onClose={() => setSelectedImage(null)}
+                />
+            )}
+            {selectedVideo && (
+                <VideoViewer
+                    videoUrl={selectedVideo}
+                    onClose={() => setSelectedVideo(null)}
+                />
+            )}
+            {selectedFile && (
+                <FileViewer
+                    fileUrl={selectedFile.url}
+                    fileName={selectedFile.name}
+                    mimeType={selectedFile.mimeType}
+                    onClose={() => setSelectedFile(null)}
+                />
+            )}
         </div>
+
     );
 }
