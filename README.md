@@ -1,4 +1,4 @@
-# ChatApp
+# PingChat - Realtime Communication Platform
 
 A modern real-time one-to-one messaging application built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, and **Socket.IO**.
 

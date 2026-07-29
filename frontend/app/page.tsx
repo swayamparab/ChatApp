@@ -18,11 +18,11 @@ export default function HomePage() {
       <div className="relative z-10 w-full max-w-5xl">
         <div className="text-center">
           <h1 className="text-6xl font-extrabold tracking-tight text-white mt-10">
-            Chat<span className="text-blue-500">App</span>
+            Ping<span className="text-blue-500">Chat</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-400">
-            A modern one-to-one messaging platform built with
+            A real-time modern communication platform built with
             <span className="text-white"> Next.js</span>,
             <span className="text-white"> Express</span>,
             <span className="text-white"> PostgreSQL</span>,
