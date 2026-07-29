@@ -24,6 +24,9 @@ export default function ChatPanel() {
 
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
 
+    const [jumpToMessageId, setJumpToMessageId] = useState<string | null>(null);
+    const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+
     useEffect(() => {
         markConversationAsRead(conversationId);
     }, [conversationId, markConversationAsRead]);
@@ -58,10 +61,16 @@ export default function ChatPanel() {
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <ChatHeader isTyping={isTyping} />
+            <ChatHeader
+                isTyping={isTyping}
+                onJumpToMessage={setJumpToMessageId}
+            />
 
             <MessageList
                 onReply={setReplyingTo}
+                jumpToMessageId={jumpToMessageId}
+                highlightedMessageId={highlightedMessageId}
+                setHighlightedMessageId={setHighlightedMessageId}
             />
 
             <MessageInput

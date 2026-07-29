@@ -35,6 +35,7 @@ type MessageBubbleProps = {
     isOwnMessage: boolean;
     isLastOwnMessage: boolean;
     lastReadAt: string | null;
+    isHighlighted: boolean
 };
 
 export default function MessageBubble({
@@ -43,6 +44,7 @@ export default function MessageBubble({
     isOwnMessage,
     isLastOwnMessage,
     lastReadAt,
+    isHighlighted
 }: MessageBubbleProps) {
     const { socket } = useSocket();
 
@@ -156,8 +158,14 @@ export default function MessageBubble({
 
     return (
         <div
-            className={`group flex ${isOwnMessage ? "justify-end" : "justify-start"
-                }`}
+            id={`message-${message.id}`}
+            className={`
+                group
+                flex
+                ${isOwnMessage ? "justify-end" : "justify-start"}
+                ${isHighlighted &&
+"rounded-full bg-slate-800 scale-[1.01] shadow-lg"}
+            `}
         >
             <div
                 className={`flex items-end gap-2 ${isOwnMessage ? "flex-row-reverse" : ""

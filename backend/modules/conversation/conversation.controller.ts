@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getConversations, markConversationAsRead } from "./conversation.service";
+import { getConversations, markConversationAsRead, searchMessages } from "./conversation.service";
 
 export async function getConversationsController(req: Request, res: Response) {
     try {
@@ -24,10 +24,7 @@ export async function getConversationsController(req: Request, res: Response) {
 type Params = {
     conversationId: string;
 };
-export async function markConversationAsReadController(
-    req: Request<Params>,
-    res: Response
-) {
+export async function markConversationAsReadController(req: Request<Params>, res: Response) {
     try {
         const { conversationId } = req.params;
         const userId = req.userId!;
@@ -45,6 +42,32 @@ export async function markConversationAsReadController(
                 error instanceof Error
                     ? error.message
                     : "Something went wrong",
+        });
+    }
+}
+
+export async function searchMessagesController(req: Request, res: Response) {
+    try {
+        const userId = req.userId!;
+        const conversationId = req.params.conversationId as string;
+        const query = String(req.query.q ?? "");
+
+        const messages = await searchMessages(
+            conversationId,
+            userId,
+            query
+        );
+
+        res.status(200).json({
+            success: true,
+            messages,
+        });
+    } catch (error) {
+        console.error("Search messages error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to search messages",
         });
     }
 }

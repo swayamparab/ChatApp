@@ -11,12 +11,21 @@ import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
 import { useSocket } from "@/hooks/useSocket";
 
 import type { Message } from "@/types/message";
+
 interface MessageListProps {
     onReply: (message: Message) => void;
+    jumpToMessageId: string | null;
+    highlightedMessageId: string | null;
+    setHighlightedMessageId: (
+        id: string | null
+    ) => void;
 }
 
 export default function MessageList({
     onReply,
+    jumpToMessageId,
+    highlightedMessageId,
+    setHighlightedMessageId
 }: MessageListProps) {
     const { conversationId } = useParams<{
         conversationId: string;
@@ -78,6 +87,10 @@ export default function MessageList({
 
             fetchNextPage();
         }
+    };
+
+    const findMessageElement = (messageId: string) => {
+        return document.getElementById(`message-${messageId}`);
     };
 
     // Only mark as read if the latest message was sent by the other user.
@@ -178,6 +191,43 @@ export default function MessageList({
             window.removeEventListener("message-image-loaded", handleImageLoaded);
     }, []);
 
+    useEffect(() => {
+        if (!jumpToMessageId) {
+            return;
+        }
+
+        const element = document.getElementById(
+            `message-${jumpToMessageId}`
+        );
+
+        if (element) {
+            element.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+
+            setHighlightedMessageId(jumpToMessageId);
+
+            const timeout = setTimeout(() => {
+                setHighlightedMessageId(null);
+            }, 2000);
+
+            return () => clearTimeout(timeout);
+        }
+
+        if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+
+    }, [
+        jumpToMessageId,
+        messages.length,
+        hasNextPage,
+        isFetchingNextPage,
+        fetchNextPage,
+        setHighlightedMessageId,
+    ]);
+
     if (isLoading) {
         return (
             <div className="flex flex-1 items-center justify-center">
@@ -246,6 +296,7 @@ export default function MessageList({
                         message.id === lastOwnMessage?.id
                     }
                     lastReadAt={lastReadAt}
+                    isHighlighted={highlightedMessageId === message.id}
                 />
             ))}
         </div>

@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { conversationParticipants, messages } from "../../db/schema";
-import { and, count, eq, gt, ne } from "drizzle-orm";
+import { and, count, eq, gt, ne, ilike} from "drizzle-orm";
 
 export async function getConversations(userId: string) {
   const userConversations = await db.query.conversationParticipants.findMany({
@@ -259,4 +259,51 @@ export async function markConversationAsRead(
     );
 
   return lastReadAt;
+}
+
+export async function searchMessages(
+  conversationId: string,
+  userId: string,
+  query: string
+) {
+  const search = query.trim();
+
+  if (!search) {
+    return [];
+  }
+
+  // Verify the user is part of this conversation
+  const participant = await db.query.conversationParticipants.findFirst({
+    where: and(
+      eq(conversationParticipants.conversationId, conversationId),
+      eq(conversationParticipants.userId, userId)
+    ),
+  });
+
+  if (!participant) {
+    throw new Error("Unauthorized");
+  }
+
+  const results = await db.query.messages.findMany({
+    where: and(
+      eq(messages.conversationId, conversationId),
+      ilike(messages.content, `%${search}%`)
+    ),
+
+    columns: {
+      id: true,
+      content: true,
+      senderId: true,
+      createdAt: true,
+      type: true,
+    },
+
+    orderBy: (messages, { desc }) => [
+      desc(messages.createdAt),
+    ],
+
+    limit: 50,
+  });
+
+  return results;
 }
