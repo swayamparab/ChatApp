@@ -1,6 +1,7 @@
 import { Socket, Server } from "socket.io";
 import { registerConversationEvents } from "./conversation.event";
-import { registerMessageEvent } from "./message.event";
+import { registerMessageEvents } from "./message.event";
+import { registerCallEvents } from "./call.event";
 import { getOnlineUserIds, onlineUsers } from "../helpers/online-users";
 
 import { db } from "../../db";
@@ -25,7 +26,10 @@ export function handleConnection(io: Server, socket: Socket) {
   registerConversationEvents(io, socket);
 
   //send a message
-  registerMessageEvent(io, socket);
+  registerMessageEvents(io, socket);
+
+  //call events
+  registerCallEvents(io, socket);
 
   //offline status as user disconnects
   socket.on("disconnect", async () => {

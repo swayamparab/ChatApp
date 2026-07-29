@@ -4,7 +4,7 @@ import { sendMessage, deleteMessage, editMessage } from "../../modules/message/m
 import { ZodError } from "zod";
 import { isParticipant } from "../../modules/conversation/conversation.service";
 
-export function registerMessageEvent(io: Server, socket: Socket) {
+export function registerMessageEvents(io: Server, socket: Socket) {
     socket.on("send_message", async (data, callback) => {
         try {
             const validatedData = sendMessageSchema.parse(data);

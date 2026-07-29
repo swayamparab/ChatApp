@@ -2,8 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MoreVertical } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+import { MoreVertical, ArrowLeft, Phone } from "lucide-react";
 
 import { useConversations } from "@/hooks/useConversations";
 import { useSocket } from "@/hooks/useSocket";
@@ -21,6 +20,7 @@ import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchMessages } from "@/hooks/useSearchMessages";
+import { useCallActions } from "@/hooks/useCallActions";
 
 type ChatHeaderProps = {
     isTyping: boolean;
@@ -41,6 +41,8 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
     const [search, setSearch] = useState("");
 
     const [currentMatch, setCurrentMatch] = useState(0);
+
+    const { startVoiceCall } = useCallActions();
 
     const conversation = data?.conversations.find(
         (conversation) =>
@@ -267,37 +269,61 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                 </div>
             </div>
 
-            <DropdownMenu>
-                <DropdownMenuTrigger
+            <div className="flex items-center gap-1">
+                <button
+                    onClick={() =>
+                        startVoiceCall({
+                            conversationId,
+                            receiver: {
+                                id: conversation.otherUser.id,
+                                username: conversation.otherUser.username,
+                            },
+                        })
+                    }
                     className="
-                        rounded-xl
-                        p-2
-                        text-slate-400
-                        transition-all
-                        duration-200
-                        hover:bg-slate-800
-                        hover:text-white
-                    "
-                    aria-label="Conversation options"
+            rounded-xl
+            p-2
+            text-slate-400
+            transition-all
+            duration-200
+            hover:bg-slate-800
+            hover:text-white
+        "
+                    aria-label="Voice Call"
                 >
-                    <MoreVertical className="h-5 w-5" />
-                </DropdownMenuTrigger>
+                    <Phone className="h-5 w-5" />
+                </button>
 
-                <DropdownMenuContent
-                    align="end"
-                    className="w-44 border-slate-700 bg-slate-900 text-white"
-                >
-                    <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => {
-                            setIsSearching(true)
-                        }}
+                <DropdownMenu>
+                    <DropdownMenuTrigger
+                        className="
+                rounded-xl
+                p-2
+                text-slate-400
+                transition-all
+                duration-200
+                hover:bg-slate-800
+                hover:text-white
+            "
+                        aria-label="Conversation options"
                     >
-                        <Search className="mr-2 h-4 w-4" />
-                        Search
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                        <MoreVertical className="h-5 w-5" />
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                        align="end"
+                        className="w-44 border-slate-700 bg-slate-900 text-white"
+                    >
+                        <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => setIsSearching(true)}
+                        >
+                            <Search className="mr-2 h-4 w-4" />
+                            Search
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
         </header>
     );
 }
