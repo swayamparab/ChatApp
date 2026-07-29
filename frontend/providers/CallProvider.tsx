@@ -9,6 +9,7 @@ import {
 import { IncomingCallDialog } from "@/components/call/IncomingCallDialog";
 import { useCallEvents } from "@/hooks/useCallEvents";
 import { CallingDialog } from "@/components/call/CallingDialog";
+import { CallEvents } from "@/components/call/CallEvents";
 
 export type CallType = "voice" | "video";
 
@@ -67,8 +68,6 @@ export function CallProvider({
     const [callState, setCallState] =
         useState(initialCallState);
 
-    useCallEvents();
-
     const value = useMemo(
         () => ({
             callState,
@@ -79,6 +78,8 @@ export function CallProvider({
 
     return (
         <CallContext.Provider value={value}>
+            <CallEvents/>
+
             {children}
 
             <IncomingCallDialog />
