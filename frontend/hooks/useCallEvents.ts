@@ -25,6 +25,7 @@ export function useCallEvents() {
             setCallState({
                 ...data,
                 status: "incoming",
+                connectedAt: null,
             });
         }
 

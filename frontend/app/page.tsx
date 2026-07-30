@@ -18,7 +18,7 @@ export default function HomePage() {
       <div className="relative z-10 w-full max-w-5xl">
         <div className="text-center">
           <h1 className="text-6xl font-extrabold tracking-tight text-white mt-10">
-            Ping<span className="text-blue-500">Chat</span>
+            Re<span className="text-blue-500">lay</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-400">

@@ -31,7 +31,8 @@ export function useCallActions() {
                 id: currentUser.user.id,
                 username: currentUser.user.username,
             },
-            receiver
+            receiver,
+            connectedAt: null,
         });
 
         socket.emit(

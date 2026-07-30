@@ -18,8 +18,8 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "PingChat",
-    template: "%s | PingChat",
+    default: "Relay",
+    template: "%s | Relay",
   },
   description: "Real-time one-to-one chat application",
 
