@@ -40,7 +40,7 @@ export function useCallActions() {
             endCall(conversationId);
 
             toast.info(`No answer from ${receiver.username}`);
-        }, 30000);
+        },30000);
 
         socket.emit(
             "call_user",

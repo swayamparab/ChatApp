@@ -1,4 +1,4 @@
-# PingChat - Realtime Communication Platform
+# Relay - Real-time Communication Platform.
 
 A modern real-time one-to-one messaging application built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, and **Socket.IO**.
 
@@ -123,8 +123,7 @@ _Add screenshots here._
 ### Clone the repository
 
 ```bash
-git clone https://github.com/swayamparab/ChatApp.git
-cd ChatApp
+git clone https://github.com/swayamparab/Relay-Realtime_Communication_Platform.git
 ```
 
 ### Install dependencies

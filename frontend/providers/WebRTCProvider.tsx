@@ -1,8 +1,7 @@
 "use client";
 
 import { RemoteAudio } from "@/components/call/RemoteAudio";
-import { WebRTCEvents } from "@/components/providers/WebRTCEvents";
-import { createContext, ReactNode, useMemo, useRef, useState } from "react";
+import { createContext, useMemo, useRef, useState } from "react";
 
 interface WebRTCContextType {
     peerConnection: React.MutableRefObject<RTCPeerConnection | null>
@@ -22,6 +21,9 @@ interface WebRTCContextType {
     connectionState: RTCPeerConnectionState;
 
     pendingIceCandidates: React.MutableRefObject<RTCIceCandidateInit[]>;
+
+    isMuted: boolean;
+    setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const WebRTCContext = createContext<WebRTCContextType | null>(null);
@@ -37,6 +39,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
     const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>("new");
 
     const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
+
+    const [isMuted, setIsMuted] = useState(false);
 
     function createPeerConnection() {
         if (peerConnection.current) {
@@ -86,6 +90,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
         peerConnection.current = null;
 
         setConnectionState("closed");
+
+        setIsMuted(false);
     }
 
     async function getLocalStream() {
@@ -141,8 +147,11 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
             connectionState,
 
             pendingIceCandidates,
+
+            isMuted,
+            setIsMuted,
         }),
-        [localStream, remoteStream, connectionState]
+        [localStream, remoteStream, connectionState, isMuted]
     );
 
     return (

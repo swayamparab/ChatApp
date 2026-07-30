@@ -60,7 +60,7 @@ export default function SignupForm() {
             </h1>
 
             <p className="mb-8 text-center text-sm text-slate-400">
-                Join ChatApp and start chatting instantly.
+                Join Relay and start chatting instantly.
             </p>
 
             <form

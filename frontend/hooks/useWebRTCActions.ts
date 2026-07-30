@@ -7,9 +7,12 @@ export function useWebRTCActions() {
     const { socket } = useSocket();
 
     const {
+        localStream,
         createPeerConnection,
         setupLocalMedia,
-        pendingIceCandidates
+        pendingIceCandidates,
+        isMuted,
+        setIsMuted,
     } = useWebRTC();
 
     async function createOffer(conversationId: string) {
@@ -79,8 +82,19 @@ export function useWebRTCActions() {
         });
     }
 
+    function toggleMute() {
+        const audioTrack = localStream?.getAudioTracks()[0];
+
+        if (!audioTrack) return;
+
+        audioTrack.enabled = !audioTrack.enabled;
+
+        setIsMuted(!audioTrack.enabled);
+    }
+
     return {
         createOffer,
         createAnswer,
+        toggleMute,
     };
 }

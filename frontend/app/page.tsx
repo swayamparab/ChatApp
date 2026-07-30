@@ -88,7 +88,7 @@ export default function HomePage() {
             </p>
 
             <p className="mt-2 text-xs text-slate-500">
-              ChatApp • Real-Time One-to-One Messaging Platform
+              Relay • Real-Time One-to-One Messaging Platform
             </p>
 
             <a

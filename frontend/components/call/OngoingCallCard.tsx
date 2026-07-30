@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone, PhoneOff } from "lucide-react";
+import { Phone, PhoneOff, Mic, MicOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +8,8 @@ import { useCall } from "@/hooks/useCall";
 import { useCallActions } from "@/hooks/useCallActions";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useCallDuration } from "@/hooks/useCallDuration";
+import { useWebRTCActions } from "@/hooks/useWebRTCActions";
+import { useWebRTC } from "@/hooks/useWebRTC";
 
 export default function OngoingCallCard() {
     const { callState } = useCall();
@@ -17,6 +19,10 @@ export default function OngoingCallCard() {
     const { data: currentUser } = useCurrentUser();
 
     const duration = useCallDuration(callState.connectedAt);
+
+    const { toggleMute } = useWebRTCActions();
+
+    const { isMuted } = useWebRTC();
 
     if (
         callState.status !== "connecting" &&
@@ -55,16 +61,32 @@ export default function OngoingCallCard() {
                     </div>
                 </div>
 
-                <Button
-                    variant="destructive"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() =>
-                        endCall(callState.conversationId)
-                    }
-                >
-                    <PhoneOff className="h-5 w-5" />
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="secondary"
+                        size="icon"
+                        className={`rounded-full transition-colors ${isMuted
+                                ? "bg-red-500 hover:bg-red-600 text-white"
+                                : ""
+                            }`}
+                        onClick={toggleMute}
+                    >
+                        {isMuted ? (
+                            <MicOff className="h-5 w-5" />
+                        ) : (
+                            <Mic className="h-5 w-5" />
+                        )}
+                    </Button>
+
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        className="rounded-full"
+                        onClick={() => endCall(callState.conversationId)}
+                    >
+                        <PhoneOff className="h-5 w-5" />
+                    </Button>
+                </div>
             </div>
         </div>
     );
