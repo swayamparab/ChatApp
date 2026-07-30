@@ -14,7 +14,7 @@ import { useWebRTC } from "./useWebRTC";
 
 export function useCallEvents() {
     const { socket } = useSocket();
-    const { setCallState } = useCall();
+    const { setCallState, timeoutRef } = useCall();
 
     const { createOffer } = useWebRTCActions();
 
@@ -37,17 +37,32 @@ export function useCallEvents() {
                 status: "connecting",
             }));
 
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
+
             await createOffer(data.conversationId);
         }
 
         function handleCallRejected() {
             setCallState(initialCallState);
+
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
         }
 
         function handleCallEnded() {
             closePeerConnection();
 
             setCallState(initialCallState);
+
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
         }
 
         socket.off("incoming_call", handleIncomingCall);

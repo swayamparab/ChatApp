@@ -3,6 +3,7 @@
 import {
     createContext,
     useMemo,
+    useRef,
     useState,
 } from "react";
 
@@ -40,6 +41,7 @@ interface CallContextType {
     setCallState: React.Dispatch<
         React.SetStateAction<CallState>
     >;
+    timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>;
 }
 
 export const CallContext =
@@ -67,10 +69,13 @@ export function CallProvider({
 }) {
     const [callState, setCallState] = useState(initialCallState);
 
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const value = useMemo(
         () => ({
             callState,
             setCallState,
+            timeoutRef
         }),
         [callState]
     );

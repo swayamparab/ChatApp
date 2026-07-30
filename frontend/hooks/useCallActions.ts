@@ -5,6 +5,7 @@ import { useCall } from "./useCall";
 import { CallUser, initialCallState } from "@/providers/CallProvider";
 import { useWebRTC } from "./useWebRTC";
 import { useCurrentUser } from "./useCurrentUser";
+import { toast } from "sonner";
 
 interface StartVoiceCallData {
     conversationId: string;
@@ -13,7 +14,7 @@ interface StartVoiceCallData {
 
 export function useCallActions() {
     const { socket } = useSocket();
-    const { setCallState } = useCall();
+    const { setCallState, timeoutRef } = useCall();
 
     const { data: currentUser } = useCurrentUser();
 
@@ -21,7 +22,7 @@ export function useCallActions() {
 
     function startVoiceCall({ conversationId, receiver }: StartVoiceCallData) {
 
-        if(!currentUser) return;
+        if (!currentUser) return;
 
         setCallState({
             status: "calling",
@@ -34,6 +35,12 @@ export function useCallActions() {
             receiver,
             connectedAt: null,
         });
+
+        timeoutRef.current = setTimeout(() => {
+            endCall(conversationId);
+
+            toast.info(`No answer from ${receiver.username}`);
+        }, 30000);
 
         socket.emit(
             "call_user",
