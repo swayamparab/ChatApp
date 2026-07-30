@@ -114,4 +114,40 @@ export function registerCallEvents(io: Server, socket: Socket) {
             }
         }
     );
+
+    socket.on(
+        "end_call",
+        async ({ conversationId }, callback) => {
+            try {
+                const allowed = await isParticipant(
+                    socket.userId,
+                    conversationId
+                );
+
+                if (!allowed) {
+                    return callback?.({
+                        success: false,
+                        message: "Unauthorized",
+                    });
+                }
+
+                socket.to(conversationId).emit("end_call", {
+                    conversationId,
+                });
+
+                callback?.({
+                    success: true,
+                });
+            } catch (error) {
+                callback?.({
+                    success: false,
+                    message:
+                        error instanceof Error
+                            ? error.message
+                            : "Internal Server Error",
+                });
+            }
+        }
+    );
+
 }

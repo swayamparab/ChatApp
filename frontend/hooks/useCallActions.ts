@@ -2,7 +2,9 @@
 
 import { useSocket } from "./useSocket";
 import { useCall } from "./useCall";
-import { CallUser } from "@/providers/CallProvider";
+import { CallUser, initialCallState } from "@/providers/CallProvider";
+import { useWebRTC } from "./useWebRTC";
+import { useCurrentUser } from "./useCurrentUser";
 
 interface StartVoiceCallData {
     conversationId: string;
@@ -13,14 +15,21 @@ export function useCallActions() {
     const { socket } = useSocket();
     const { setCallState } = useCall();
 
-    function startVoiceCall({conversationId, receiver}: StartVoiceCallData) {
+    const { data: currentUser } = useCurrentUser();
+
+    const { closePeerConnection } = useWebRTC();
+
+    function startVoiceCall({ conversationId, receiver }: StartVoiceCallData) {
+
+        if(!currentUser) return;
+
         setCallState({
             status: "calling",
             conversationId,
             type: "voice",
             caller: {
-                id: "",
-                username: "",
+                id: currentUser.user.id,
+                username: currentUser.user.username,
             },
             receiver
         });
@@ -47,7 +56,18 @@ export function useCallActions() {
         );
     }
 
+    function endCall(conversationId: string) {
+        socket?.emit("end_call", {
+            conversationId,
+        });
+
+        closePeerConnection();
+
+        setCallState(initialCallState);
+    }
+
     return {
         startVoiceCall,
+        endCall
     };
 }

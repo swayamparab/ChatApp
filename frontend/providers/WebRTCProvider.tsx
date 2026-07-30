@@ -19,6 +19,8 @@ interface WebRTCContextType {
     getLocalStream: () => Promise<MediaStream>;
     setupLocalMedia: () => Promise<MediaStream>;
 
+    connectionState: RTCPeerConnectionState;
+
     pendingIceCandidates: React.MutableRefObject<RTCIceCandidateInit[]>;
 }
 
@@ -31,6 +33,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
     const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+
+    const [connectionState, setConnectionState] = useState<RTCPeerConnectionState>("new");
 
     const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
 
@@ -51,6 +55,12 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
             console.log("Remote stream received");
 
             setRemoteStream(event.streams[0]);
+        };
+
+        peer.onconnectionstatechange = () => {
+            console.log("Connection State:", peer.connectionState);
+
+            setConnectionState(peer.connectionState);
         };
 
         peerConnection.current = peer;
@@ -74,6 +84,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
 
         peerConnection.current?.close();
         peerConnection.current = null;
+
+        setConnectionState("closed");
     }
 
     async function getLocalStream() {
@@ -126,14 +138,15 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
             getLocalStream,
             setupLocalMedia,
 
+            connectionState,
+
             pendingIceCandidates,
         }),
-        [localStream, remoteStream]
+        [localStream, remoteStream, connectionState]
     );
 
     return (
         <WebRTCContext.Provider value={value}>
-            <WebRTCEvents />
             <RemoteAudio />
             {children}
         </WebRTCContext.Provider>

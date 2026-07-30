@@ -5,12 +5,24 @@ import { useEffect } from "react";
 import { useSocket } from "@/hooks/useSocket";
 import { useWebRTCActions } from "./useWebRTCActions";
 import { useWebRTC } from "./useWebRTC";
+import { useCall } from "./useCall";
 
 export function useWebRTCEvents() {
     const { socket } = useSocket();
 
     const { createAnswer } = useWebRTCActions();
-    const { createPeerConnection, pendingIceCandidates } = useWebRTC();
+    const { createPeerConnection, pendingIceCandidates, connectionState } = useWebRTC();
+
+    const {setCallState} = useCall();
+
+    useEffect(() => {
+    if (connectionState === "connected") {
+        setCallState((prev) => ({
+            ...prev,
+            status: "connected",
+        }));
+    }
+}, [connectionState, setCallState]);
 
     useEffect(() => {
         if (!socket) return;

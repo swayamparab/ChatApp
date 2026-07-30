@@ -9,6 +9,7 @@ import ConversationList from "./Either/ConversationList";
 import RequestsPanel from "./RequestsPanel/RequestsPanel";
 import PendingRequestsButton from "./RequestsPanel/PendingRequestsButton";
 import { useChatRequests } from "@/hooks/useChatRequests";
+import OngoingCallCard from "@/components/call/OngoingCallCard";
 
 export default function Sidebar() {
     const [query, setQuery] = useState("");
@@ -36,6 +37,8 @@ export default function Sidebar() {
                         value={query}
                         onValueChange={setQuery}
                     />
+
+                    <OngoingCallCard/>
 
                     <div className="flex-1 overflow-y-auto px-1 pb-2">
                         {query.trim() ? (

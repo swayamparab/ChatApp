@@ -77,8 +77,6 @@ export function CallProvider({
 
     return (
         <CallContext.Provider value={value}>
-            <CallEvents />
-
             {children}
 
             <IncomingCallDialog />
