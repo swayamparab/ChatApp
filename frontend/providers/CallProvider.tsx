@@ -9,7 +9,7 @@ import {
 import { IncomingCallDialog } from "@/components/call/IncomingCallDialog";
 import { useCallEvents } from "@/hooks/useCallEvents";
 import { CallingDialog } from "@/components/call/CallingDialog";
-import { CallEvents } from "@/components/call/CallEvents";
+import { CallEvents } from "@/components/providers/CallEvents";
 
 export type CallType = "voice" | "video";
 
@@ -65,8 +65,7 @@ export function CallProvider({
 }: {
     children: React.ReactNode;
 }) {
-    const [callState, setCallState] =
-        useState(initialCallState);
+    const [callState, setCallState] = useState(initialCallState);
 
     const value = useMemo(
         () => ({
@@ -78,12 +77,12 @@ export function CallProvider({
 
     return (
         <CallContext.Provider value={value}>
-            <CallEvents/>
+            <CallEvents />
 
             {children}
 
             <IncomingCallDialog />
-            <CallingDialog/>
+            <CallingDialog />
         </CallContext.Provider>
     );
 }

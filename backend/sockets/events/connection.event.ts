@@ -2,6 +2,7 @@ import { Socket, Server } from "socket.io";
 import { registerConversationEvents } from "./conversation.event";
 import { registerMessageEvents } from "./message.event";
 import { registerCallEvents } from "./call.event";
+import { registerWebRTCEvents } from "./webrtc.event";
 import { getOnlineUserIds, onlineUsers } from "../helpers/online-users";
 
 import { db } from "../../db";
@@ -30,6 +31,9 @@ export function handleConnection(io: Server, socket: Socket) {
 
   //call events
   registerCallEvents(io, socket);
+
+  //webrtc events
+  registerWebRTCEvents(io, socket);
 
   //offline status as user disconnects
   socket.on("disconnect", async () => {

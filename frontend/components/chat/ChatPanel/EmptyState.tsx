@@ -19,7 +19,7 @@ export default function EmptyState() {
             </div>
 
             <h2 className="text-3xl font-bold tracking-tight text-white">
-                Welcome to ChatApp
+                Welcome to PingChat
             </h2>
 
             <p className="mt-3 max-w-max text-sm leading-6 text-slate-400">

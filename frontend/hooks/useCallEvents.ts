@@ -9,10 +9,13 @@ import {
 
 import { useCall } from "./useCall";
 import { useSocket } from "./useSocket";
+import { useWebRTCActions } from "./useWebRTCActions";
 
 export function useCallEvents() {
     const { socket } = useSocket();
     const { setCallState } = useCall();
+
+    const { createOffer } = useWebRTCActions();
 
     useEffect(() => {
         function handleIncomingCall(data: CallData) {
@@ -22,13 +25,15 @@ export function useCallEvents() {
             });
         }
 
-        function handleCallAccepted(_: {
+        async function handleCallAccepted(data: {
             conversationId: string;
         }) {
             setCallState((prev) => ({
                 ...prev,
                 status: "connecting",
             }));
+            
+            await createOffer(data.conversationId);
         }
 
         function handleCallRejected() {
@@ -48,5 +53,5 @@ export function useCallEvents() {
             socket.off("call_accepted", handleCallAccepted);
             socket.off("call_rejected", handleCallRejected);
         };
-    }, [socket, setCallState]);
+    }, [socket, setCallState, createOffer]);
 }
