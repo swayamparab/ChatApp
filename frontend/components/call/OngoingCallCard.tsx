@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useCall } from "@/hooks/useCall";
 import { useCallActions } from "@/hooks/useCallActions";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCallDuration } from "@/hooks/useCallDuration";
 
 export default function OngoingCallCard() {
     const { callState } = useCall();
@@ -14,6 +15,8 @@ export default function OngoingCallCard() {
     const { endCall } = useCallActions();
 
     const { data: currentUser } = useCurrentUser();
+
+    const duration = useCallDuration(callState.connectedAt);
 
     if (
         callState.status !== "connecting" &&
@@ -47,7 +50,7 @@ export default function OngoingCallCard() {
                         <p className="text-sm text-emerald-300">
                             {callState.status === "connecting"
                                 ? "Connecting..."
-                                : "Voice Call"}
+                                : duration}
                         </p>
                     </div>
                 </div>

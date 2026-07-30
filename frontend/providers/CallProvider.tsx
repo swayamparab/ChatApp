@@ -7,9 +7,7 @@ import {
 } from "react";
 
 import { IncomingCallDialog } from "@/components/call/IncomingCallDialog";
-import { useCallEvents } from "@/hooks/useCallEvents";
 import { CallingDialog } from "@/components/call/CallingDialog";
-import { CallEvents } from "@/components/providers/CallEvents";
 
 export type CallType = "voice" | "video";
 
@@ -34,6 +32,7 @@ export interface CallData {
 
 export interface CallState extends CallData {
     status: CallStatus;
+    connectedAt: number | null;
 }
 
 interface CallContextType {
@@ -57,7 +56,8 @@ export const initialCallState: CallState = {
     receiver: {
         id: "",
         username: ""
-    }
+    },
+    connectedAt: null,
 };
 
 export function CallProvider({

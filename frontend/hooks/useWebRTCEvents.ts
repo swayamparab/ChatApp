@@ -13,16 +13,17 @@ export function useWebRTCEvents() {
     const { createAnswer } = useWebRTCActions();
     const { createPeerConnection, pendingIceCandidates, connectionState } = useWebRTC();
 
-    const {setCallState} = useCall();
+    const { setCallState } = useCall();
 
     useEffect(() => {
-    if (connectionState === "connected") {
-        setCallState((prev) => ({
-            ...prev,
-            status: "connected",
-        }));
-    }
-}, [connectionState, setCallState]);
+        if (connectionState === "connected") {
+            setCallState((prev) => ({
+                ...prev,
+                status: "connected",
+                connectedAt: Date.now(),
+            }));
+        }
+    }, [connectionState, setCallState]);
 
     useEffect(() => {
         if (!socket) return;
