@@ -162,9 +162,18 @@ export default function MessageBubble({
             className={`
                 group
                 flex
+
+                animate-in
+                fade-in
+                slide-in-from-bottom-2
+                duration-200
+
                 ${isOwnMessage ? "justify-end" : "justify-start"}
-                ${isHighlighted &&
-"rounded-full bg-slate-800 scale-[1.01] shadow-lg"}
+
+                ${isHighlighted
+                    ? "rounded-full bg-sky-500/15 ring-2 ring-sky-400/30"
+                    : ""
+                }
             `}
         >
             <div
@@ -340,12 +349,14 @@ export default function MessageBubble({
                     className={`
                         ${message.type === "text" ? "min-w-[140px]" : ""}
 
-                        max-w-[85%]
-                        md:max-w-[70%]
+                        max-w-[82%]
+                        sm:max-w-[76%]
+                        lg:max-w-[66%]
+                        xl:max-w-[60%]
 
                         ${message.type === "image" || message.type === "file"
-                            ? "rounded-xl"
-                            : "rounded-[20px]"
+                            ? "rounded-2xl"
+                            : "rounded-[22px]"
                         }
 
                         ${message.type === "image"
@@ -354,18 +365,26 @@ export default function MessageBubble({
                                 ? "p-2"
                                 : message.type === "voice"
                                     ? "px-3 py-2"
-                                    : "px-4 py-2.5"
+                                    : "px-4 py-3"
                         }
 
-                        shadow-md
+                        shadow-[0_4px_18px_rgba(0,0,0,0.16)]
                         transition-all
                         duration-200
+                        ease-out
+                        will-change-transform
+                        hover:scale-[1.01]
+                        active:scale-[0.99]
+
+                        hover:-translate-y-[1px]
+                        hover:shadow-[0_8px_24px_rgba(0,0,0,0.22)]
+
                         select-none
                         touch-manipulation
 
                         ${isOwnMessage
-                            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
-                            : "bg-slate-800 text-slate-100 ring-1 ring-slate-700/50"
+                            ? "bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-600 text-white"
+                            : "bg-slate-800 text-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.18)]"
                         }
                     `}
                 >
@@ -439,27 +458,44 @@ export default function MessageBubble({
                             {message.replyTo && (
                                 <div
                                     className={`
-                                        mb-2 rounded-lg border-l-4 px-3 py-2
+                                        mb-2
+                                        overflow-hidden
+                                        rounded-xl
+                                        border-l-[3px]
+                                        px-3
+                                        py-2
+
                                         ${isOwnMessage
-                                            ? "border-blue-200 bg-blue-400/20"
-                                            : "border-blue-500 bg-slate-700/60"
+                                            ? "border-blue-200 bg-white/10 backdrop-blur-sm"
+                                            : "border-sky-400 bg-slate-700/70 backdrop-blur-sm"
                                         }
                                     `}
                                 >
                                     <p
-                                        className={`text-xs font-semibold ${isOwnMessage
-                                            ? "text-blue-100"
-                                            : "text-blue-400"
-                                            }`}
+                                        className={`
+                                            text-[12px]
+                                            font-semibold
+                                            tracking-wide
+                                            ${isOwnMessage
+                                                ? "text-blue-100"
+                                                : "text-sky-400"
+                                            }
+                                        `}
                                     >
                                         {message.replyTo.sender.username}
                                     </p>
 
                                     <p
-                                        className={`mt-1 line-clamp-2 text-xs ${isOwnMessage
-                                            ? "text-blue-50/90"
-                                            : "text-slate-300"
-                                            }`}
+                                        className={`
+                                        mt-1
+                                        line-clamp-2
+                                        text-[13px]
+                                        leading-5
+                                        ${isOwnMessage
+                                                ? "text-blue-50/90"
+                                                : "text-slate-300"
+                                            }
+                                    `}
                                     >
                                         {message.replyTo.type === "text"
                                             ? message.replyTo.content
@@ -487,7 +523,16 @@ export default function MessageBubble({
                             )}
 
                             {message.type === "text" && (
-                                <p className="break-words text-[15px] leading-5">
+                                <p
+                                    className="
+                                        break-words
+                                        whitespace-pre-wrap
+                                        text-[15px]
+                                        leading-6
+                                        tracking-[0.01em]
+                                        font-normal
+                                    "
+                                >
                                     {message.content}
                                 </p>
                             )}
@@ -500,7 +545,19 @@ export default function MessageBubble({
                                         alt="Image"
                                         width={800}
                                         height={800}
-                                        className=" cursor-pointer block w-full h-auto rounded-[16px] object-cover"
+                                        className="
+                                            block
+                                            h-auto
+                                            w-full
+                                            cursor-pointer
+                                            rounded-[16px]
+                                            object-cover
+
+                                            transition-transform
+                                            duration-300
+
+                                            hover:scale-[1.02]
+                                        "
                                         onLoadingComplete={() => {
                                             window.dispatchEvent(new Event("message-image-loaded"));
                                         }}
@@ -551,15 +608,16 @@ export default function MessageBubble({
                             )}
 
                             <div
-                                className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${isOwnMessage
-                                    ? "text-blue-100/80"
-                                    : "text-slate-400"
+                                className={`mt-2 flex items-center justify-end gap-1 text-[11px] font-medium ${isOwnMessage
+                                    ? "text-blue-100/75"
+                                    : "text-slate-500"
                                     }`}
                             >
+
                                 <span>{time}</span>
 
                                 {isOwnMessage && isLastOwnMessage && (
-                                    <span>{isSeen ? "Seen" : "Sent"}</span>
+                                    <span>{isSeen ? "seen" : "sent"}</span>
                                 )}
                             </div>
                         </>

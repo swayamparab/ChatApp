@@ -121,7 +121,18 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
 
     if (isLoading) {
         return (
-            <header className="flex h-16 items-center bg-slate-900/95 px-5 shadow-sm">
+            <header
+                className="
+                    flex
+                    h-16
+                    items-center
+                    justify-between
+                    border-slate-800/70
+                    bg-slate-900/80
+                    px-5
+                    backdrop-blur-xl
+                "
+            >
                 <p className="text-slate-400">
                     Loading...
                 </p>
@@ -131,7 +142,18 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
 
     if (!conversation) {
         return (
-            <header className="flex h-16 items-center bg-slate-900/95 px-5 shadow-sm">
+            <header
+                className="
+                    flex
+                    h-16
+                    items-center
+                    justify-between
+                    border-slate-800/70
+                    bg-slate-900/80
+                    px-5
+                    backdrop-blur-xl
+                "
+            >
                 <p className="text-red-400">
                     Conversation not found
                 </p>
@@ -142,8 +164,18 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
     if (isSearching) {
         return (
             <>
-                <header className="flex h-16 items-center gap-3 bg-slate-900/95 px-4 shadow-sm">
-
+                <header
+                    className="
+                        flex
+                        h-16
+                        items-center
+                        justify-between
+                        border-slate-800/70
+                        bg-slate-900/80
+                        px-5
+                        backdrop-blur-xl
+                    "
+                >
                     <button
                         onClick={() => {
                             setIsSearching(false);
@@ -162,10 +194,11 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                             className="
                                 h-10
                                 w-full
-                                rounded-lg
+                                rounded-xl
                                 border
                                 border-slate-700
-                                bg-slate-800
+                                bg-slate-800/80
+                                backdrop-blur
                                 px-4
                                 text-sm
                                 text-white
@@ -218,7 +251,18 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
     }
 
     return (
-        <header className="flex h-16 items-center justify-between bg-slate-900/95 px-5 shadow-sm">
+        <header
+            className="
+                flex
+                h-16
+                items-center
+                justify-between
+                border-slate-800/70
+                bg-slate-900/80
+                px-5
+                backdrop-blur-xl
+            "
+        >
             <div className="flex min-w-0 items-center gap-3">
                 <button
                     onClick={() => router.push("/chat")}
@@ -228,8 +272,16 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                     <ArrowLeft className="h-5 w-5 text-slate-300" />
                 </button>
 
-                <Avatar className="h-11 w-11 ring-1 ring-slate-700/60 shadow-sm">
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-700 font-semibold text-white">
+                <Avatar
+                    className="
+                        h-12
+                        w-12
+                        ring-2
+                        ring-slate-700/40
+                        shadow-lg
+                    "
+                >
+                    <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
                         {conversation.otherUser.username
                             .charAt(0)
                             .toUpperCase()}
@@ -237,23 +289,45 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                 </Avatar>
 
                 <div className="min-w-0">
-                    <h2 className="truncate text-[15px] font-semibold tracking-tight text-white">
+                    <h2 className="truncate text-[15px] font-semibold tracking-[0.01em] text-white">
                         {conversation.otherUser.username}
                     </h2>
 
                     <div className="mt-0.5 flex items-center gap-2">
-                        <span
-                            className={`h-2 w-2 rounded-full ${isTyping
-                                ? "bg-emerald-400 animate-pulse"
-                                : isOnline
-                                    ? "bg-emerald-500"
-                                    : "bg-slate-500"
-                                }`}
-                        />
+                        <div className="relative">
+                            {isOnline && (
+                                <span
+                                    className="
+                                        absolute
+                                        inset-0
+                                        animate-ping
+                                        rounded-full
+                                        bg-emerald-500
+                                        opacity-60
+                                    "
+                                />
+                            )}
+
+                            <span
+                                className={`
+                                    relative
+                                    block
+                                    h-2.5
+                                    w-2.5
+                                    rounded-full
+                                    ${isTyping
+                                        ? "bg-emerald-400"
+                                        : isOnline
+                                            ? "bg-emerald-500"
+                                            : "bg-slate-500"
+                                    }
+                                `}
+                            />
+                        </div>
 
                         <p
                             className={`truncate text-sm ${isTyping
-                                ? "animate-pulse text-green-400"
+                                ? "text-green-400"
                                 : isOnline
                                     ? "text-emerald-400"
                                     : "text-slate-400"
@@ -287,7 +361,10 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                             text-slate-400
                             transition-all
                             duration-200
-                            hover:bg-slate-800
+                            hover:bg-sky-500/15
+                            hover:text-sky-400
+                            hover:scale-105
+                            active:scale-95
                             hover:text-white
                         "
                         aria-label="Voice Call"
@@ -311,7 +388,10 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                             text-slate-400
                             transition-all
                             duration-200
-                            hover:bg-slate-800
+                            hover:bg-sky-500/15
+                            hover:text-sky-400
+                            hover:scale-105
+                            active:scale-95
                             hover:text-white
                         "
                         aria-label="Video Call"
