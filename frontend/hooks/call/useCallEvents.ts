@@ -15,7 +15,7 @@ import { useRingtone } from "./useRingtone";
 
 export function useCallEvents() {
     const { socket } = useSocket();
-    const { setCallState, timeoutRef } = useCall();
+    const { setCallState, timeoutRef, setIsVideoMinimized } = useCall();
 
     const { createOffer } = useWebRTCActions();
 
@@ -59,6 +59,7 @@ export function useCallEvents() {
             stopOutgoing();
 
             setCallState(initialCallState);
+            setIsVideoMinimized(false);
 
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
@@ -74,6 +75,7 @@ export function useCallEvents() {
             closePeerConnection();
 
             setCallState(initialCallState);
+            setIsVideoMinimized(false);
 
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);

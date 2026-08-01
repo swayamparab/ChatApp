@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 export function IncomingCallDialog() {
     const { socket } = useSocket();
 
-    const { callState, setCallState } = useCall();
+    const { callState, setCallState, setIsVideoMinimized } = useCall();
 
     const { stopIncoming } = useRingtone();
 
@@ -73,6 +73,7 @@ export function IncomingCallDialog() {
         );
 
         setCallState(initialCallState);
+        setIsVideoMinimized(false);
     };
 
     return (

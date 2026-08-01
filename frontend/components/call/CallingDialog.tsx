@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 export function CallingDialog() {
     const { socket } = useSocket();
 
-    const { callState, setCallState } = useCall();
+    const { callState, setCallState, setIsVideoMinimized } = useCall();
 
     const { stopOutgoing } = useRingtone();
 
@@ -49,6 +49,7 @@ export function CallingDialog() {
         );
 
         setCallState(initialCallState);
+        setIsVideoMinimized(false);
     }
 
     return (
@@ -68,7 +69,10 @@ export function CallingDialog() {
                     </h2>
 
                     <p className="mt-2 text-muted-foreground animate-pulse text-base">
-                        Calling{dots}
+                        {callState.type === "video"
+                            ? `Video Calling${dots}`
+                            : `Voice Calling ${dots}`
+                        }
                     </p>
 
                     <Button

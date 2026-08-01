@@ -14,13 +14,12 @@ export function RemoteVideo() {
     const { data: currentUser } = useCurrentUser();
 
     useEffect(() => {
-        if (videoRef.current && remoteStream) {
-            videoRef.current.srcObject = null;
-            videoRef.current.srcObject = remoteStream;
+        if (!videoRef.current || !remoteStream) return;
 
-            videoRef.current.play().catch(console.error);
-        }
-    }, [remoteStream, remoteCameraOff]);
+        videoRef.current.srcObject = remoteStream;
+
+        videoRef.current.play().catch(() => { });
+    }, [remoteStream]);
 
     if (!currentUser) {
         return null;
@@ -42,12 +41,29 @@ export function RemoteVideo() {
             ? callState.receiver
             : callState.caller;
 
-    if (remoteCameraOff) {
-        return (
-            <div className="flex h-full w-full items-center justify-center bg-slate-950">
-                <div className="text-center">
-                    <div
-                        className="
+    return (
+        <div className="relative h-full w-full">
+            <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="h-full w-full object-cover"
+            />
+
+            {remoteCameraOff && (
+                <div
+                    className="
+                    absolute
+                    inset-0
+                    flex
+                    items-center
+                    justify-center
+                    bg-slate-950
+                "
+                >
+                    <div className="text-center">
+                        <div
+                            className="
                             mx-auto
                             flex
                             h-28
@@ -60,30 +76,22 @@ export function RemoteVideo() {
                             font-semibold
                             text-white
                         "
-                    >
-                        {remoteUser.username
-                            .charAt(0)
-                            .toUpperCase()}
+                        >
+                            {remoteUser.username
+                                .charAt(0)
+                                .toUpperCase()}
+                        </div>
+
+                        <p className="mt-6 text-xl font-semibold text-white">
+                            {remoteUser.username}
+                        </p>
+
+                        <p className="mt-2 text-slate-400">
+                            Camera is turned off
+                        </p>
                     </div>
-
-                    <p className="mt-6 text-xl font-semibold text-white">
-                        {remoteUser.username}
-                    </p>
-
-                    <p className="mt-2 text-slate-400">
-                        Camera is turned off
-                    </p>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            className="h-full w-full object-cover"
-        />
+            )}
+        </div>
     );
 }

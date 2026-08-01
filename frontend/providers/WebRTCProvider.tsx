@@ -32,6 +32,9 @@ interface WebRTCContextType {
 
     remoteCameraOff: boolean;
     setRemoteCameraOff: React.Dispatch<React.SetStateAction<boolean>>;
+
+    cameraFacingMode: "user" | "environment";
+    setCameraFacingMode: React.Dispatch<React.SetStateAction<"user" | "environment">>;
 }
 
 interface SetupLocalMediaOptions {
@@ -57,6 +60,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
     const [isCameraOff, setIsCameraOff] = useState(false);
 
     const [remoteCameraOff, setRemoteCameraOff] = useState(false);
+
+    const [cameraFacingMode, setCameraFacingMode] = useState<"user" | "environment">("user");
 
     function createPeerConnection() {
         if (peerConnection.current) {
@@ -120,7 +125,11 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
 
         const stream = await navigator.mediaDevices.getUserMedia({
             audio: options.audio,
-            video: options.video,
+            video: options.video
+                ? {
+                    facingMode: cameraFacingMode,
+                }
+                : false,
         });
 
         setLocalStream(stream);
@@ -176,8 +185,11 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
 
             remoteCameraOff,
             setRemoteCameraOff,
+
+            cameraFacingMode,
+            setCameraFacingMode,
         }),
-        [localStream, remoteStream, connectionState, isMuted, isCameraOff, remoteCameraOff]
+        [localStream, remoteStream, connectionState, isMuted, isCameraOff, remoteCameraOff, cameraFacingMode]
     );
 
     return (

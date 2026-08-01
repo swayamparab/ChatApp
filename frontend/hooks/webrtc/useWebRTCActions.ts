@@ -9,11 +9,15 @@ export function useWebRTCActions() {
 
     const {
         localStream,
+        setLocalStream,
+        peerConnection,
         createPeerConnection,
         setupLocalMedia,
         pendingIceCandidates,
         setIsMuted,
-        setIsCameraOff
+        setIsCameraOff,
+        cameraFacingMode,
+        setCameraFacingMode,
     } = useWebRTC();
 
     const { callState } = useCall();
@@ -118,10 +122,59 @@ export function useWebRTCActions() {
         });
     }
 
+    async function switchCamera() {
+        if (!peerConnection.current) return;
+
+        const newFacingMode =
+            cameraFacingMode === "user"
+                ? "environment"
+                : "user";
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: newFacingMode,
+                },
+                audio: false,
+            });
+
+        const newTrack = stream.getVideoTracks()[0];
+
+        if (!newTrack) return;
+
+        const sender = peerConnection.current
+            .getSenders()
+            .find((sender) => sender.track?.kind === "video");
+
+        if (!sender) return;
+
+        await sender.replaceTrack(newTrack);
+
+        // Stop old camera
+        localStream?.getVideoTracks().forEach((track) => track.stop());
+
+        // Keep existing audio
+        const audioTrack =
+            localStream?.getAudioTracks()[0];
+
+        const updatedStream = new MediaStream();
+
+        if (audioTrack) {
+            updatedStream.addTrack(audioTrack);
+        }
+
+        updatedStream.addTrack(newTrack);
+
+        setLocalStream(updatedStream);
+
+        setCameraFacingMode(newFacingMode);
+    }
+
     return {
         createOffer,
         createAnswer,
         toggleMute,
         toggleCamera,
+        switchCamera
     };
 }

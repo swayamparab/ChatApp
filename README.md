@@ -1,92 +1,150 @@
-# Relay - Real-time Communication Platform.
+# Relay - Real-Time Communication Platform
 
-A modern real-time one-to-one messaging application built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, and **Socket.IO**.
+A modern full-stack real-time one-to-one communication platform built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, **Socket.IO**, and **WebRTC**.
+
+Relay provides secure messaging, media sharing, voice & video calling, and a responsive experience across desktop and mobile.
+
+---
 
 ## Architecture
 
+- **Frontend:** Next.js 15 + React + TypeScript (Vercel)
+- **Backend:** Express.js + Socket.IO + TypeScript (Render)
+- **Database:** PostgreSQL + Drizzle ORM
+- **Media Storage:** Cloudinary
+- **Real-Time Communication:** Socket.IO
+- **Voice & Video Calls:** WebRTC (STUN)
+
+### Architecture Highlights
+
 - Next.js frontend deployed on Vercel
 - Express + Socket.IO backend deployed on Render
-- API and WebSocket traffic are proxied through Vercel rewrites (`/api` and `/socket.io`)
-- Same-origin architecture for improved HttpOnly cookie handling and cross-browser compatibility
+- API & WebSocket traffic proxied through Vercel rewrites (`/api` and `/socket.io`)
+- Same-origin architecture for secure HttpOnly cookie authentication
 - Cursor-based message pagination for scalable conversations
 
 ---
 
-## Features
+# Features
 
-### Authentication
+## Authentication
 
-- JWT Authentication with HttpOnly Cookies
-- Secure protected routes
-- Persistent login sessions
-
-### Messaging
-
-- Real-time one-to-one messaging with Socket.IO
-- Text, Image and Video messaging
-- Images and Videos upload with Cloudinary integration
-- Reply to messages
-- Edit your own text messages
-- Delete your own messages
-- Typing indicators
-- Read receipts
-- Unread message counts
-- Cursor-based infinite message pagination
-- Automatic scroll restoration while loading older messages
-- Optimistic UI updates for seamless real-time messaging
-
-### Media Sharing
-
-- Image sharing
-- Video sharing
-- PDF and document sharing
-- Voice message recording and playback
-
-### Voice Messages
-
-- Record voice messages directly in chat
-- Custom audio player
-- Play/Pause controls
-- Seek through recordings
-- Playback speed (1×, 1.5×, 2×)
-- Recording timer
-- Automatic pause when another voice message starts playing
-
-### Media Preview
-
-- Image viewer
-- Video player
-- File preview and download
-- Voice message player
-
-### Real-Time
-
-- Live online/offline presence
-- Last seen status
-- Typing indicators
-- Live unread message counts
-- Automatic conversation preview updates
-- Single persistent Socket.IO connection per browser tab
-
-### Chat Requests
-
-- Send chat requests
-- Accept requests
-- Reject requests
-- Cancel outgoing requests
-
-### User Experience
-
-- Search users
-- Responsive UI for desktop and mobile
-- React Query caching
-- Modern UI built with Tailwind CSS and shadcn/ui
+- JWT Authentication
+- Secure HttpOnly Cookies
+- Protected Routes
+- Persistent Login Sessions
 
 ---
 
-## Tech Stack
+## Real-Time Messaging
 
-### Frontend
+- One-to-one real-time messaging
+- Text messages
+- Image messages
+- Video messages
+- Document sharing
+- Reply to messages
+- Edit messages
+- Delete messages
+- Typing indicators
+- Read receipts
+- Unread message counts
+- Live conversation preview updates
+- Automatic conversation reordering
+- Optimistic UI updates
+- Cursor-based infinite scrolling
+- Automatic scroll position restoration
+
+---
+
+## Voice Messages
+
+- Record voice messages
+- Voice message playback
+- Play / Pause
+- Seek support
+- Playback speed controls
+- Recording timer
+- Auto pause when another voice message starts
+
+---
+
+## Media Sharing
+
+- Image uploads
+- Video uploads
+- Document sharing
+- Cloudinary integration
+- Image preview
+- Video preview
+- File preview
+- Download attachments
+
+---
+
+## Voice Calling
+
+- Real-time voice calling
+- Busy state handling
+- Incoming call screen
+- Outgoing call screen
+- Call timeout
+- Call duration
+- Mute microphone
+- Ongoing call card
+- Speaker selection (supported browsers)
+
+---
+
+## Video Calling
+
+- Real-time video calls
+- Camera toggle
+- Camera switching (mobile)
+- Mute microphone
+- Remote camera status
+- Camera-off placeholder
+- Picture-in-Picture (PiP) mode
+- Draggable floating video window
+- Fullscreen / Restore
+- Responsive mobile experience
+
+---
+
+## Chat Requests
+
+- Send request
+- Accept request
+- Reject request
+- Cancel outgoing request
+
+---
+
+## Presence
+
+- Online / Offline status
+- Last seen
+- Typing indicators
+- Live unread counts
+- Single persistent Socket.IO connection per browser tab
+
+---
+
+## User Experience
+
+- Responsive UI
+- Desktop & Mobile support
+- React Query caching
+- Modern UI with Tailwind CSS
+- shadcn/ui components
+- Toast notifications
+- Optimistic updates
+
+---
+
+# Tech Stack
+
+## Frontend
 
 - Next.js 15
 - React
@@ -100,14 +158,17 @@ A modern real-time one-to-one messaging application built with **Next.js**, **Ex
 - Zod
 - Sonner
 
-### Backend
+---
+
+## Backend
 
 - Express.js
 - TypeScript
 - PostgreSQL
 - Drizzle ORM
 - Socket.IO
-- JWT Authentication
+- WebRTC
+- JWT
 - bcrypt
 
 ---
@@ -118,53 +179,62 @@ _Add screenshots here._
 
 ---
 
-## Getting Started
+# Getting Started
 
-### Clone the repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/swayamparab/Relay-Realtime_Communication_Platform.git
 ```
 
-### Install dependencies
+---
 
-Frontend
+## Install Dependencies
 
-```bash
-npm install
-```
-
-Backend
+### Frontend
 
 ```bash
 npm install
 ```
 
-### Environment Variables
+### Backend
 
-Frontend
-
-```env
-NEXT_PUBLIC_API_URL=...
+```bash
+npm install
 ```
 
-Backend
+---
+
+## Environment Variables
+
+### Frontend
 
 ```env
-DATABASE_URL=...
-JWT_SECRET=...
-CLIENT_URL=...
+NEXT_PUBLIC_API_URL=
 ```
 
-### Run the application
+### Backend
 
-Backend
+```env
+DATABASE_URL=
+JWT_SECRET=
+CLIENT_URL=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+---
+
+## Run Development Server
+
+### Backend
 
 ```bash
 npm run dev
 ```
 
-Frontend
+### Frontend
 
 ```bash
 npm run dev
@@ -172,47 +242,37 @@ npm run dev
 
 ---
 
-## Real-Time Features
-
-- Instant messaging
-- Typing indicators
-- Online/offline presence
-- Last seen updates
-- Live unread message counts
-- Automatic conversation reordering
-- Live message editing
-- Live message deletion
-- Socket-based communication with a single persistent connection per browser tab
-
----
-
-## Technical Highlights
+# Technical Highlights
 
 - Layered backend architecture (Routes → Controllers → Services → Database)
 - Socket.IO room-based messaging
-- Cursor-based infinite scrolling
-- React Query cache synchronization with WebSocket events
+- WebRTC peer-to-peer audio/video communication
+- STUN server integration
+- Cursor-based infinite pagination
+- React Query cache synchronization
 - Optimistic UI updates
 - Secure HttpOnly cookie authentication
 - Type-safe API validation with Zod
-- Fully typed codebase using TypeScript
+- Fully typed TypeScript codebase
+- Modular frontend architecture using custom hooks and providers
 
 ---
 
-## Future Improvements
+# Future Improvements
 
-- file sharing
+- TURN server for production-grade WebRTC reliability
+- Call history
+- Group chats
+- Screen sharing
 - Emoji reactions
 - Message search
-- Voice messages
-- Group chats
 - Push notifications
 - End-to-end encryption
 
 ---
 
-## Author
+# Author
 
 **Swayam Parab**
 
-GitHub: https://github.com/swayamparab/ChatApp
+GitHub: https://github.com/swayamparab/Relay-Realtime_Communication_Platform

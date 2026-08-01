@@ -40,9 +40,11 @@ export interface CallState extends CallData {
 
 interface CallContextType {
     callState: CallState;
-    setCallState: React.Dispatch<
-        React.SetStateAction<CallState>
-    >;
+    setCallState: React.Dispatch<React.SetStateAction<CallState>>;
+
+    isVideoMinimized: boolean;
+    setIsVideoMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+
     timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>;
 }
 
@@ -71,25 +73,29 @@ export function CallProvider({
 }) {
     const [callState, setCallState] = useState(initialCallState);
 
+    const [isVideoMinimized, setIsVideoMinimized] = useState(false);
+
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const value = useMemo(
         () => ({
             callState,
             setCallState,
-            timeoutRef
+            timeoutRef,
+            isVideoMinimized,
+            setIsVideoMinimized,
         }),
-        [callState]
+        [callState, isVideoMinimized]
     );
 
     return (
         <CallContext.Provider value={value}>
             {children}
-            <RemoteAudio/>
+            <RemoteAudio />
 
             <IncomingCallDialog />
             <CallingDialog />
-            <VideoCallScreen/>
+            <VideoCallScreen />
         </CallContext.Provider>
     );
 }

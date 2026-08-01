@@ -15,7 +15,7 @@ interface StartVoiceCallData {
 
 export function useCallActions() {
     const { socket } = useSocket();
-    const { setCallState, timeoutRef } = useCall();
+    const { setCallState, timeoutRef, setIsVideoMinimized } = useCall();
 
     const { data: currentUser } = useCurrentUser();
 
@@ -64,6 +64,7 @@ export function useCallActions() {
 
                     // reset if failed
                     setCallState(initialCallState);
+                    setIsVideoMinimized(false);
                 }
             }
         );
@@ -110,6 +111,7 @@ export function useCallActions() {
 
                     // reset if failed
                     setCallState(initialCallState);
+                    setIsVideoMinimized(false);
                 }
             }
         );
@@ -132,6 +134,7 @@ export function useCallActions() {
         closePeerConnection();
 
         setCallState(initialCallState);
+        setIsVideoMinimized(false);
     }
 
     return {
