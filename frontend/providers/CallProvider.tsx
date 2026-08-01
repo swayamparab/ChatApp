@@ -9,6 +9,8 @@ import {
 
 import { IncomingCallDialog } from "@/components/call/IncomingCallDialog";
 import { CallingDialog } from "@/components/call/CallingDialog";
+import { VideoCallScreen } from "@/components/call/VideoCallScreen";
+import { RemoteAudio } from "@/components/call/RemoteAudio";
 
 export type CallType = "voice" | "video";
 
@@ -83,9 +85,11 @@ export function CallProvider({
     return (
         <CallContext.Provider value={value}>
             {children}
+            <RemoteAudio/>
 
             <IncomingCallDialog />
             <CallingDialog />
+            <VideoCallScreen/>
         </CallContext.Provider>
     );
 }

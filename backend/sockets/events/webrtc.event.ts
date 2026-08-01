@@ -24,4 +24,14 @@ export function registerWebRTCEvents(io: Server, socket: Socket) {
         });
     }
     );
+
+    socket.on("camera_toggle", ({ conversationId, enabled }) => {
+        socket.to(conversationId).emit(
+            "camera_toggle",
+            {
+                enabled,
+            }
+        );
+    }
+    );
 }

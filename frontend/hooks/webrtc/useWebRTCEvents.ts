@@ -11,7 +11,13 @@ export function useWebRTCEvents() {
     const { socket } = useSocket();
 
     const { createAnswer } = useWebRTCActions();
-    const { createPeerConnection, pendingIceCandidates, connectionState } = useWebRTC();
+
+    const {
+        createPeerConnection,
+        pendingIceCandidates,
+        connectionState,
+        setRemoteCameraOff,
+    } = useWebRTC();
 
     const { setCallState } = useCall();
 
@@ -28,16 +34,26 @@ export function useWebRTCEvents() {
     useEffect(() => {
         if (!socket) return;
 
-        socket.on("webrtc_offer", async ({ conversationId, offer }) => {
-
+        async function handleOffer({
+            conversationId,
+            offer,
+        }: {
+            conversationId: string;
+            offer: RTCSessionDescriptionInit;
+        }) {
             await createAnswer(conversationId, offer);
-        });
+        }
 
-        socket.on("webrtc_answer", async ({ answer }) => {
-
+        async function handleAnswer({
+            answer,
+        }: {
+            answer: RTCSessionDescriptionInit;
+        }) {
             const peer = createPeerConnection();
 
-            await peer.setRemoteDescription(new RTCSessionDescription(answer));
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(answer)
+            );
 
             for (const candidate of pendingIceCandidates.current) {
                 await peer.addIceCandidate(
@@ -48,9 +64,13 @@ export function useWebRTCEvents() {
             pendingIceCandidates.current = [];
 
             console.log("WebRTC connection negotiated");
-        });
+        }
 
-        socket.on("ice_candidate", async ({ candidate }) => {
+        async function handleIceCandidate({
+            candidate,
+        }: {
+            candidate: RTCIceCandidateInit;
+        }) {
             const peer = createPeerConnection();
 
             if (!peer.remoteDescription) {
@@ -65,19 +85,42 @@ export function useWebRTCEvents() {
 
                 console.log("ICE added");
             } catch (error) {
-                console.error("Failed to add ICE candidate", error);
+                console.error(
+                    "Failed to add ICE candidate",
+                    error
+                );
             }
-        });
+        }
+
+        function handleCameraToggle({
+            enabled,
+        }: {
+            enabled: boolean;
+        }) {
+            setRemoteCameraOff(!enabled);
+        }
+
+        socket.off("webrtc_offer", handleOffer);
+        socket.off("webrtc_answer", handleAnswer);
+        socket.off("ice_candidate", handleIceCandidate);
+        socket.off("camera_toggle", handleCameraToggle);
+
+        socket.on("webrtc_offer", handleOffer);
+        socket.on("webrtc_answer", handleAnswer);
+        socket.on("ice_candidate", handleIceCandidate);
+        socket.on("camera_toggle", handleCameraToggle);
 
         return () => {
-            socket.off("webrtc_offer");
-            socket.off("webrtc_answer");
-            socket.off("ice_candidate");
+            socket.off("webrtc_offer", handleOffer);
+            socket.off("webrtc_answer", handleAnswer);
+            socket.off("ice_candidate", handleIceCandidate);
+            socket.off("camera_toggle", handleCameraToggle);
         };
     }, [
         socket,
         createAnswer,
         createPeerConnection,
-        pendingIceCandidates
+        pendingIceCandidates,
+        setRemoteCameraOff,
     ]);
 }

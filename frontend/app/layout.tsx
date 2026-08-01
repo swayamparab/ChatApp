@@ -39,8 +39,8 @@ export default function RootLayout({
       <body className={geist.className}>
         <QueryProvider>
           <SocketProvider>
-            <CallProvider>
-              <WebRTCProvider>
+            <WebRTCProvider>
+              <CallProvider>
                 <CallEvents />
                 <WebRTCEvents />
                 {children}
@@ -48,8 +48,8 @@ export default function RootLayout({
                   position="top-right"
                   richColors
                 />
-              </WebRTCProvider>
-            </CallProvider>
+              </CallProvider>
+            </WebRTCProvider>
           </SocketProvider>
         </QueryProvider>
       </body>

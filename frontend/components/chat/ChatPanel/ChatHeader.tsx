@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MoreVertical, ArrowLeft, Phone } from "lucide-react";
+import { MoreVertical, ArrowLeft, Phone, Video } from "lucide-react";
 
 import { useConversations } from "@/hooks/conversation/useConversations";
 import { useSocket } from "@/hooks/useSocket";
@@ -42,7 +42,7 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
 
     const [currentMatch, setCurrentMatch] = useState(0);
 
-    const { startVoiceCall } = useCallActions();
+    const { startVoiceCall, startVideoCall } = useCallActions();
 
     const conversation = data?.conversations.find(
         (conversation) =>
@@ -270,29 +270,55 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
             </div>
 
             <div className="flex items-center gap-1">
-                <button
-                    onClick={() =>
-                        startVoiceCall({
-                            conversationId,
-                            receiver: {
-                                id: conversation.otherUser.id,
-                                username: conversation.otherUser.username,
-                            },
-                        })
-                    }
-                    className="
-            rounded-xl
-            p-2
-            text-slate-400
-            transition-all
-            duration-200
-            hover:bg-slate-800
-            hover:text-white
-        "
-                    aria-label="Voice Call"
-                >
-                    <Phone className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() =>
+                            startVoiceCall({
+                                conversationId,
+                                receiver: {
+                                    id: conversation.otherUser.id,
+                                    username: conversation.otherUser.username,
+                                },
+                            })
+                        }
+                        className="
+                            rounded-xl
+                            p-2
+                            text-slate-400
+                            transition-all
+                            duration-200
+                            hover:bg-slate-800
+                            hover:text-white
+                        "
+                        aria-label="Voice Call"
+                    >
+                        <Phone className="h-5 w-5" />
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            startVideoCall({
+                                conversationId,
+                                receiver: {
+                                    id: conversation.otherUser.id,
+                                    username: conversation.otherUser.username,
+                                },
+                            })
+                        }
+                        className="
+                            rounded-xl
+                            p-2
+                            text-slate-400
+                            transition-all
+                            duration-200
+                            hover:bg-slate-800
+                            hover:text-white
+                        "
+                        aria-label="Video Call"
+                    >
+                        <Video className="h-5 w-5" />
+                    </button>
+                </div>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger

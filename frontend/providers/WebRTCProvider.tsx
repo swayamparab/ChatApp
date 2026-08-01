@@ -1,6 +1,8 @@
 "use client";
 
+import { LocalVideo } from "@/components/call/LocalVideo";
 import { RemoteAudio } from "@/components/call/RemoteAudio";
+import { RemoteVideo } from "@/components/call/RemoteVideo";
 import { createContext, useMemo, useRef, useState } from "react";
 
 interface WebRTCContextType {
@@ -15,8 +17,8 @@ interface WebRTCContextType {
     createPeerConnection: () => RTCPeerConnection;
     closePeerConnection: () => void;
 
-    getLocalStream: () => Promise<MediaStream>;
-    setupLocalMedia: () => Promise<MediaStream>;
+    getLocalStream: (options: SetupLocalMediaOptions) => Promise<MediaStream>;
+    setupLocalMedia: (options: SetupLocalMediaOptions) => Promise<MediaStream>;
 
     connectionState: RTCPeerConnectionState;
 
@@ -24,6 +26,17 @@ interface WebRTCContextType {
 
     isMuted: boolean;
     setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
+
+    isCameraOff: boolean;
+    setIsCameraOff: React.Dispatch<React.SetStateAction<boolean>>;
+
+    remoteCameraOff: boolean;
+    setRemoteCameraOff: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface SetupLocalMediaOptions {
+    audio: boolean;
+    video: boolean;
 }
 
 export const WebRTCContext = createContext<WebRTCContextType | null>(null);
@@ -41,6 +54,9 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
     const pendingIceCandidates = useRef<RTCIceCandidateInit[]>([]);
 
     const [isMuted, setIsMuted] = useState(false);
+    const [isCameraOff, setIsCameraOff] = useState(false);
+
+    const [remoteCameraOff, setRemoteCameraOff] = useState(false);
 
     function createPeerConnection() {
         if (peerConnection.current) {
@@ -92,15 +108,19 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
         setConnectionState("closed");
 
         setIsMuted(false);
+        setIsCameraOff(false);
+
+        setRemoteCameraOff(false);
     }
 
-    async function getLocalStream() {
+    async function getLocalStream(options: SetupLocalMediaOptions) {
         if (localStream) {
             return localStream;
         }
 
         const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true
+            audio: options.audio,
+            video: options.video,
         });
 
         setLocalStream(stream);
@@ -108,8 +128,8 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
         return stream;
     }
 
-    async function setupLocalMedia() {
-        const stream = await getLocalStream();
+    async function setupLocalMedia(options: SetupLocalMediaOptions) {
+        const stream = await getLocalStream(options);
 
         const peer = createPeerConnection();
 
@@ -150,13 +170,18 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
 
             isMuted,
             setIsMuted,
+
+            isCameraOff,
+            setIsCameraOff,
+
+            remoteCameraOff,
+            setRemoteCameraOff,
         }),
-        [localStream, remoteStream, connectionState, isMuted]
+        [localStream, remoteStream, connectionState, isMuted, isCameraOff, remoteCameraOff]
     );
 
     return (
         <WebRTCContext.Provider value={value}>
-            <RemoteAudio />
             {children}
         </WebRTCContext.Provider>
     );

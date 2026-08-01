@@ -2,6 +2,7 @@
 
 import { useSocket } from "@/hooks/useSocket";
 import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
+import { useCall } from "../call/useCall";
 
 export function useWebRTCActions() {
     const { socket } = useSocket();
@@ -11,14 +12,19 @@ export function useWebRTCActions() {
         createPeerConnection,
         setupLocalMedia,
         pendingIceCandidates,
-        isMuted,
         setIsMuted,
+        setIsCameraOff
     } = useWebRTC();
+
+    const { callState } = useCall();
 
     async function createOffer(conversationId: string) {
         if (!socket) return;
 
-        await setupLocalMedia();
+        await setupLocalMedia({
+            audio: true,
+            video: callState.type === "video",
+        });
 
         const peer = createPeerConnection();
 
@@ -47,7 +53,10 @@ export function useWebRTCActions() {
     ) {
         if (!socket) return;
 
-        await setupLocalMedia();
+        await setupLocalMedia({
+            audio: true,
+            video: callState.type === "video",
+        });
 
         const peer = createPeerConnection();
 
@@ -92,9 +101,27 @@ export function useWebRTCActions() {
         setIsMuted(!audioTrack.enabled);
     }
 
+    function toggleCamera() {
+        const videoTrack = localStream?.getVideoTracks()[0];
+
+        if (!videoTrack) return;
+
+        videoTrack.enabled = !videoTrack.enabled;
+
+        const enabled = videoTrack.enabled;
+
+        setIsCameraOff(!enabled);
+
+        socket.emit("camera_toggle", {
+            conversationId: callState.conversationId,
+            enabled,
+        });
+    }
+
     return {
         createOffer,
         createAnswer,
         toggleMute,
+        toggleCamera,
     };
 }

@@ -69,6 +69,52 @@ export function useCallActions() {
         );
     }
 
+    function startVideoCall({ conversationId, receiver }: StartVoiceCallData) {
+        if (!currentUser) return;
+
+        setCallState({
+            status: "calling",
+            conversationId,
+            type: "video",
+            caller: {
+                id: currentUser.user.id,
+                username: currentUser.user.username,
+            },
+            receiver,
+            connectedAt: null,
+        });
+
+        playOutgoing();
+
+        timeoutRef.current = setTimeout(() => {
+            endCall(conversationId);
+
+            toast.info(`No answer from ${receiver.username}`);
+        }, 30000);
+
+        socket.emit(
+            "call_user",
+            {
+                conversationId,
+                type: "video",
+                receiver
+            },
+            (response: {
+                success: boolean;
+                message?: string;
+            }) => {
+                if (!response.success) {
+                    stopOutgoing();
+
+                    toast.error(response.message);
+
+                    // reset if failed
+                    setCallState(initialCallState);
+                }
+            }
+        );
+    }
+
     function endCall(conversationId: string) {
 
         if (timeoutRef.current) {
@@ -90,6 +136,7 @@ export function useCallActions() {
 
     return {
         startVoiceCall,
-        endCall
+        startVideoCall,
+        endCall,
     };
 }

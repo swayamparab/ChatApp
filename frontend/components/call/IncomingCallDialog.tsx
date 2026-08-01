@@ -92,7 +92,9 @@ export function IncomingCallDialog() {
                     </h2>
 
                     <p className="mt-2 text-muted-foreground text-base">
-                        Incoming Voice Call{dots}
+                        {callState.type === "video"
+                            ? `Incoming Video Call${dots}`
+                            : `Incoming Voice Call${dots}`}
                     </p>
 
                     <div className="mt-10 flex gap-8">
