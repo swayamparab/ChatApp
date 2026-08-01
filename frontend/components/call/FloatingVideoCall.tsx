@@ -24,7 +24,6 @@ export function FloatingVideoCall() {
         y: 0,
     });
 
-    // Tracks whether the mouse actually moved while dragging
     const hasMoved = useRef(false);
 
     useEffect(() => {
@@ -37,11 +36,10 @@ export function FloatingVideoCall() {
     useEffect(() => {
         if (!isDragging) return;
 
-        function handleMouseMove(e: MouseEvent) {
+        function handlePointerMove(e: PointerEvent) {
             const newX = e.clientX - dragOffset.current.x;
             const newY = e.clientY - dragOffset.current.y;
 
-            // Ignore tiny mouse movements (click jitter)
             if (
                 Math.abs(newX - position.x) > 5 ||
                 Math.abs(newY - position.y) > 5
@@ -55,22 +53,31 @@ export function FloatingVideoCall() {
             });
         }
 
-        function handleMouseUp() {
+        function handlePointerUp() {
             setIsDragging(false);
         }
 
-        window.addEventListener("mousemove", handleMouseMove);
-        window.addEventListener("mouseup", handleMouseUp);
+        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp);
 
         return () => {
-            window.removeEventListener("mousemove", handleMouseMove);
-            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener(
+                "pointermove",
+                handlePointerMove
+            );
+
+            window.removeEventListener(
+                "pointerup",
+                handlePointerUp
+            );
         };
     }, [isDragging, position]);
 
-    function handleMouseDown(
-        e: React.MouseEvent<HTMLDivElement>
+    function handlePointerDown(
+        e: React.PointerEvent<HTMLDivElement>
     ) {
+        e.currentTarget.setPointerCapture(e.pointerId);
+
         setIsDragging(true);
 
         hasMoved.current = false;
@@ -83,9 +90,8 @@ export function FloatingVideoCall() {
 
     return (
         <div
-            onMouseDown={handleMouseDown}
+            onPointerDown={handlePointerDown}
             onClick={() => {
-                // Don't maximize if this interaction was a drag
                 if (hasMoved.current) {
                     hasMoved.current = false;
                     return;
@@ -109,9 +115,11 @@ export function FloatingVideoCall() {
                 bg-black
                 shadow-2xl
                 select-none
-                ${isDragging
-                    ? "cursor-grabbing"
-                    : "cursor-grab"
+                touch-none
+                ${
+                    isDragging
+                        ? "cursor-grabbing"
+                        : "cursor-grab"
                 }
             `}
         >
