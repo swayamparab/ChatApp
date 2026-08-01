@@ -8,6 +8,7 @@ import { getOnlineUserIds, onlineUsers } from "../helpers/online-users";
 import { db } from "../../db";
 import { users } from "../../db/schema";
 import { eq } from "drizzle-orm";
+import { activeCalls } from "../helpers/active-calls";
 
 export function handleConnection(io: Server, socket: Socket) {
   // console.log(`User ${socket.userId} connected`);
@@ -39,6 +40,7 @@ export function handleConnection(io: Server, socket: Socket) {
   socket.on("disconnect", async () => {
 
     onlineUsers.delete(socket.userId);
+    activeCalls.delete(socket.userId);
 
     await db
       .update(users)

@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
-import { isParticipant } from "../../modules/conversation/conversation.service";
+import { isParticipant, getConversationParticipantIds } from "../../modules/conversation/conversation.service";
 import { findUserForCall } from "../../services/user.service";
+import { activeCalls } from "../helpers/active-calls";
 
 export function registerCallEvents(io: Server, socket: Socket) {
     socket.on("call_user", async ({ conversationId, type, receiver }, callback) => {
@@ -20,6 +21,13 @@ export function registerCallEvents(io: Server, socket: Socket) {
                 return callback?.({
                     success: false,
                     message: "User not found",
+                });
+            }
+
+            if (activeCalls.has(receiver.id)) {
+                return callback?.({
+                    success: false,
+                    message: "User is already on another call.",
                 });
             }
 
@@ -60,6 +68,10 @@ export function registerCallEvents(io: Server, socket: Socket) {
                         message: "Unauthorized",
                     });
                 }
+
+                //check call busy
+                const participantIds = await getConversationParticipantIds(conversationId);
+                participantIds.forEach((id) => activeCalls.add(id));
 
                 socket.to(conversationId).emit("call_accepted", {
                     conversationId,
@@ -130,6 +142,10 @@ export function registerCallEvents(io: Server, socket: Socket) {
                         message: "Unauthorized",
                     });
                 }
+
+                //remove caller busy status
+                const participantIds = await getConversationParticipantIds(conversationId);
+                participantIds.forEach((id) => activeCalls.delete(id));
 
                 socket.to(conversationId).emit("end_call", {
                     conversationId,

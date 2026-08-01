@@ -1,6 +1,6 @@
 import { db } from "../../db";
 import { conversationParticipants, messages } from "../../db/schema";
-import { and, count, eq, gt, ne, ilike} from "drizzle-orm";
+import { and, count, eq, gt, ne, ilike } from "drizzle-orm";
 
 export async function getConversations(userId: string) {
   const userConversations = await db.query.conversationParticipants.findMany({
@@ -126,6 +126,23 @@ export async function isParticipant(
   });
 
   return !!participant;
+}
+
+export async function getConversationParticipantIds(
+  conversationId: string
+) {
+  const participants =
+    await db.query.conversationParticipants.findMany({
+      where: eq(
+        conversationParticipants.conversationId,
+        conversationId
+      ),
+      columns: {
+        userId: true,
+      },
+    });
+
+  return participants.map((participant) => participant.userId);
 }
 
 export async function getConversationBetweenUsers(

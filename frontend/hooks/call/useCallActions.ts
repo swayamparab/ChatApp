@@ -60,11 +60,10 @@ export function useCallActions() {
                 if (!response.success) {
                     stopOutgoing();
 
+                    toast.error(response.message);
+
                     // reset if failed
-                    setCallState((prev) => ({
-                        ...prev,
-                        status: "idle",
-                    }));
+                    setCallState(initialCallState);
                 }
             }
         );
