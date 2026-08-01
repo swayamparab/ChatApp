@@ -41,19 +41,25 @@ export default function OngoingCallCard() {
             : callState.caller;
 
     return (
-        <div className="mx-3 mb-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+        <div className="mx-3 mb-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 backdrop-blur-sm">
             <div className="flex items-center justify-between">
+
                 <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-emerald-500/20 p-2">
-                        <Phone className="h-5 w-5 text-emerald-400" />
+
+                    <div className="relative">
+                        <div className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-slate-900 animate-pulse" />
+
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15">
+                            <Phone className="h-5 w-5 text-emerald-400" />
+                        </div>
                     </div>
 
                     <div>
-                        <p className="font-medium text-white">
+                        <p className="font-semibold text-white">
                             {remoteUser.username}
                         </p>
 
-                        <p className="text-sm text-emerald-300">
+                        <p className="text-xs text-slate-400">
                             {callState.status === "connecting"
                                 ? "Connecting..."
                                 : duration}
@@ -62,31 +68,36 @@ export default function OngoingCallCard() {
                 </div>
 
                 <div className="flex items-center gap-2">
+
                     <Button
-                        variant="secondary"
                         size="icon"
-                        className={`rounded-full transition-colors ${isMuted
+                        variant="secondary"
+                        className={`h-10 w-10 rounded-full transition-all ${isMuted
                                 ? "bg-red-500 hover:bg-red-600 text-white"
-                                : ""
+                                : "bg-slate-800 hover:bg-slate-700"
                             }`}
                         onClick={toggleMute}
                     >
                         {isMuted ? (
-                            <MicOff className="h-5 w-5" />
+                            <MicOff className="h-4 w-4" />
                         ) : (
-                            <Mic className="h-5 w-5" />
+                            <Mic className="h-4 w-4" />
                         )}
                     </Button>
 
                     <Button
-                        variant="destructive"
                         size="icon"
-                        className="rounded-full"
-                        onClick={() => endCall(callState.conversationId)}
+                        variant="destructive"
+                        className="h-10 w-10 rounded-full"
+                        onClick={() =>
+                            endCall(callState.conversationId)
+                        }
                     >
-                        <PhoneOff className="h-5 w-5" />
+                        <PhoneOff className="h-4 w-4" />
                     </Button>
+
                 </div>
+
             </div>
         </div>
     );
