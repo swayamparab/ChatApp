@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MoreVertical, ArrowLeft, Phone } from "lucide-react";
 
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations } from "@/hooks/conversation/useConversations";
 import { useSocket } from "@/hooks/useSocket";
 
 import { formatLastSeen } from "@/lib/formatLastSeen";
@@ -19,8 +19,8 @@ import {
 import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchMessages } from "@/hooks/useSearchMessages";
-import { useCallActions } from "@/hooks/useCallActions";
+import { useSearchMessages } from "@/hooks/message/useSearchMessages";
+import { useCallActions } from "@/hooks/call/useCallActions";
 
 type ChatHeaderProps = {
     isTyping: boolean;

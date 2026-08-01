@@ -1,11 +1,12 @@
 "use client";
 
-import { useSocket } from "./useSocket";
+import { useSocket } from "../useSocket";
 import { useCall } from "./useCall";
 import { CallUser, initialCallState } from "@/providers/CallProvider";
-import { useWebRTC } from "./useWebRTC";
-import { useCurrentUser } from "./useCurrentUser";
+import { useWebRTC } from "../webrtc/useWebRTC";
+import { useCurrentUser } from "../useCurrentUser";
 import { toast } from "sonner";
+import { useRingtone } from "./useRingtone";
 
 interface StartVoiceCallData {
     conversationId: string;
@@ -20,8 +21,9 @@ export function useCallActions() {
 
     const { closePeerConnection } = useWebRTC();
 
-    function startVoiceCall({ conversationId, receiver }: StartVoiceCallData) {
+    const { playOutgoing, stopOutgoing, stopIncoming } = useRingtone();
 
+    function startVoiceCall({ conversationId, receiver }: StartVoiceCallData) {
         if (!currentUser) return;
 
         setCallState({
@@ -36,11 +38,13 @@ export function useCallActions() {
             connectedAt: null,
         });
 
+        playOutgoing();
+
         timeoutRef.current = setTimeout(() => {
             endCall(conversationId);
 
             toast.info(`No answer from ${receiver.username}`);
-        },30000);
+        }, 30000);
 
         socket.emit(
             "call_user",
@@ -54,6 +58,8 @@ export function useCallActions() {
                 message?: string;
             }) => {
                 if (!response.success) {
+                    stopOutgoing();
+
                     // reset if failed
                     setCallState((prev) => ({
                         ...prev,
@@ -65,9 +71,18 @@ export function useCallActions() {
     }
 
     function endCall(conversationId: string) {
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+
         socket?.emit("end_call", {
             conversationId,
         });
+
+        stopIncoming();
+        stopOutgoing();
 
         closePeerConnection();
 

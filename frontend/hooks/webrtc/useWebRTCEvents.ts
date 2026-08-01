@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useSocket } from "@/hooks/useSocket";
 import { useWebRTCActions } from "./useWebRTCActions";
 import { useWebRTC } from "./useWebRTC";
-import { useCall } from "./useCall";
+import { useCall } from "../call/useCall";
 
 export function useWebRTCEvents() {
     const { socket } = useSocket();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallEvents } from "@/hooks/useCallEvents";
+import { useCallEvents } from "@/hooks/call/useCallEvents";
 
 export function CallEvents() {
     useCallEvents();

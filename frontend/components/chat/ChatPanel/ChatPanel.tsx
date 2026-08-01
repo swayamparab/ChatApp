@@ -7,7 +7,7 @@ import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 
 import { useSocket } from "@/hooks/useSocket";
-import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
+import { useMarkConversationAsRead } from "@/hooks/conversation/useMarkConversationAsRead";
 
 import { useParams } from "next/navigation";
 

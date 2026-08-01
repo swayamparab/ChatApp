@@ -3,8 +3,8 @@
 import { useParams } from "next/navigation";
 
 import Sidebar from "@/components/chat/SideBar/Sidebar";
-import { useJoinConversations } from "@/hooks/useJoinConversations";
-import { useMessageEvents } from "@/hooks/useMessageEvents";
+import { useJoinConversations } from "@/hooks/conversation/useJoinConversations";
+import { useMessageEvents } from "@/hooks/message/useMessageEvents";
 
 export default function ChatLayout({
     children,

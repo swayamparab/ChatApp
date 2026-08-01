@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { useWebRTC } from "@/hooks/useWebRTC";
+import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
 
 export function RemoteAudio() {
     const audioRef = useRef<HTMLAudioElement>(null);

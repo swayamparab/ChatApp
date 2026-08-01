@@ -1,6 +1,6 @@
 "use client";
 
-import { useSocket } from "./useSocket";
+import { useSocket } from "../useSocket";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSocket } from "@/hooks/useSocket";
-import { useWebRTC } from "@/hooks/useWebRTC";
+import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
 
 export function useWebRTCActions() {
     const { socket } = useSocket();

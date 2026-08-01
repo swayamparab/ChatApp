@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { useSocket } from "./useSocket";
+import { useSocket } from "../useSocket";
 import { useConversations } from "./useConversations";
 
 export function useJoinConversations() {

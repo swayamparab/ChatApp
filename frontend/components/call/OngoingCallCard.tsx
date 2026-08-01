@@ -4,12 +4,12 @@ import { Phone, PhoneOff, Mic, MicOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import { useCall } from "@/hooks/useCall";
-import { useCallActions } from "@/hooks/useCallActions";
+import { useCall } from "@/hooks/call/useCall";
+import { useCallActions } from "@/hooks/call/useCallActions";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useCallDuration } from "@/hooks/useCallDuration";
-import { useWebRTCActions } from "@/hooks/useWebRTCActions";
-import { useWebRTC } from "@/hooks/useWebRTC";
+import { useCallDuration } from "@/hooks/call/useCallDuration";
+import { useWebRTCActions } from "@/hooks/webrtc/useWebRTCActions";
+import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
 
 export default function OngoingCallCard() {
     const { callState } = useCall();

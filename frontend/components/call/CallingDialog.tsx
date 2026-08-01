@@ -8,20 +8,26 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-import { useCall } from "@/hooks/useCall";
+import { useCall } from "@/hooks/call/useCall";
 import { useSocket } from "@/hooks/useSocket";
 import { initialCallState } from "@/providers/CallProvider";
+import { useRingtone } from "@/hooks/call/useRingtone";
 
 export function CallingDialog() {
     const { socket } = useSocket();
 
     const { callState, setCallState } = useCall();
 
+    const { stopOutgoing } = useRingtone();
+
     if (callState.status !== "calling") {
         return null;
     }
 
     function cancelCall() {
+
+        stopOutgoing();
+
         socket.emit(
             "reject_call",
             {

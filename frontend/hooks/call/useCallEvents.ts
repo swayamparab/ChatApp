@@ -8,9 +8,10 @@ import {
 } from "@/providers/CallProvider";
 
 import { useCall } from "./useCall";
-import { useSocket } from "./useSocket";
-import { useWebRTCActions } from "./useWebRTCActions";
-import { useWebRTC } from "./useWebRTC";
+import { useSocket } from "../useSocket";
+import { useWebRTCActions } from "../webrtc/useWebRTCActions";
+import { useWebRTC } from "../webrtc/useWebRTC";
+import { useRingtone } from "./useRingtone";
 
 export function useCallEvents() {
     const { socket } = useSocket();
@@ -20,8 +21,13 @@ export function useCallEvents() {
 
     const { closePeerConnection } = useWebRTC();
 
+    const {playIncoming,stopIncoming,stopOutgoing,} = useRingtone();
+
     useEffect(() => {
         function handleIncomingCall(data: CallData) {
+
+            playIncoming();
+
             setCallState({
                 ...data,
                 status: "incoming",
@@ -42,10 +48,16 @@ export function useCallEvents() {
                 timeoutRef.current = null;
             }
 
+            stopOutgoing();
+
             await createOffer(data.conversationId);
         }
 
         function handleCallRejected() {
+
+            stopIncoming();
+            stopOutgoing();
+
             setCallState(initialCallState);
 
             if (timeoutRef.current) {
@@ -55,6 +67,10 @@ export function useCallEvents() {
         }
 
         function handleCallEnded() {
+
+            stopIncoming();
+            stopOutgoing();
+
             closePeerConnection();
 
             setCallState(initialCallState);

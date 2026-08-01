@@ -8,20 +8,26 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-import { useCall } from "@/hooks/useCall";
+import { useCall } from "@/hooks/call/useCall";
 import { useSocket } from "@/hooks/useSocket";
 import { initialCallState } from "@/providers/CallProvider";
+import { useRingtone } from "@/hooks/call/useRingtone";
 
 export function IncomingCallDialog() {
     const { socket } = useSocket();
 
     const { callState, setCallState } = useCall();
 
+    const { stopIncoming } = useRingtone();
+
     if (callState.status !== "incoming") {
         return null;
     }
 
     const acceptCall = () => {
+
+        stopIncoming();
+
         socket.emit(
             "accept_call",
             {
@@ -44,6 +50,9 @@ export function IncomingCallDialog() {
     };
 
     const rejectCall = () => {
+
+        stopIncoming();
+
         socket.emit(
             "reject_call",
             {

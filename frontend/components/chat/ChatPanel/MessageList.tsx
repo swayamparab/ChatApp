@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 
-import { useMessages } from "@/hooks/useMessages";
+import { useMessages } from "@/hooks/message/useMessages";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
-import { useMarkConversationAsRead } from "@/hooks/useMarkConversationAsRead";
+import { useMarkConversationAsRead } from "@/hooks/conversation/useMarkConversationAsRead";
 import { useSocket } from "@/hooks/useSocket";
 
 import type { Message } from "@/types/message";
