@@ -205,52 +205,64 @@ export default function MessageBubble({
 
                         <DropdownMenuContent
                             align="end"
-                            className="rounded-xl border border-slate-800 bg-slate-900"
+                            sideOffset={8}
+                            className="w-48 rounded-xl border border-slate-800 bg-slate-900 p-1.5 shadow-xl"
                         >
                             <DropdownMenuItem
-                                className="text-white"
+                                className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-slate-100 focus:bg-blue-500/10"
                                 onClick={() => {
                                     onReply(message);
                                     setMenuOpen(false);
                                 }}
                             >
-                                <Reply className="mr-2 h-4 w-4" />
-                                Reply
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/20">
+                                    <Reply className="h-4 w-4 text-blue-400" />
+                                </div>
+                                <span>Reply</span>
                             </DropdownMenuItem>
+
                             {message.type === "text" && (
                                 <DropdownMenuItem
-                                    className="text-white"
+                                    className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-slate-100 focus:bg-emerald-500/10"
                                     onClick={async () => {
                                         await navigator.clipboard.writeText(message.content ?? "");
-                                        toast.success("Message Copied!");
+                                        toast.success("Message copied!");
                                         setMenuOpen(false);
                                     }}
                                 >
-                                    <Copy className="mr-2 h-4 w-4" />
-                                    Copy
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20">
+                                        <Copy className="h-4 w-4 text-emerald-400" />
+                                    </div>
+                                    <span>Copy</span>
                                 </DropdownMenuItem>
                             )}
+
                             {isOwnMessage && (
                                 <>
                                     {message.type === "text" && (
                                         <DropdownMenuItem
-                                            className="text-white"
+                                            className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-slate-100 focus:bg-amber-500/10"
                                             onClick={() => {
                                                 setIsEditing(true);
                                                 setEditedContent(message.content ?? "");
                                                 setMenuOpen(false);
                                             }}
                                         >
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Edit
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/20">
+                                                <Pencil className="h-4 w-4 text-amber-400" />
+                                            </div>
+                                            <span>Edit</span>
                                         </DropdownMenuItem>
                                     )}
+
                                     <DropdownMenuItem
-                                        className="cursor-pointer text-red-400 focus:bg-red-500/10 focus:text-red-400"
+                                        className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-red-400 focus:bg-red-500/10 focus:text-red-400"
                                         onClick={handleDelete}
                                     >
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20">
+                                            <Trash2 className="h-4 w-4 text-red-400" />
+                                        </div>
+                                        <span>Delete</span>
                                     </DropdownMenuItem>
                                 </>
                             )}
@@ -261,28 +273,28 @@ export default function MessageBubble({
                     open={mobileMenuOpen}
                     onOpenChange={setMobileMenuOpen}
                 >
-                    <DrawerContent className="rounded-t-3xl border-slate-800 bg-slate-900 px-2 pb-4">
-                        <DrawerHeader className="pb-2">
-                            <DrawerTitle className="text-center text-base font-semibold text-white">
+                    <DrawerContent className="rounded-t-2xl border-slate-800 bg-slate-900 px-2 pb-3">
+                        <DrawerHeader className="pb-1">
+                            <DrawerTitle className="text-center text-sm font-semibold text-white">
                                 Message
                             </DrawerTitle>
                         </DrawerHeader>
 
-                        <div className="space-y-2 px-4 pb-6">
+                        <div className="space-y-1.5 px-3 pb-4">
                             <button
                                 className="
                                     flex
                                     w-full
                                     items-center
-                                    gap-4
-                                    rounded-xl
-                                    px-4
-                                    py-3.5
+                                    gap-3
+                                    rounded-lg
+                                    px-3
+                                    py-2.5
                                     text-left
                                     text-sm
                                     font-medium
                                     text-slate-100
-                                    transition-all
+                                    transition-colors
                                     hover:bg-slate-800
                                     active:scale-[0.98]
                                 "
@@ -291,26 +303,28 @@ export default function MessageBubble({
                                     setMobileMenuOpen(false);
                                 }}
                             >
-                                <div className="rounded-full bg-blue-500/15 p-2">
-                                    <Reply className="h-5 w-5 text-blue-400" />
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/20">
+                                    <Reply className="h-4 w-4 text-blue-400" />
                                 </div>
+
                                 <span>Reply</span>
                             </button>
+
                             {message.type === "text" && (
                                 <button
                                     className="
                                         flex
                                         w-full
                                         items-center
-                                        gap-4
-                                        rounded-xl
-                                        px-4
-                                        py-3.5
+                                        gap-3
+                                        rounded-lg
+                                        px-3
+                                        py-2.5
                                         text-left
                                         text-sm
                                         font-medium
                                         text-slate-100
-                                        transition-all
+                                        transition-colors
                                         hover:bg-slate-800
                                         active:scale-[0.98]
                                     "
@@ -320,12 +334,14 @@ export default function MessageBubble({
                                         setMobileMenuOpen(false);
                                     }}
                                 >
-                                    <div className="rounded-full bg-emerald-500/15 p-2">
-                                        <Copy className="h-5 w-5 text-emerald-400" />
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20">
+                                        <Copy className="h-4 w-4 text-emerald-400" />
                                     </div>
+
                                     <span>Copy</span>
                                 </button>
                             )}
+
                             {isOwnMessage && (
                                 <>
                                     {message.type === "text" && (
@@ -334,15 +350,15 @@ export default function MessageBubble({
                                                 flex
                                                 w-full
                                                 items-center
-                                                gap-4
-                                                rounded-xl
-                                                px-4
-                                                py-3.5
+                                                gap-3
+                                                rounded-lg
+                                                px-3
+                                                py-2.5
                                                 text-left
                                                 text-sm
                                                 font-medium
                                                 text-slate-100
-                                                transition-all
+                                                transition-colors
                                                 hover:bg-slate-800
                                                 active:scale-[0.98]
                                             "
@@ -352,9 +368,10 @@ export default function MessageBubble({
                                                 setMobileMenuOpen(false);
                                             }}
                                         >
-                                            <div className="rounded-full bg-amber-500/15 p-2">
-                                                <Pencil className="h-5 w-5 text-amber-400" />
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/20">
+                                                <Pencil className="h-4 w-4 text-amber-400" />
                                             </div>
+
                                             <span>Edit</span>
                                         </button>
                                     )}
@@ -364,16 +381,16 @@ export default function MessageBubble({
                                             flex
                                             w-full
                                             items-center
-                                            gap-4
-                                            rounded-xl
-                                            px-4
-                                            py-3.5
+                                            gap-3
+                                            rounded-lg
+                                            px-3
+                                            py-2.5
                                             text-left
                                             text-sm
                                             font-medium
-                                            text-slate-100
-                                            transition-all
-                                            hover:bg-slate-800
+                                            text-red-400
+                                            transition-colors
+                                            hover:bg-red-500/10
                                             active:scale-[0.98]
                                         "
                                         onClick={() => {
@@ -381,12 +398,11 @@ export default function MessageBubble({
                                             setMobileMenuOpen(false);
                                         }}
                                     >
-                                        <div className="rounded-full bg-red-500/15 p-2">
-                                            <Trash2 className="h-5 w-5 text-red-400" />
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20">
+                                            <Trash2 className="h-4 w-4 text-red-400" />
                                         </div>
-                                        <span className="text-red-400">
-                                            Delete
-                                        </span>
+
+                                        <span>Delete</span>
                                     </button>
                                 </>
                             )}
@@ -399,6 +415,7 @@ export default function MessageBubble({
                         if (isEditing) return;
 
                         longPressTimeout.current = setTimeout(() => {
+                            navigator.vibrate?.(15);
                             setMobileMenuOpen(true);
                         }, 350);
                     }}
