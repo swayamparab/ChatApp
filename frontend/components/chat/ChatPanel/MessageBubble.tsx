@@ -261,62 +261,132 @@ export default function MessageBubble({
                     open={mobileMenuOpen}
                     onOpenChange={setMobileMenuOpen}
                 >
-                    <DrawerContent className="border-slate-800 bg-slate-900">
-                        <DrawerHeader>
-                            <DrawerTitle className="text-white">
+                    <DrawerContent className="rounded-t-3xl border-slate-800 bg-slate-900 px-2 pb-4">
+                        <DrawerHeader className="pb-2">
+                            <DrawerTitle className="text-center text-base font-semibold text-white">
                                 Message
                             </DrawerTitle>
                         </DrawerHeader>
 
                         <div className="space-y-2 px-4 pb-6">
                             <button
-                                className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                className="
+                                    flex
+                                    w-full
+                                    items-center
+                                    gap-4
+                                    rounded-xl
+                                    px-4
+                                    py-3.5
+                                    text-left
+                                    text-sm
+                                    font-medium
+                                    text-slate-100
+                                    transition-all
+                                    hover:bg-slate-800
+                                    active:scale-[0.98]
+                                "
                                 onClick={() => {
                                     onReply(message);
                                     setMobileMenuOpen(false);
                                 }}
                             >
-                                <Reply className="h-5 w-5" />
-                                Reply
+                                <div className="rounded-full bg-blue-500/15 p-2">
+                                    <Reply className="h-5 w-5 text-blue-400" />
+                                </div>
+                                <span>Reply</span>
                             </button>
                             {message.type === "text" && (
                                 <button
-                                    className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                    className="
+                                        flex
+                                        w-full
+                                        items-center
+                                        gap-4
+                                        rounded-xl
+                                        px-4
+                                        py-3.5
+                                        text-left
+                                        text-sm
+                                        font-medium
+                                        text-slate-100
+                                        transition-all
+                                        hover:bg-slate-800
+                                        active:scale-[0.98]
+                                    "
                                     onClick={async () => {
                                         await navigator.clipboard.writeText(message.content ?? "");
                                         toast.success("Message copied!");
                                         setMobileMenuOpen(false);
                                     }}
                                 >
-                                    <Copy className="h-5 w-5" />
-                                    Copy
+                                    <div className="rounded-full bg-emerald-500/15 p-2">
+                                        <Copy className="h-5 w-5 text-emerald-400" />
+                                    </div>
+                                    <span>Copy</span>
                                 </button>
                             )}
                             {isOwnMessage && (
                                 <>
                                     {message.type === "text" && (
                                         <button
-                                            className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-white hover:bg-slate-800"
+                                            className="
+                                                flex
+                                                w-full
+                                                items-center
+                                                gap-4
+                                                rounded-xl
+                                                px-4
+                                                py-3.5
+                                                text-left
+                                                text-sm
+                                                font-medium
+                                                text-slate-100
+                                                transition-all
+                                                hover:bg-slate-800
+                                                active:scale-[0.98]
+                                            "
                                             onClick={() => {
                                                 setIsEditing(true);
                                                 setEditedContent(message.content ?? "");
                                                 setMobileMenuOpen(false);
                                             }}
                                         >
-                                            <Pencil className="h-5 w-5" />
-                                            Edit
+                                            <div className="rounded-full bg-amber-500/15 p-2">
+                                                <Pencil className="h-5 w-5 text-amber-400" />
+                                            </div>
+                                            <span>Edit</span>
                                         </button>
                                     )}
 
                                     <button
-                                        className="flex w-full items-center gap-3 rounded-lg p-3 text-left text-red-400 hover:bg-red-500/10"
+                                        className="
+                                            flex
+                                            w-full
+                                            items-center
+                                            gap-4
+                                            rounded-xl
+                                            px-4
+                                            py-3.5
+                                            text-left
+                                            text-sm
+                                            font-medium
+                                            text-slate-100
+                                            transition-all
+                                            hover:bg-slate-800
+                                            active:scale-[0.98]
+                                        "
                                         onClick={() => {
                                             handleDelete();
                                             setMobileMenuOpen(false);
                                         }}
                                     >
-                                        <Trash2 className="h-5 w-5" />
-                                        Delete
+                                        <div className="rounded-full bg-red-500/15 p-2">
+                                            <Trash2 className="h-5 w-5 text-red-400" />
+                                        </div>
+                                        <span className="text-red-400">
+                                            Delete
+                                        </span>
                                     </button>
                                 </>
                             )}
