@@ -131,9 +131,11 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
 
-        return `${mins}:${secs
+        return `${mins
             .toString()
-            .padStart(2, "0")}`;
+            .padStart(2, "0")}:${secs
+                .toString()
+                .padStart(2, "0")}`;
     }
 
     const seek = (
@@ -177,6 +179,15 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
         setPlaybackRate(nextRate);
     };
 
+    const bars = Array.from({ length: 36 }, (_, index) => ({
+        id: index,
+        height: 10 + Math.random() * 18,
+    }));
+
+    const playedBars = Math.floor(
+        (progress / 100) * bars.length
+    );
+
     return (
         <div className="flex w-[320px] max-w-full items-center gap-3">
             <audio
@@ -187,7 +198,7 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
 
             <button
                 onClick={togglePlayback}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:scale-105 active:scale-95"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-b border shadow-lg hover:scale-110 active:scale-95 text-primary-foreground transition hover:scale-105 active:scale-95"
             >
                 {isPlaying ? (
                     <Pause size={18} />
@@ -200,13 +211,36 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
             </button>
 
             <div ref={progressBarRef} onClick={seek} className="flex flex-1 flex-col gap-1">
-                <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-                    <div
-                        className="h-full rounded-full bg-primary transition-all"
-                        style={{
-                            width: `${progress}%`,
-                        }}
-                    />
+                <div
+                    ref={progressBarRef}
+                    onClick={seek}
+                    className="
+                        flex
+                        h-10
+                        cursor-pointer
+                        items-end
+                        gap-[2px]
+                    "
+                >
+                    {bars.map((bar, index) => (
+                        <div
+                            key={bar.id}
+                            className={`
+                                w-[3px]
+                                rounded-full
+                                transition-colors
+                                duration-150
+
+                                ${index <= playedBars
+                                    ? "bg-sky-500"
+                                    : "bg-slate-500"
+                                }
+                            `}
+                            style={{
+                                height: `${bar.height}px`,
+                            }}
+                        />
+                    ))}
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
@@ -216,7 +250,14 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
 
                     <button
                         onClick={changePlaybackRate}
-                        className="font-medium hover:text-foreground"
+                        className="
+                            rounded-full
+                            bg-slate-700
+                            px-2
+                            py-0.5
+                            text-[10px]
+                            font-semibold
+                        "
                     >
                         {playbackRate}×
                     </button>
