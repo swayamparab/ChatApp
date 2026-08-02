@@ -171,6 +171,10 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
 
                 attachmentSize: data.attachmentSize,
 
+                duration: data.duration,
+
+                waveform: data.waveform,
+
                 replyToMessageId: data.replyToMessageId,
             })
             .returning();

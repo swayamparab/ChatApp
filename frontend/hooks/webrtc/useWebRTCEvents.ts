@@ -63,7 +63,7 @@ export function useWebRTCEvents() {
 
             pendingIceCandidates.current = [];
 
-            console.log("WebRTC connection negotiated");
+            // console.log("WebRTC connection negotiated");
         }
 
         async function handleIceCandidate({
@@ -83,7 +83,7 @@ export function useWebRTCEvents() {
                     new RTCIceCandidate(candidate)
                 );
 
-                console.log("ICE added");
+                // console.log("ICE added");
             } catch (error) {
                 console.error(
                     "Failed to add ICE candidate",

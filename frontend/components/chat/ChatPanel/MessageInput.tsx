@@ -5,13 +5,15 @@ import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizontal, Loader2, Mic } from "lucide-react";
+import { SendHorizontal, Loader2, Mic, Trash2, Check } from "lucide-react";
 import { Image as ImageIcon } from "lucide-react";
 
 import { useSocket } from "@/hooks/useSocket";
 import { useUploadAttachment } from "@/hooks/useUploadAttachment";
 
 import type { Message } from "@/types/message";
+
+import { generateWaveform } from "@/lib/generateWaveform";
 
 interface MessageInputProps {
     replyingTo: Message | null;
@@ -41,6 +43,13 @@ export default function MessageInput({
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const streamRef = useRef<MediaStream | null>(null);
+    const shouldUploadRef = useRef(true);
+
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const animationFrameRef = useRef<number | null>(null);
+    const [liveWaveform, setLiveWaveform] = useState<number[]>(
+        Array(24).fill(4)
+    );
 
     const [recordingTime, setRecordingTime] = useState(0);
 
@@ -101,6 +110,20 @@ export default function MessageInput({
                 audio: true,
             });
 
+            const audioContext = new AudioContext();
+
+            const source =
+                audioContext.createMediaStreamSource(stream);
+
+            const analyser =
+                audioContext.createAnalyser();
+
+            analyser.fftSize = 256;
+
+            source.connect(analyser);
+
+            analyserRef.current = analyser;
+
             const mimeType = getSupportedAudioMimeType();
 
             const recorder = mimeType
@@ -119,12 +142,75 @@ export default function MessageInput({
                 }
             };
 
+            shouldUploadRef.current = true;
+
             recorder.start(1000);
+
+            const data = new Uint8Array(
+                analyser.frequencyBinCount
+            );
+
+            const updateWaveform = () => {
+                analyser.getByteFrequencyData(data);
+
+                const bars = 24;
+                const chunk = Math.floor(data.length / bars);
+
+                const wave: number[] = [];
+
+                for (let i = 0; i < bars; i++) {
+                    let sum = 0;
+
+                    for (
+                        let j = i * chunk;
+                        j < (i + 1) * chunk;
+                        j++
+                    ) {
+                        sum += data[j];
+                    }
+
+                    wave.push(
+                        Math.max(
+                            4,
+                            Math.round((sum / chunk / 255) * 24)
+                        )
+                    );
+                }
+
+                setLiveWaveform(wave);
+
+                animationFrameRef.current =
+                    requestAnimationFrame(updateWaveform);
+            };
+
+            updateWaveform();
 
             setIsRecording(true);
         } catch (error) {
             console.error(error);
         }
+    }
+
+    function cancelRecording() {
+
+        shouldUploadRef.current = false;
+
+        mediaRecorderRef.current?.stop();
+
+        streamRef.current?.getTracks().forEach((track) => track.stop());
+
+        mediaRecorderRef.current = null;
+        streamRef.current = null;
+        audioChunksRef.current = [];
+
+        setRecordingTime(0);
+        setIsRecording(false);
+
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+        }
+
+        setLiveWaveform(Array(24).fill(4));
     }
 
     async function stopRecording() {
@@ -133,9 +219,16 @@ export default function MessageInput({
         if (!recorder) return;
 
         recorder.onstop = async () => {
+
+            if (!shouldUploadRef.current) {
+                return;
+            }
+
             const audioBlob = new Blob(audioChunksRef.current, {
                 type: recorder.mimeType,
             });
+
+            const waveform = await generateWaveform(audioBlob);
 
             function getExtension(mimeType: string) {
                 if (mimeType.includes("webm")) return "webm";
@@ -169,6 +262,9 @@ export default function MessageInput({
                     attachmentName: audioFile.name,
                     attachmentSize: upload.attachmentSize,
 
+                    duration: recordingTime,
+                    waveform,
+
                     replyToMessageId: replyingTo?.id,
                 },
                 (response: {
@@ -195,6 +291,12 @@ export default function MessageInput({
         };
 
         recorder.stop();
+
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+        }
+
+        setLiveWaveform(Array(24).fill(4));
     }
 
     function handleSend() {
@@ -438,25 +540,44 @@ export default function MessageInput({
                         <Mic className="h-5 w-5" />
                     </Button>
                 ) : (
-                    <div className="flex items-center gap-3">
-                        <Button
-                            type="button"
-                            size="icon"
-                            variant="destructive"
-                            onClick={stopRecording}
-                            className="
-                            h-10
-                            w-10
-                            mr-2
-                            rounded-full
-                            animate-pulse
-                        "
-                        >
-                            Stop
-                        </Button>
-                        <span className="text-sm font-medium text-muted-foreground tabular-nums">
-                            {formatTime(recordingTime)}
-                        </span>
+                    <div className="flex flex-1 items-center justify-between px-3">
+                        <div className="flex items-center gap-3">
+                            <span className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+
+                            <div className="flex h-8 items-end gap-[2px]">
+                                {liveWaveform.map((h, i) => (
+                                    <div
+                                        key={i}
+                                        className="w-[3px] rounded-full bg-red-500"
+                                        style={{
+                                            height: `${h}px`,
+                                        }}
+                                    />
+                                ))}
+                            </div>
+
+                            <span className="font-mono text-sm text-muted-foreground">
+                                {formatTime(recordingTime)}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={cancelRecording}
+                            >
+                                <Trash2 className="h-5 w-5" />
+                            </Button>
+
+                            <Button
+                                size="icon"
+                                onClick={stopRecording}
+                                className="rounded-full"
+                            >
+                                <Check className="h-5 w-5" />
+                            </Button>
+                        </div>
                     </div>
                 )}
                 <Button

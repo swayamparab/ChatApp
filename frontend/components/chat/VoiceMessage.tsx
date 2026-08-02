@@ -5,17 +5,20 @@ import { useEffect, useRef, useState } from "react";
 
 type VoiceMessageProps = {
     url: string;
+    waveform: number[];
+    duration: number;
 };
 
-export default function VoiceMessage({ url }: VoiceMessageProps) {
+export default function VoiceMessage({ url, waveform, duration }: VoiceMessageProps) {
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
 
     const progressBarRef = useRef<HTMLDivElement>(null);
     const [playbackRate, setPlaybackRate] = useState(1);
+
+    const [audioDuration, setAudioDuration] = useState(duration);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -23,10 +26,11 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
         if (!audio) return;
 
         const handleLoadedMetadata = () => {
-            if (Number.isFinite(audio.duration)) {
-                setDuration(audio.duration);
-                setCurrentTime(audio.currentTime);
+            if (audio.duration && Number.isFinite(audio.duration)) {
+                setAudioDuration(audio.duration);
             }
+
+            setCurrentTime(audio.currentTime);
         };
 
         const handleTimeUpdate = () => {
@@ -119,9 +123,9 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
     };
 
     const progress =
-        duration === 0
+        audioDuration === 0
             ? 0
-            : (currentTime / duration) * 100;
+            : (currentTime / audioDuration) * 100;
 
     function formatTime(seconds: number) {
         if (!Number.isFinite(seconds)) {
@@ -146,7 +150,7 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
 
         if (!audio || !progressBar) return;
 
-        if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
+        if (audioDuration <= 0) {
             return;
         }
 
@@ -159,7 +163,7 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
             1
         );
 
-        audio.currentTime = percentage * audio.duration;
+        audio.currentTime = percentage * audioDuration;
     };
 
     const changePlaybackRate = () => {
@@ -179,17 +183,17 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
         setPlaybackRate(nextRate);
     };
 
-    const bars = Array.from({ length: 36 }, (_, index) => ({
-        id: index,
-        height: 10 + Math.random() * 18,
-    }));
+    const bars = waveform.length
+        ? waveform
+        : Array.from({ length: 36 }, () => 10);
 
-    const playedBars = Math.floor(
-        (progress / 100) * bars.length
-    );
+    const playedBars =
+        audioDuration > 0
+            ? Math.floor((currentTime / audioDuration) * bars.length)
+            : 0;
 
     return (
-        <div className="flex w-[320px] max-w-full items-center gap-3">
+        <div className="flex w-full items-center gap-3 overflow-hidden">
             <audio
                 ref={audioRef}
                 src={url}
@@ -198,7 +202,23 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
 
             <button
                 onClick={togglePlayback}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-b border shadow-lg hover:scale-110 active:scale-95 text-primary-foreground transition hover:scale-105 active:scale-95"
+                className="
+                    flex
+                    h-10
+                    w-10
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-gradient-to-br
+                    from-sky-500
+                    to-blue-600
+                    text-white
+                    shadow-lg
+                    transition-all
+                    hover:scale-110
+                    active:scale-95
+                    "
             >
                 {isPlaying ? (
                     <Pause size={18} />
@@ -210,34 +230,37 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
                 )}
             </button>
 
-            <div ref={progressBarRef} onClick={seek} className="flex flex-1 flex-col gap-1">
+            <div className="flex flex-1 flex-col gap-1">
                 <div
                     ref={progressBarRef}
                     onClick={seek}
                     className="
                         flex
-                        h-10
+                        h-14
+                        w-full
                         cursor-pointer
                         items-end
                         gap-[2px]
+                        overflow-hidden
                     "
                 >
-                    {bars.map((bar, index) => (
+                    {bars.map((height, index) => (
                         <div
-                            key={bar.id}
+                            key={index}
                             className={`
                                 w-[3px]
+                                shrink-0
                                 rounded-full
                                 transition-colors
                                 duration-150
 
-                                ${index <= playedBars
+                                ${index < playedBars
                                     ? "bg-sky-500"
                                     : "bg-slate-500"
                                 }
                             `}
                             style={{
-                                height: `${bar.height}px`,
+                                height: `${Math.max(6, height * 1.7)}px`,
                             }}
                         />
                     ))}
@@ -245,25 +268,24 @@ export default function VoiceMessage({ url }: VoiceMessageProps) {
 
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                     <span>
-                        {formatTime(currentTime)}
+                        {formatTime(
+                            isPlaying
+                                ? currentTime
+                                : currentTime === 0
+                                    ? 0
+                                    : currentTime
+                        )}
                     </span>
 
                     <button
                         onClick={changePlaybackRate}
-                        className="
-                            rounded-full
-                            bg-slate-700
-                            px-2
-                            py-0.5
-                            text-[10px]
-                            font-semibold
-                        "
+                        className="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-semibold"
                     >
                         {playbackRate}×
                     </button>
 
                     <span>
-                        {formatTime(duration)}
+                        {formatTime(audioDuration || audioRef.current?.duration || 0)}
                     </span>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import {
     foreignKey,
     pgEnum,
     integer,
+    json,
 } from "drizzle-orm/pg-core";
 
 import { conversations } from "./conversations";
@@ -53,6 +54,8 @@ export const messages = pgTable(
         attachmentSize: integer("attachment_size"),
 
         duration: integer(),
+
+        waveform: json().$type<number[]>(),
 
         replyToMessageId: uuid("reply_to_message_id"),
 

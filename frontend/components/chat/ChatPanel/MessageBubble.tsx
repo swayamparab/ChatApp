@@ -364,7 +364,7 @@ export default function MessageBubble({
                             : message.type === "file"
                                 ? "p-2"
                                 : message.type === "voice"
-                                    ? "px-3 py-2"
+                                    ? "w-[320px] max-w-full px-3 py-2 overflow-hidden"
                                     : "px-4 py-3"
                         }
 
@@ -604,6 +604,8 @@ export default function MessageBubble({
                             {message.type === "voice" && (
                                 <VoiceMessage
                                     url={message.attachmentUrl!}
+                                    waveform={message.waveform ?? []}
+                                    duration={message.duration ?? 0}
                                 />
                             )}
 

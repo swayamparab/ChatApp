@@ -77,13 +77,13 @@ export function WebRTCProvider({ children }: { children: React.ReactNode }) {
         });
 
         peer.ontrack = (event) => {
-            console.log("Remote stream received");
+            // console.log("Remote stream received");
 
             setRemoteStream(event.streams[0]);
         };
 
         peer.onconnectionstatechange = () => {
-            console.log("Connection State:", peer.connectionState);
+            // console.log("Connection State:", peer.connectionState);
 
             setConnectionState(peer.connectionState);
         };

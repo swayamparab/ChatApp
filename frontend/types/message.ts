@@ -11,6 +11,9 @@ export interface Message {
     attachmentMimeType: string | null;
     attachmentSize: number | null;
 
+    duration: number | null;
+    waveform: number[] | null;
+
     createdAt: string;
     updatedAt: string;
     editedAt: string | null;

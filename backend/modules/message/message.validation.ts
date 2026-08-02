@@ -23,6 +23,10 @@ export const sendImageSchema = z.object({
   attachmentMimeType: z.string(),
   attachmentName: z.string(),
   attachmentSize: z.number().positive(),
+
+  duration: z.number().int().positive().optional(),
+  waveform: z.array(z.number()).optional(),
+
   replyToMessageId: z.uuid().optional(),
 });
 export type SendImageInput = z.infer<typeof sendImageSchema>;
@@ -45,6 +49,10 @@ export type CreateMessageInput = {
   attachmentName?: string;
 
   attachmentSize?: number;
+
+  duration?: number;
+
+  waveform?: number[];
 };
 
 export const typingSchema = z.object({
