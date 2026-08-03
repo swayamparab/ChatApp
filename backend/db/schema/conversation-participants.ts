@@ -3,10 +3,16 @@ import {
     primaryKey,
     timestamp,
     uuid,
+    pgEnum
 } from "drizzle-orm/pg-core";
 
 import { conversations } from "./conversations";
 import { users } from "./users";
+
+export const conversationRoleEnum = pgEnum("conversation_role", [
+    "admin",
+    "member",
+]);
 
 export const conversationParticipants = pgTable(
     "conversation-participants",
@@ -22,6 +28,10 @@ export const conversationParticipants = pgTable(
             .references(() => users.id, {
                 onDelete: "cascade",
             }),
+
+        role: conversationRoleEnum()
+            .default("member")
+            .notNull(),
 
         joinedAt: timestamp()
             .defaultNow()

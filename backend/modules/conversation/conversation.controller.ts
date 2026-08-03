@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { getConversations, markConversationAsRead, searchMessages } from "./conversation.service";
+import { addMembers, createGroup, deleteGroup, demoteAdmin, getConversations, getGroupInfo, markConversationAsRead, promoteMember, removeMember, searchMessages, updateGroup } from "./conversation.service";
+import { ZodError } from "zod";
+import { addMembersSchema, createGroupSchema, updateGroupSchema } from "./conversation.validation";
 
 export async function getConversationsController(req: Request, res: Response) {
     try {
@@ -68,6 +70,243 @@ export async function searchMessagesController(req: Request, res: Response) {
         res.status(500).json({
             success: false,
             message: "Failed to search messages",
+        });
+    }
+}
+
+export async function createGroupController(req: Request, res: Response) {
+    try {
+        const data = createGroupSchema.parse(req.body);
+
+        const conversation = await createGroup(
+            req.userId,
+            data
+        );
+
+        return res.status(201).json({
+            success: true,
+            conversation,
+        });
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+                success: false,
+                errors: error.issues,
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+type GroupParams = {
+    groupId: string;
+};
+export async function getGroupInfoController(
+    req: Request<GroupParams>,
+    res: Response
+) {
+    try {
+        const group = await getGroupInfo(
+            req.userId,
+            req.params.groupId,
+        );
+
+        return res.status(200).json({
+            success: true,
+            group,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function updateGroupController(
+    req: Request<GroupParams>,
+    res: Response
+) {
+    try {
+        const data = updateGroupSchema.parse(req.body);
+
+        const group = await updateGroup(
+            req.userId,
+            req.params.groupId,
+            data
+        );
+
+        return res.status(200).json({
+            success: true,
+            group,
+        });
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+                success: false,
+                errors: error.issues,
+            });
+        }
+
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function addMembersController(
+    req: Request<GroupParams>,
+    res: Response
+) {
+    try {
+        const data = addMembersSchema.parse(req.body);
+
+        const members = await addMembers(
+            req.userId,
+            req.params.groupId,
+            data
+        );
+
+        return res.status(200).json({
+            success: true,
+            members,
+        });
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+                success: false,
+                errors: error.issues,
+            });
+        }
+
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+type MemberParams = {
+    groupId: string;
+    memberId: string;
+};
+
+export async function removeMemberController(
+    req: Request<MemberParams>,
+    res: Response
+) {
+    try {
+        await removeMember(
+            req.userId,
+            req.params.groupId,
+            req.params.memberId,
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Member removed successfully.",
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function promoteMemberController(
+    req: Request<MemberParams>,
+    res: Response
+) {
+    try {
+        await promoteMember(
+            req.userId,
+            req.params.groupId,
+            req.params.memberId,
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Member promoted successfully.",
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function demoteAdminController(
+    req: Request<MemberParams>,
+    res: Response
+) {
+    try {
+        await demoteAdmin(
+            req.params.groupId,
+            req.params.memberId,
+            req.userId
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin demoted successfully.",
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function deleteGroupController(
+    req: Request<GroupParams>,
+    res: Response
+) {
+    try {
+        await deleteGroup(
+            req.params.groupId,
+            req.userId
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Group deleted successfully.",
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
         });
     }
 }

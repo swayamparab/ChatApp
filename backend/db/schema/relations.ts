@@ -10,10 +10,15 @@ import { messages } from "./messages";
 // One conversation has many messages.
 export const conversationsRelations = relations(
     conversations,
-    ({ many }) => ({
+    ({ many, one }) => ({
         participants: many(conversationParticipants),
 
-        messages: many(messages)
+        messages: many(messages),
+
+        creator: one(users, {
+            fields: [conversations.createdBy],
+            references: [users.id],
+        }),
     })
 );
 //A participant belongs to one conversation.
@@ -48,7 +53,9 @@ export const usersRelations = relations(users, ({ many }) => ({
 
     conversationParticipants: many(conversationParticipants),
 
-    messages: many(messages)
+    messages: many(messages),
+
+    createdGroups: many(conversations),
 }));
 
 // Each chat request belongs to:
