@@ -3,6 +3,7 @@ import {Server} from "socket.io"
 import { env } from "../config/env"
 import { handleConnection } from "./events/connection.event"
 import { socketAuth } from "./middleware/auth.middleware"
+import { setSocketServer } from "./socket-server"
 
 export function createSocketServer(server: HttpServer){
     const io = new Server(server, {
@@ -11,6 +12,8 @@ export function createSocketServer(server: HttpServer){
             credentials: true
         }
     })
+
+    setSocketServer(io);
 
     io.use(socketAuth);
 

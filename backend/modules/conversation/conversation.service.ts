@@ -114,7 +114,7 @@ export async function getConversations(userId: string) {
 
       group: isGroup
         ? {
-          name: conversation.groupName,
+          name: conversation.groupName!,
           avatar: conversation.groupAvatar,
           memberCount: conversation.participants.length,
         }
@@ -514,8 +514,9 @@ export async function updateGroup(
     .where(eq(conversations.id, groupId));
 
   return {
-    id: conversation.id,
+    conversationId: conversation.id,
     groupName: data.name,
+    groupAvatar: conversation.groupAvatar
   };
 }
 
@@ -609,22 +610,10 @@ export async function addMembers(
       }))
     );
 
-  return await db.query.conversationParticipants.findMany({
-    where: eq(
-      conversationParticipants.conversationId,
-      groupId
-    ),
-    with: {
-      user: {
-        columns: {
-          id: true,
-          username: true,
-          email: true,
-          lastSeen: true,
-        },
-      },
-    },
-  });
+  return {
+    conversationId: groupId,
+    memberIds: newMemberIds,
+  };
 }
 
 export async function removeMember(
@@ -709,6 +698,90 @@ export async function removeMember(
         )
       )
     );
+
+  return {
+    conversationId: groupId,
+    memberId,
+  };
+}
+
+export async function leaveGroup(
+  groupId: string,
+  userId: string
+) {
+  const conversation =
+    await db.query.conversations.findFirst({
+      where: eq(conversations.id, groupId),
+    });
+
+  if (!conversation) {
+    throw new Error("Group not found");
+  }
+
+  if (conversation.type !== "group") {
+    throw new Error("Not a group");
+  }
+
+  const participant =
+    await db.query.conversationParticipants.findFirst({
+      where: and(
+        eq(
+          conversationParticipants.conversationId,
+          groupId
+        ),
+        eq(
+          conversationParticipants.userId,
+          userId
+        )
+      ),
+    });
+
+  if (!participant) {
+    throw new Error("You are not a member.");
+  }
+
+  // Prevent the last admin from leaving
+  if (participant.role === "admin") {
+    const admins =
+      await db.query.conversationParticipants.findMany({
+        where: and(
+          eq(
+            conversationParticipants.conversationId,
+            groupId
+          ),
+          eq(
+            conversationParticipants.role,
+            "admin"
+          )
+        ),
+      });
+
+    if (admins.length === 1) {
+      throw new Error(
+        "Transfer admin rights before leaving."
+      );
+    }
+  }
+
+  await db
+    .delete(conversationParticipants)
+    .where(
+      and(
+        eq(
+          conversationParticipants.conversationId,
+          groupId
+        ),
+        eq(
+          conversationParticipants.userId,
+          userId
+        )
+      )
+    );
+
+  return {
+    conversationId: groupId,
+    memberId: userId,
+  };
 }
 
 export async function promoteMember(
@@ -759,6 +832,11 @@ export async function promoteMember(
         eq(conversationParticipants.userId, memberId)
       )
     );
+
+  return {
+    conversationId: groupId,
+    memberId,
+  };
 }
 
 export async function demoteAdmin(
@@ -839,6 +917,11 @@ export async function demoteAdmin(
         )
       )
     );
+
+  return {
+    conversationId: groupId,
+    memberId,
+  };
 }
 
 export async function deleteGroup(
@@ -882,6 +965,17 @@ export async function deleteGroup(
     );
   }
 
+  const members =
+    await db.query.conversationParticipants.findMany({
+      where: eq(
+        conversationParticipants.conversationId,
+        groupId
+      ),
+      columns: {
+        userId: true,
+      },
+    });
+
   await db
     .delete(messages)
     .where(
@@ -902,4 +996,9 @@ export async function deleteGroup(
     .where(
       eq(conversations.id, groupId)
     );
+
+  return {
+    conversationId: groupId,
+    memberIds: members.map((m) => m.userId),
+  };
 }

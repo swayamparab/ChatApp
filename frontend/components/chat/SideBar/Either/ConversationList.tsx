@@ -39,13 +39,7 @@ export default function ConversationList() {
             {data.conversations.map((conversation) => (
                 <ConversationItem
                     key={conversation.conversationId}
-                    conversationId={conversation.conversationId}
-                    userId={conversation.otherUser.id}
-                    username={conversation.otherUser.username}
-                    lastMessage={conversation.lastMessage}
-                    unreadCount={
-                        conversation.unreadCount ?? null
-                    }
+                    conversation={conversation}
                 />
             ))}
         </>

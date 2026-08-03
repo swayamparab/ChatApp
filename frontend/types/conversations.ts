@@ -1,6 +1,8 @@
 export type Conversation = {
     conversationId: string;
 
+    type: "direct" | "group";
+
     updatedAt: string;
 
     otherUser: {
@@ -8,7 +10,13 @@ export type Conversation = {
         username: string;
         email: string;
         lastSeen: string | null;
-    };
+    } | null;
+
+    group: {
+        name: string;
+        avatar: string | null;
+        memberCount: number;
+    } | null;
 
     lastMessage: {
         id: string;

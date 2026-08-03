@@ -49,13 +49,15 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
             conversation.conversationId === conversationId
     );
 
-    const isOnline = conversation
-        ? onlineUsers.includes(conversation.otherUser.id)
-        : false;
+    const isOnline =
+        conversation?.type === "direct"
+            ? onlineUsers.includes(conversation.otherUser!.id)
+            : false;
 
-    const lastSeenText = conversation
-        ? formatLastSeen(conversation.otherUser.lastSeen)
-        : "";
+    const lastSeenText =
+        conversation?.type === "direct"
+            ? formatLastSeen(conversation.otherUser!.lastSeen)
+            : "";
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -282,15 +284,17 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                     "
                 >
                     <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
-                        {conversation.otherUser.username
-                            .charAt(0)
-                            .toUpperCase()}
+                        {conversation.type === "group"
+                            ? conversation.group!.name!.charAt(0).toUpperCase()
+                            : conversation.otherUser!.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
                 <div className="min-w-0">
                     <h2 className="truncate text-[15px] font-semibold tracking-[0.01em] text-white">
-                        {conversation.otherUser.username}
+                        {conversation.type === "group"
+                            ? conversation.group!.name
+                            : conversation.otherUser!.username}
                     </h2>
 
                     <div className="mt-0.5 flex items-center gap-2">
@@ -350,8 +354,12 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                             startVoiceCall({
                                 conversationId,
                                 receiver: {
-                                    id: conversation.otherUser.id,
-                                    username: conversation.otherUser.username,
+                                    id: conversation.type === "group"
+                                        ? conversation.conversationId
+                                        : conversation.otherUser!.id,
+                                    username: conversation.type === "group"
+                                        ? conversation.group!.name!
+                                        : conversation.otherUser!.username,
                                 },
                             })
                         }
@@ -377,8 +385,15 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                             startVideoCall({
                                 conversationId,
                                 receiver: {
-                                    id: conversation.otherUser.id,
-                                    username: conversation.otherUser.username,
+                                    id:
+                                        conversation.type === "group"
+                                            ? conversation.conversationId
+                                            : conversation.otherUser!.id,
+
+                                    username:
+                                        conversation.type === "group"
+                                            ? conversation.group!.name
+                                            : conversation.otherUser!.username,
                                 },
                             })
                         }

@@ -2,27 +2,15 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSocket } from "@/hooks/useSocket";
+import { Conversation } from "@/types/conversations";
 import { useRouter, useParams } from "next/navigation";
 
 type ConversationItemProps = {
-    conversationId: string;
-    userId: string;
-    username: string;
-
-    lastMessage: {
-        type: "text" | "image" | "video" | "file" | "voice";
-        content: string | null;
-    } | null;
-
-    unreadCount: number;
+    conversation: Conversation;
 };
 
 export default function ConversationItem({
-    conversationId,
-    userId,
-    username,
-    lastMessage,
-    unreadCount
+    conversation,
 }: ConversationItemProps) {
     const router = useRouter();
 
@@ -30,20 +18,32 @@ export default function ConversationItem({
         conversationId?: string;
     }>();
 
-    const isActive = currentConversationId === conversationId;
+    const isActive =
+        currentConversationId === conversation.conversationId;
 
     const { onlineUsers } = useSocket();
 
-    const isOnline = onlineUsers.includes(userId);
+    const isGroup = conversation.type === "group";
+
+    const title = isGroup
+        ? conversation.group!.name
+        : conversation.otherUser!.username;
+
+    const isOnline = !isGroup
+        ? onlineUsers.includes(conversation.otherUser!.id)
+        : false;
 
     return (
         <button
-            onClick={() => router.push(`/chat/${conversationId}`)}
+            onClick={() =>
+                router.push(`/chat/${conversation.conversationId}`)
+            }
             className={`
                 mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-2xl px-4 py-3
                 text-left transition-all duration-200
-                ${isActive
-                    ? `
+                ${
+                    isActive
+                        ? `
                         bg-gradient-to-r
                         from-sky-500/15
                         to-blue-500/10
@@ -52,7 +52,7 @@ export default function ConversationItem({
                         ring-sky-400/30
                         scale-[1.01]
                     `
-                    : `
+                        : `
                         hover:bg-slate-800/70
                         hover:scale-[1.01]
                         hover:shadow-md
@@ -80,11 +80,11 @@ export default function ConversationItem({
                             text-white
                         "
                     >
-                        {username.charAt(0).toUpperCase()}
+                        {title.charAt(0).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
-                {isOnline && (
+                {!isGroup && isOnline && (
                     <div className="absolute bottom-0 right-0">
                         <span
                             className="
@@ -114,27 +114,25 @@ export default function ConversationItem({
 
             <div className="min-w-0 flex-1">
                 <p className="truncate text-[15px] font-semibold tracking-[0.01em] text-white">
-                    {username}
+                    {title}
                 </p>
 
                 <p className="mt-0.5 truncate text-[13px] leading-5 text-slate-400">
-                    {!lastMessage
+                    {!conversation.lastMessage
                         ? "No messages yet"
-                        : lastMessage.type === "text"
-                            ? lastMessage.content
-                            : lastMessage.type === "image"
-                                ? "📷 Image"
-                                : lastMessage.type === "video"
-                                    ? "🎥 Video"
-                                    : lastMessage.type === "file"
-                                        ? "📄 File"
-                                        : lastMessage.type === "voice"
-                                            ? "🎤 Voice message"
-                                            : ""}
+                        : conversation.lastMessage.type === "text"
+                        ? conversation.lastMessage.content
+                        : conversation.lastMessage.type === "image"
+                        ? "📷 Image"
+                        : conversation.lastMessage.type === "video"
+                        ? "🎥 Video"
+                        : conversation.lastMessage.type === "file"
+                        ? "📄 File"
+                        : "🎤 Voice message"}
                 </p>
             </div>
 
-            {unreadCount > 0 && (
+            {conversation.unreadCount > 0 && (
                 <div
                     className="
                         flex
@@ -152,7 +150,7 @@ export default function ConversationItem({
                         shadow-sky-500/30
                     "
                 >
-                    {unreadCount}
+                    {conversation.unreadCount}
                 </div>
             )}
         </button>

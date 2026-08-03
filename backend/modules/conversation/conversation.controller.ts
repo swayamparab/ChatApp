@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { addMembers, createGroup, deleteGroup, demoteAdmin, getConversations, getGroupInfo, markConversationAsRead, promoteMember, removeMember, searchMessages, updateGroup } from "./conversation.service";
+import { addMembers, createGroup, deleteGroup, demoteAdmin, getConversations, getGroupInfo, leaveGroup, markConversationAsRead, promoteMember, removeMember, searchMessages, updateGroup } from "./conversation.service";
 import { ZodError } from "zod";
 import { addMembersSchema, createGroupSchema, updateGroupSchema } from "./conversation.validation";
+import { emitAdminDemoted, emitAdminPromoted, emitGroupDeleted, emitGroupUpdated, emitMemberAdded, emitMemberRemoved, emitToUser, joinUserToConversation, leaveUserFromConversation } from "../../sockets/helpers/socket";
 
 export async function getConversationsController(req: Request, res: Response) {
     try {
@@ -140,15 +141,20 @@ export async function updateGroupController(
     try {
         const data = updateGroupSchema.parse(req.body);
 
-        const group = await updateGroup(
-            req.userId,
+        const result = await updateGroup(
             req.params.groupId,
+            req.userId,
             data
         );
 
+        emitGroupUpdated(result.conversationId, {
+            conversationId: result.conversationId,
+            groupName: result.groupName,
+            groupAvatar: result.groupAvatar,
+        });
+
         return res.status(200).json({
             success: true,
-            group,
         });
     } catch (error) {
         if (error instanceof ZodError) {
@@ -175,15 +181,32 @@ export async function addMembersController(
     try {
         const data = addMembersSchema.parse(req.body);
 
-        const members = await addMembers(
-            req.userId,
+        const result = await addMembers(
             req.params.groupId,
+            req.userId,
             data
         );
 
+        for (const memberId of result.memberIds) {
+            joinUserToConversation(
+                memberId,
+                result.conversationId
+            );
+        }
+
+        emitMemberAdded(result.conversationId, {
+            conversationId: result.conversationId,
+            memberIds: result.memberIds,
+        });
+
+        for (const memberId of result.memberIds) {
+            emitToUser(memberId, "group_added", {
+                conversationId: result.conversationId,
+            });
+        }
+
         return res.status(200).json({
             success: true,
-            members,
         });
     } catch (error) {
         if (error instanceof ZodError) {
@@ -213,15 +236,66 @@ export async function removeMemberController(
     res: Response
 ) {
     try {
-        await removeMember(
-            req.userId,
+        const result = await removeMember(
             req.params.groupId,
             req.params.memberId,
+            req.userId,
         );
+
+        leaveUserFromConversation(
+            result.memberId,
+            result.conversationId
+        );
+
+        emitMemberRemoved(result.conversationId, {
+            conversationId: result.conversationId,
+            memberId: result.memberId,
+        });
+
+        emitToUser(result.memberId, "removed_from_group", {
+            conversationId: result.conversationId,
+        });
 
         return res.status(200).json({
             success: true,
-            message: "Member removed successfully.",
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Internal Server Error",
+        });
+    }
+}
+
+export async function leaveGroupController(
+    req: Request<GroupParams>,
+    res: Response
+) {
+    try {
+        const result = await leaveGroup(
+            req.params.groupId,
+            req.userId
+        );
+
+        leaveUserFromConversation(
+            result.memberId,
+            result.conversationId
+        );
+
+        emitMemberRemoved(result.conversationId, {
+            conversationId: result.conversationId,
+            memberId: result.memberId,
+        });
+
+        emitToUser(result.memberId, "left_group", {
+            conversationId: result.conversationId,
+        });
+
+        return res.status(200).json({
+            success: true,
         });
     } catch (error) {
         return res.status(400).json({
@@ -239,15 +313,19 @@ export async function promoteMemberController(
     res: Response
 ) {
     try {
-        await promoteMember(
+        const result = await promoteMember(
             req.userId,
             req.params.groupId,
             req.params.memberId,
         );
 
+        emitAdminPromoted(result.conversationId, {
+            conversationId: result.conversationId,
+            memberId: result.memberId
+        })
+
         return res.status(200).json({
             success: true,
-            message: "Member promoted successfully.",
         });
     } catch (error) {
         return res.status(400).json({
@@ -265,15 +343,19 @@ export async function demoteAdminController(
     res: Response
 ) {
     try {
-        await demoteAdmin(
+        const result = await demoteAdmin(
             req.params.groupId,
             req.params.memberId,
             req.userId
         );
 
+        emitAdminDemoted(result.conversationId, {
+            conversationId: result.conversationId,
+            memberId: result.memberId
+        })
+
         return res.status(200).json({
             success: true,
-            message: "Admin demoted successfully.",
         });
     } catch (error) {
         return res.status(400).json({
@@ -291,14 +373,24 @@ export async function deleteGroupController(
     res: Response
 ) {
     try {
-        await deleteGroup(
+        const result = await deleteGroup(
             req.params.groupId,
             req.userId
         );
 
+        for (const memberId of result.memberIds) {
+            leaveUserFromConversation(
+                memberId,
+                result.conversationId
+            );
+        }
+
+        emitGroupDeleted(result.conversationId, {
+            conversationId: result.conversationId,
+        });
+
         return res.status(200).json({
             success: true,
-            message: "Group deleted successfully.",
         });
     } catch (error) {
         return res.status(400).json({
