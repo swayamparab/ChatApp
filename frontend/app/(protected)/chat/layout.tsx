@@ -22,22 +22,24 @@ export default function ChatLayout({
 
     return (
         <main className="flex h-[100dvh] flex-col overflow-hidden lg:grid lg:grid-cols-[320px_1fr]">
-            {/* Sidebar */}
             <aside
                 className={`
-                    h-full
-                    ${isConversationPage ? "hidden lg:block" : "block"}
-                `}
+            min-h-0
+            overflow-hidden
+            ${isConversationPage ? "hidden lg:flex" : "flex"}
+        `}
             >
                 <Sidebar />
             </aside>
 
-            {/* Chat */}
             <section
                 className={`
-                    h-full min-h-0 flex-col overflow-hidden bg-slate-950
-                    ${isConversationPage ? "flex" : "hidden lg:flex"}
-                `}
+            min-h-0
+            overflow-hidden
+            bg-slate-950
+            ${isConversationPage ? "flex" : "hidden lg:flex"}
+            flex-col
+        `}
             >
                 {children}
             </section>

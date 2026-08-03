@@ -268,7 +268,11 @@ export default function MessageList({
             ref={messagesContainerRef}
             onScroll={handleScroll}
             className="
-                flex flex-1 flex-col gap-3
+                min-h-0
+                flex 
+                flex-1
+                flex-col 
+                gap-3
                 overflow-x-hidden
                 overflow-y-auto
                 bg-gradient-to-b
