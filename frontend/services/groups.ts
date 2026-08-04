@@ -24,3 +24,35 @@ export async function updateGroup({ groupId, name }: UpdateGroupInput) {
 
     return data;
 }
+
+export async function addMembers(data: { groupId: string; memberIds: string[]; }) {
+    const response = await api.patch(`/conversations/groups/${data.groupId}/members`,
+        {
+            memberIds: data.memberIds,
+        }
+    );
+
+    return response.data;
+}
+
+export type CreateGroupPayload = {
+    name: string;
+    memberIds: string[];
+};
+
+export type CreateGroupResponse = {
+    success: boolean;
+    conversationId: string;
+};
+
+export async function createGroup(
+    data: CreateGroupPayload
+): Promise<CreateGroupResponse> {
+    const response = await api.post<CreateGroupResponse>("/conversations/groups", data);
+
+    return response.data;
+}
+
+export async function deleteGroup(groupId: string) {
+    await api.delete(`/conversations/groups/${groupId}`);
+}

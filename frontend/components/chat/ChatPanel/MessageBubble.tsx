@@ -542,7 +542,7 @@ export default function MessageBubble({
                         </div>
                     ) : (
                         <>
-                            {!isOwnMessage && message.conversation.type === "group" && (
+                            {!isOwnMessage && message.conversation?.type === "group" && (
                                 <p className="mb-1 ml-1 text-xs font-semibold text-sky-400">
                                     {message.sender.username}
                                 </p>

@@ -380,14 +380,15 @@ export async function createGroup(creatorId: string, data: CreateGroupInput) {
       })
       .returning()
 
-    await tx
-      .insert(conversationParticipants)
-      .values(
-        memberIds.map((userId) => ({
-          conversationId: conversation.id,
-          userId
-        }))
-      )
+    await tx.insert(conversationParticipants).values(
+      memberIds.map((userId) => ({
+        conversationId: conversation.id,
+        userId,
+        role: userId === creatorId
+          ? ("admin" as const)
+          : ("member" as const),
+      }))
+    );
 
     return conversation;
 

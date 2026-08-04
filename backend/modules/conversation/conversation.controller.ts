@@ -84,9 +84,15 @@ export async function createGroupController(req: Request, res: Response) {
             data
         );
 
+        for (const memberId of data.memberIds) {
+            emitToUser(memberId, "group_added", {
+                conversationId: conversation.id,
+            });
+        }
+
         return res.status(201).json({
             success: true,
-            conversation,
+            conversationId: conversation.id,
         });
     } catch (error) {
         if (error instanceof ZodError) {

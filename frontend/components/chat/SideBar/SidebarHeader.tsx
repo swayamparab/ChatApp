@@ -10,18 +10,23 @@ import {
 
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-import { MoreVertical, LogOut } from "lucide-react";
+import { MoreVertical, LogOut, UsersRound } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import CreateGroupDialog from "../group/CreateGroupDialog";
 
 export default function SidebarHeader() {
     const { data } = useCurrentUser();
 
     const router = useRouter();
     const queryClient = useQueryClient();
+
+    const [createGroupOpen, setCreateGroupOpen] = useState(false);
 
     if (!data) return null;
 
@@ -65,6 +70,19 @@ export default function SidebarHeader() {
                     </p>
                 </div>
             </div>
+
+            <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setCreateGroupOpen(true)}
+            >
+                <UsersRound className="h-5 w-5" />
+            </Button>
+
+            <CreateGroupDialog
+                open={createGroupOpen}
+                onOpenChange={setCreateGroupOpen}
+            />
 
             <DropdownMenu>
                 <DropdownMenuTrigger className="rounded-xl p-2.5 text-slate-400 transition-all duration-200 hover:bg-slate-800 hover:text-white focus:outline-none">

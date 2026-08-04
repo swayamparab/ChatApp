@@ -117,6 +117,17 @@ export function emitAdminDemoted(
         .emit("admin_demoted", payload);
 }
 
+type GroupAddedPayload = {
+    conversationId: string;
+};
+
+export function emitGroupAdded(
+    userId: string,
+    payload: GroupAddedPayload
+) {
+    emitToUser(userId, "group_added", payload);
+}
+
 export function emitGroupDeleted(
     conversationId: string,
     payload: GroupDeletedPayload
