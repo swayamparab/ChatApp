@@ -156,6 +156,12 @@ export default function MessageBubble({
         };
     }, []);
 
+    console.log({
+    isOwnMessage,
+    conversation: message.conversation,
+    sender: message.sender,
+});
+
     return (
         <div
             id={`message-${message.id}`}
@@ -542,6 +548,12 @@ export default function MessageBubble({
                         </div>
                     ) : (
                         <>
+                            {!isOwnMessage && message.conversation.type === "group" && (
+                                <p className="mb-1 ml-1 text-xs font-semibold text-sky-400">
+                                    {message.sender.username}
+                                </p>
+                            )}
+                            
                             {message.replyTo && (
                                 <div
                                     className={`

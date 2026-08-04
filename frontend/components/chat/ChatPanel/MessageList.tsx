@@ -286,8 +286,7 @@ export default function MessageList({
                 min-h-0
                 flex 
                 flex-1
-                flex-col 
-                justify-end
+                flex-col
                 gap-3
                 overflow-x-hidden
                 overflow-y-auto

@@ -65,6 +65,12 @@ export async function getMessages(
             ),
 
             with: {
+                conversation: {
+                    columns: {
+                        type: true
+                    }
+                },
+
                 sender: {
                     columns: {
                         id: true,

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSocket } from "@/hooks/useSocket";
 import { Conversation } from "@/types/conversations";
 import { useRouter, useParams } from "next/navigation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 type ConversationItemProps = {
     conversation: Conversation;
@@ -33,6 +34,32 @@ export default function ConversationItem({
         ? onlineUsers.includes(conversation.otherUser!.id)
         : false;
 
+    const { data: currentUser } = useCurrentUser();
+
+    const lastMessagePreview = !conversation.lastMessage
+        ? "No messages yet"
+        : conversation.lastMessage.type === "text"
+            ? conversation.lastMessage.content
+            : conversation.lastMessage.type === "image"
+                ? "📷 Image"
+                : conversation.lastMessage.type === "video"
+                    ? "🎥 Video"
+                    : conversation.lastMessage.type === "file"
+                        ? "📄 File"
+                        : "🎤 Voice message";
+
+    const senderName =
+        conversation.lastMessage?.sender.id === currentUser?.user.id
+            ? "You"
+            : conversation.lastMessage?.sender.username;
+
+    const preview =
+        !conversation.lastMessage
+            ? "No messages yet"
+            : isGroup
+                ? `${senderName}: ${lastMessagePreview}`
+                : lastMessagePreview;
+
     return (
         <button
             onClick={() =>
@@ -41,9 +68,8 @@ export default function ConversationItem({
             className={`
                 mx-2 my-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-2xl px-4 py-3
                 text-left transition-all duration-200
-                ${
-                    isActive
-                        ? `
+                ${isActive
+                    ? `
                         bg-gradient-to-r
                         from-sky-500/15
                         to-blue-500/10
@@ -52,7 +78,7 @@ export default function ConversationItem({
                         ring-sky-400/30
                         scale-[1.01]
                     `
-                        : `
+                    : `
                         hover:bg-slate-800/70
                         hover:scale-[1.01]
                         hover:shadow-md
@@ -118,17 +144,7 @@ export default function ConversationItem({
                 </p>
 
                 <p className="mt-0.5 truncate text-[13px] leading-5 text-slate-400">
-                    {!conversation.lastMessage
-                        ? "No messages yet"
-                        : conversation.lastMessage.type === "text"
-                        ? conversation.lastMessage.content
-                        : conversation.lastMessage.type === "image"
-                        ? "📷 Image"
-                        : conversation.lastMessage.type === "video"
-                        ? "🎥 Video"
-                        : conversation.lastMessage.type === "file"
-                        ? "📄 File"
-                        : "🎤 Voice message"}
+                    {preview}
                 </p>
             </div>
 

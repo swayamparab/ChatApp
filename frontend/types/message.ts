@@ -2,6 +2,10 @@ export interface Message {
     id: string;
     conversationId: string;
 
+    conversation: {
+        type: "direct" | "group";
+    };
+
     type: "text" | "image" | "video" | "file" | "voice";
 
     content: string | null;

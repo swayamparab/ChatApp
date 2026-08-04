@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchMessages } from "@/hooks/message/useSearchMessages";
 import { useCallActions } from "@/hooks/call/useCallActions";
+import GroupInfoDialog from "../group/GroupInfoDialog";
 
 type ChatHeaderProps = {
     isTyping: boolean;
@@ -42,22 +43,9 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
 
     const [currentMatch, setCurrentMatch] = useState(0);
 
+    const [groupInfoOpen, setGroupInfoOpen] = useState(false);
+
     const { startVoiceCall, startVideoCall } = useCallActions();
-
-    const conversation = data?.conversations.find(
-        (conversation) =>
-            conversation.conversationId === conversationId
-    );
-
-    const isOnline =
-        conversation?.type === "direct"
-            ? onlineUsers.includes(conversation.otherUser!.id)
-            : false;
-
-    const lastSeenText =
-        conversation?.type === "direct"
-            ? formatLastSeen(conversation.otherUser!.lastSeen)
-            : "";
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -102,6 +90,78 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
         onJumpToMessage,
     ]);
 
+    const conversation = data?.conversations.find(
+        (conversation) =>
+            conversation.conversationId === conversationId
+    );
+
+    if (isLoading) {
+        return (
+            <header
+                className="
+                flex
+                h-16
+                items-center
+                justify-between
+                border-slate-800/70
+                bg-slate-900/80
+                px-5
+                backdrop-blur-xl
+            "
+            >
+                <p className="text-slate-400">
+                    Loading...
+                </p>
+            </header>
+        );
+    }
+
+    if (!conversation) {
+        return (
+            <header
+                className="
+                flex
+                h-16
+                items-center
+                justify-between
+                border-slate-800/70
+                bg-slate-900/80
+                px-5
+                backdrop-blur-xl
+            "
+            >
+                <p className="text-red-400">
+                    Conversation not found
+                </p>
+            </header>
+        );
+    }
+
+    const isGroup = conversation.type === "group";
+
+    const isOnline =
+        !isGroup &&
+        onlineUsers.includes(conversation.otherUser!.id);
+
+    const lastSeenText =
+        !isGroup
+            ? formatLastSeen(conversation.otherUser!.lastSeen)
+            : "";
+
+    const title = isGroup
+        ? conversation.group!.name!
+        : conversation.otherUser!.username;
+
+    const avatarLetter = title.charAt(0).toUpperCase();
+
+    const subtitle = isGroup
+        ? `${conversation.group!.memberCount} members`
+        : isTyping
+            ? "Typing..."
+            : isOnline
+                ? "Online"
+                : lastSeenText;
+
     const highlightText = (text: string, query: string) => {
         if (!query.trim()) return text;
 
@@ -118,48 +178,6 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
             ) : (
                 part
             )
-        );
-    }
-
-    if (isLoading) {
-        return (
-            <header
-                className="
-                    flex
-                    h-16
-                    items-center
-                    justify-between
-                    border-slate-800/70
-                    bg-slate-900/80
-                    px-5
-                    backdrop-blur-xl
-                "
-            >
-                <p className="text-slate-400">
-                    Loading...
-                </p>
-            </header>
-        );
-    }
-
-    if (!conversation) {
-        return (
-            <header
-                className="
-                    flex
-                    h-16
-                    items-center
-                    justify-between
-                    border-slate-800/70
-                    bg-slate-900/80
-                    px-5
-                    backdrop-blur-xl
-                "
-            >
-                <p className="text-red-400">
-                    Conversation not found
-                </p>
-            </header>
         );
     }
 
@@ -265,7 +283,7 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                 backdrop-blur-xl
             "
         >
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-center gap-2">
                 <button
                     onClick={() => router.push("/chat")}
                     className="rounded-xl p-2 transition-all duration-200 hover:bg-slate-800 lg:hidden"
@@ -274,158 +292,174 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                     <ArrowLeft className="h-5 w-5 text-slate-300" />
                 </button>
 
-                <Avatar
+                <button
+                    onClick={() => {
+                        if (isGroup) {
+                            setGroupInfoOpen(true);
+                        }
+                    }}
                     className="
-                        h-12
-                        w-12
-                        ring-2
-                        ring-slate-700/40
-                        shadow-lg
-                    "
+            flex
+            min-w-0
+            items-center
+            gap-3
+            rounded-xl
+            px-2
+            py-1
+            transition
+            hover:bg-slate-800/60
+        "
                 >
-                    <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
-                        {conversation.type === "group"
-                            ? conversation.group!.name!.charAt(0).toUpperCase()
-                            : conversation.otherUser!.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
+                    <Avatar
+                        className="
+                h-12
+                w-12
+                ring-2
+                ring-slate-700/40
+                shadow-lg
+            "
+                    >
+                        <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
+                            {avatarLetter}
+                        </AvatarFallback>
+                    </Avatar>
 
-                <div className="min-w-0">
-                    <h2 className="truncate text-[15px] font-semibold tracking-[0.01em] text-white">
-                        {conversation.type === "group"
-                            ? conversation.group!.name
-                            : conversation.otherUser!.username}
-                    </h2>
+                    <div className="min-w-0">
+                        <h2 className="truncate text-[15px] font-semibold tracking-[0.01em] text-white">
+                            {title}
+                        </h2>
 
-                    <div className="mt-0.5 flex items-center gap-2">
-                        <div className="relative">
-                            {isOnline && (
-                                <span
-                                    className="
-                                        absolute
-                                        inset-0
-                                        animate-ping
-                                        rounded-full
-                                        bg-emerald-500
-                                        opacity-60
-                                    "
-                                />
+                        <div className="mt-0.5 flex items-center gap-2">
+                            {!isGroup && (
+                                <div className="relative">
+                                    {isOnline && (
+                                        <span
+                                            className="
+                                    absolute
+                                    inset-0
+                                    animate-ping
+                                    rounded-full
+                                    bg-emerald-500
+                                    opacity-60
+                                "
+                                        />
+                                    )}
+
+                                    <span
+                                        className={`
+                                relative
+                                block
+                                h-2.5
+                                w-2.5
+                                rounded-full
+                                ${isTyping
+                                                ? "bg-emerald-400"
+                                                : isOnline
+                                                    ? "bg-emerald-500"
+                                                    : "bg-slate-500"
+                                            }
+                            `}
+                                    />
+                                </div>
                             )}
 
-                            <span
-                                className={`
-                                    relative
-                                    block
-                                    h-2.5
-                                    w-2.5
-                                    rounded-full
-                                    ${isTyping
-                                        ? "bg-emerald-400"
+                            <p
+                                className={`truncate text-sm ${isTyping
+                                        ? "text-green-400"
                                         : isOnline
-                                            ? "bg-emerald-500"
-                                            : "bg-slate-500"
-                                    }
-                                `}
-                            />
+                                            ? "text-emerald-400"
+                                            : "text-slate-400"
+                                    }`}
+                            >
+                                {subtitle}
+                            </p>
                         </div>
-
-                        <p
-                            className={`truncate text-sm ${isTyping
-                                ? "text-green-400"
-                                : isOnline
-                                    ? "text-emerald-400"
-                                    : "text-slate-400"
-                                }`}
-                        >
-                            {isTyping
-                                ? "Typing..."
-                                : isOnline
-                                    ? "Online"
-                                    : lastSeenText}
-                        </p>
                     </div>
-                </div>
+                </button>
             </div>
-
             <div className="flex items-center gap-1">
                 <div className="flex items-center gap-1">
-                    <button
-                        onClick={() =>
-                            startVoiceCall({
-                                conversationId,
-                                receiver: {
-                                    id: conversation.type === "group"
-                                        ? conversation.conversationId
-                                        : conversation.otherUser!.id,
-                                    username: conversation.type === "group"
-                                        ? conversation.group!.name!
-                                        : conversation.otherUser!.username,
-                                },
-                            })
-                        }
-                        className="
-                            rounded-xl
-                            p-2
-                            text-slate-400
-                            transition-all
-                            duration-200
-                            hover:bg-sky-500/15
-                            hover:text-sky-400
-                            hover:scale-105
-                            active:scale-95
-                            hover:text-white
-                        "
-                        aria-label="Voice Call"
-                    >
-                        <Phone className="h-5 w-5" />
-                    </button>
+                    {!isGroup && (
+                        <>
+                            <button
+                                onClick={() =>
+                                    startVoiceCall({
+                                        conversationId,
+                                        receiver: {
+                                            id: conversation.type === "group"
+                                                ? conversation.conversationId
+                                                : conversation.otherUser!.id,
+                                            username: conversation.type === "group"
+                                                ? conversation.group!.name!
+                                                : conversation.otherUser!.username,
+                                        },
+                                    })
+                                }
+                                className="
+                                    rounded-xl
+                                    p-2
+                                    text-slate-400
+                                    transition-all
+                                    duration-200
+                                    hover:bg-sky-500/15
+                                    hover:text-sky-400
+                                    hover:scale-105
+                                    active:scale-95
+                                    hover:text-white
+                                "
+                                aria-label="Voice Call"
+                            >
+                                <Phone className="h-5 w-5" />
+                            </button>
 
-                    <button
-                        onClick={() =>
-                            startVideoCall({
-                                conversationId,
-                                receiver: {
-                                    id:
-                                        conversation.type === "group"
-                                            ? conversation.conversationId
-                                            : conversation.otherUser!.id,
+                            <button
+                                onClick={() =>
+                                    startVideoCall({
+                                        conversationId,
+                                        receiver: {
+                                            id:
+                                                conversation.type === "group"
+                                                    ? conversation.conversationId
+                                                    : conversation.otherUser!.id,
 
-                                    username:
-                                        conversation.type === "group"
-                                            ? conversation.group!.name
-                                            : conversation.otherUser!.username,
-                                },
-                            })
-                        }
-                        className="
-                            rounded-xl
-                            p-2
-                            text-slate-400
-                            transition-all
-                            duration-200
-                            hover:bg-sky-500/15
-                            hover:text-sky-400
-                            hover:scale-105
-                            active:scale-95
-                            hover:text-white
-                        "
-                        aria-label="Video Call"
-                    >
-                        <Video className="h-5 w-5" />
-                    </button>
+                                            username:
+                                                conversation.type === "group"
+                                                    ? conversation.group!.name
+                                                    : conversation.otherUser!.username,
+                                        },
+                                    })
+                                }
+                                className="
+                                    rounded-xl
+                                    p-2
+                                    text-slate-400
+                                    transition-all
+                                    duration-200
+                                    hover:bg-sky-500/15
+                                    hover:text-sky-400
+                                    hover:scale-105
+                                    active:scale-95
+                                    hover:text-white
+                                "
+                                aria-label="Video Call"
+                            >
+                                <Video className="h-5 w-5" />
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         className="
-                rounded-xl
-                p-2
-                text-slate-400
-                transition-all
-                duration-200
-                hover:bg-slate-800
-                hover:text-white
-            "
+                            rounded-xl
+                            p-2
+                            text-slate-400
+                            transition-all
+                            duration-200
+                            hover:bg-slate-800
+                            hover:text-white
+                        "
                         aria-label="Conversation options"
                     >
                         <MoreVertical className="h-5 w-5" />
@@ -445,6 +479,13 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-        </header>
+            {isGroup && (
+                <GroupInfoDialog
+                    open={groupInfoOpen}
+                    onOpenChange={setGroupInfoOpen}
+                    groupId={conversation.conversationId}
+                />
+            )}
+        </header >
     );
 }
