@@ -48,7 +48,7 @@ export default function GroupInfoDialog({
 
     const [editingName, setEditingName] = useState(false);
 
-    const [groupName, setGroupName] = useState(data!.group.name);
+    const [groupName, setGroupName] = useState("");
 
     useEffect(() => {
         if (data) {
@@ -131,9 +131,16 @@ export default function GroupInfoDialog({
                                     }
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
+                                            const newName = groupName.trim();
+
+                                            if (!newName || newName === data.group.name) {
+                                                setEditingName(false);
+                                                return;
+                                            }
+
                                             updateGroup({
                                                 groupId,
-                                                name: groupName.trim(),
+                                                name: newName,
                                             });
 
                                             setEditingName(false);
