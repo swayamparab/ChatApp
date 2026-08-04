@@ -140,6 +140,23 @@ export default function GroupInfoDialog({
             >
                 {/* Header */}
                 <DialogHeader className="shrink-0 border-b border-slate-800 px-6 py-4">
+                    <button
+                        type="button"
+                        onClick={() => onOpenChange(false)}
+                        className="
+                            absolute
+                            left-4
+                            top-4
+                            rounded-full
+                            p-2
+                            text-slate-400
+                            transition
+                            hover:bg-slate-800
+                            hover:text-white
+                        "
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="h-16 w-16 ring-2 ring-slate-700 shadow-lg">
                             <AvatarFallback className="bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 text-xl font-bold text-white">
