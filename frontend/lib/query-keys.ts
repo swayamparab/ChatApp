@@ -10,4 +10,7 @@ export const queryKeys = {
 
   searchUsers: (query: string) =>
     ["search-users", query] as const,
+
+  groupInfo: (groupId: string) =>
+    ["group-info", groupId] as const,
 };

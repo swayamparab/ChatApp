@@ -156,12 +156,6 @@ export default function MessageBubble({
         };
     }, []);
 
-    console.log({
-    isOwnMessage,
-    conversation: message.conversation,
-    sender: message.sender,
-});
-
     return (
         <div
             id={`message-${message.id}`}
