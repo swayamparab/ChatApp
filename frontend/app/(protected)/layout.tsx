@@ -50,5 +50,9 @@ export default function ChatLayout({
         return null;
     }
 
-    return <>{children}</>;
+    return (
+    <div className="flex h-[100dvh] flex-col overflow-hidden">
+        {children}
+    </div>
+);
 }

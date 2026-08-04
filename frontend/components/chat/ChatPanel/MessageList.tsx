@@ -250,10 +250,25 @@ export default function MessageList({
 
     if (!data || messages.length === 0) {
         return (
-            <div className="flex flex-1 items-center justify-center">
-                <p className="text-slate-400">
-                    No messages yet.
-                </p>
+            <div
+                className="
+            flex
+            flex-1
+            min-h-0
+            flex-col
+            overflow-y-auto
+            bg-gradient-to-b
+            from-slate-950
+            to-[#030712]
+            px-5
+            py-4
+        "
+            >
+                <div className="flex flex-1 items-center justify-center">
+                    <p className="text-slate-400">
+                        No messages yet.
+                    </p>
+                </div>
             </div>
         );
     }
@@ -272,6 +287,7 @@ export default function MessageList({
                 flex 
                 flex-1
                 flex-col 
+                justify-end
                 gap-3
                 overflow-x-hidden
                 overflow-y-auto

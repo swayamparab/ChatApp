@@ -60,7 +60,7 @@ export default function ChatPanel() {
     }, [socket]);
 
     return (
-        <div className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
             <ChatHeader
                 isTyping={isTyping}
                 onJumpToMessage={setJumpToMessageId}
@@ -73,10 +73,12 @@ export default function ChatPanel() {
                 setHighlightedMessageId={setHighlightedMessageId}
             />
 
-            <MessageInput
-                replyingTo={replyingTo}
-                clearReply={() => setReplyingTo(null)}
-            />
+            <div className="shrink-0">
+                <MessageInput
+                    replyingTo={replyingTo}
+                    clearReply={() => setReplyingTo(null)}
+                />
+            </div>
         </div>
     );
 }

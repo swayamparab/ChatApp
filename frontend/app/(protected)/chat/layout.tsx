@@ -35,12 +35,13 @@ export default function ChatLayout({
 
             <section
                 className={`
-            min-h-0
-            overflow-hidden
-            bg-slate-950
-            ${isConversationPage ? "flex" : "hidden lg:flex"}
-            flex-col
-        `}
+                    flex-1
+                    min-h-0
+                    overflow-hidden
+                    bg-slate-950
+                    ${isConversationPage ? "flex" : "hidden lg:flex"}
+                    flex-col
+                `}
             >
                 {children}
             </section>
