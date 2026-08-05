@@ -195,12 +195,19 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
         const message = await tx.query.messages.findFirst({
             where: eq(messages.id, insertedMessage.id),
             with: {
+                conversation: {
+                    columns: {
+                        type: true,
+                    },
+                },
+
                 sender: {
                     columns: {
                         id: true,
                         username: true,
                     },
                 },
+
                 replyTo: {
                     columns: {
                         id: true,
@@ -217,7 +224,7 @@ export async function sendMessage(userId: string, data: CreateMessageInput) {
                         },
                     },
                 },
-            },
+            }
         });
 
         if (!message) {

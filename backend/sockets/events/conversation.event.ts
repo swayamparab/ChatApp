@@ -9,7 +9,7 @@ export function registerConversationEvents(io: Server, socket: Socket) {
         );
 
         if (!allowed) {
-            return callback({
+            return callback?.({
                 success: false,
                 message: "Unauthorized",
             });
@@ -17,13 +17,10 @@ export function registerConversationEvents(io: Server, socket: Socket) {
 
         socket.join(conversationId);
 
-        // console.log(`User ${socket.userId} joined ${conversationId}`);
-
-        callback({
+        callback?.({
             success: true,
         });
-    }
-    );
+    });
 
     socket.on(
         "mark_conversation_read",
