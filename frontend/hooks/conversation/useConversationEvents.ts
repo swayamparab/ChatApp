@@ -3,11 +3,16 @@ import { useSocket } from "../useSocket";
 import { useEffect } from "react";
 import { GetConversationsResponse } from "@/types/conversations";
 import { queryKeys } from "@/lib/query-keys";
+import { useRouter, useParams } from "next/navigation";
 
 export function useConversationEvents() {
     const { socket } = useSocket();
 
     const queryClient = useQueryClient();
+
+    const router = useRouter();
+
+    const { conversationId: activeConversationId } = useParams<{ conversationId: string }>();
 
     useEffect(() => {
         function handleGroupUpdated(data: {
@@ -68,13 +73,17 @@ export function useConversationEvents() {
             queryClient.removeQueries({
                 queryKey: queryKeys.groupInfo(data.conversationId),
             });
+
+            if (activeConversationId === data.conversationId) {
+                router.replace("/chat");
+            }
         }
 
         function handleMemberAdded(data: {
             conversationId: string;
             memberIds: string[];
         }) {
-            queryClient.invalidateQueries({
+            queryClient.refetchQueries({
                 queryKey: queryKeys.groupInfo(data.conversationId),
             });
 
@@ -87,7 +96,7 @@ export function useConversationEvents() {
             conversationId: string;
             memberId: string;
         }) {
-            queryClient.invalidateQueries({
+            queryClient.refetchQueries({
                 queryKey: queryKeys.groupInfo(data.conversationId),
             });
 
@@ -99,10 +108,6 @@ export function useConversationEvents() {
         function handleGroupAdded(data: { conversationId: string }) {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
-            });
-
-            socket.emit("join_conversation", {
-                conversationId: data.conversationId,
             });
         }
 
@@ -132,6 +137,32 @@ export function useConversationEvents() {
             queryClient.removeQueries({
                 queryKey: queryKeys.messages(data.conversationId),
             });
+
+            if (activeConversationId === data.conversationId) {
+                router.replace("/chat");
+            }
+        }
+
+        function handleRemovedFromGroup(data: {
+            conversationId: string;
+        }) {
+            handleLeftGroup(data);
+
+            if (activeConversationId === data.conversationId) {
+                router.replace("/chat");
+            }
+        }
+
+        function handleAdminChanged(data: {
+            conversationId: string;
+        }) {
+            queryClient.refetchQueries({
+                queryKey: queryKeys.groupInfo(data.conversationId),
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.conversations,
+            });
         }
 
         socket.on("group_updated", handleGroupUpdated);
@@ -140,6 +171,9 @@ export function useConversationEvents() {
         socket.on("member_removed", handleMemberRemoved);
         socket.on("group_added", handleGroupAdded);
         socket.on("group_deleted", handleGroupDeleted);
+        socket.on("removed_from_group", handleRemovedFromGroup);
+        socket.on("admin_promoted", handleAdminChanged);
+        socket.on("admin_demoted", handleAdminChanged);
 
         return () => {
             socket.off("group_updated", handleGroupUpdated);
@@ -148,6 +182,9 @@ export function useConversationEvents() {
             socket.off("member_removed", handleMemberRemoved);
             socket.off("group_added", handleGroupAdded);
             socket.off("group_deleted", handleGroupDeleted);
+            socket.off("removed_from_group", handleRemovedFromGroup);
+            socket.off("admin_promoted", handleAdminChanged);
+            socket.off("admin_demoted", handleAdminChanged);
         };
-    }, [socket, queryClient]);
+    }, [socket, queryClient, router, activeConversationId]);
 }
