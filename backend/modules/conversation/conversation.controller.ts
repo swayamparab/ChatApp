@@ -320,9 +320,9 @@ export async function promoteMemberController(
 ) {
     try {
         const result = await promoteMember(
-            req.userId,
             req.params.groupId,
             req.params.memberId,
+            req.userId,
         );
 
         emitAdminPromoted(result.conversationId, {
@@ -384,16 +384,16 @@ export async function deleteGroupController(
             req.userId
         );
 
+        emitGroupDeleted(result.conversationId, {
+            conversationId: result.conversationId,
+        });
+
         for (const memberId of result.memberIds) {
             leaveUserFromConversation(
                 memberId,
                 result.conversationId
             );
         }
-
-        emitGroupDeleted(result.conversationId, {
-            conversationId: result.conversationId,
-        });
 
         return res.status(200).json({
             success: true,

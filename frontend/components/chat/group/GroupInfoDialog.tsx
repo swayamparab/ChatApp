@@ -308,6 +308,13 @@ export default function GroupInfoDialog({
                                     key={member.id}
                                     member={member}
                                     currentUserId={currentUser.user.id}
+                                    currentUserRole={
+                                        data.group.members.find(
+                                            (m) => m.id === currentUser.user.id
+                                        )!.role
+                                    }
+                                    groupOwnerId={data.group.createdBy}
+                                    groupId={groupId}
                                 />
                             ))}
                         </div>

@@ -56,3 +56,27 @@ export async function createGroup(
 export async function deleteGroup(groupId: string) {
     await api.delete(`/conversations/groups/${groupId}`);
 }
+
+export async function removeMember(groupId: string, memberId: string) {
+    const { data } = await api.delete(
+        `/conversations/groups/${groupId}/members/${memberId}`
+    );
+
+    return data;
+}
+
+export async function promoteMember(groupId: string, memberId: string) {
+    const { data } = await api.patch(
+        `/conversations/groups/${groupId}/members/${memberId}/promote`
+    );
+
+    return data;
+}
+
+export async function demoteAdmin(groupId: string, memberId: string) {
+    const { data } = await api.patch(
+        `/conversations/groups/${groupId}/members/${memberId}/demote`
+    );
+
+    return data;
+}

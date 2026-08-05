@@ -13,8 +13,8 @@ router.get("/groups/:groupId", requireAuth, getGroupInfoController);
 router.patch("/groups/:groupId", requireAuth, updateGroupController);
 router.patch("/groups/:groupId/members", requireAuth, addMembersController);
 router.delete("/groups/:groupId/members/:memberId", requireAuth, removeMemberController);
-router.patch("/groups/:groupId/admins/:memberId", requireAuth, promoteMemberController);
-router.patch("/groups/:groupId/admins/:memberId/demote", requireAuth, demoteAdminController);
+router.patch("/groups/:groupId/members/:memberId/promote", requireAuth, promoteMemberController);
+router.patch("/groups/:groupId/members/:memberId/demote", requireAuth, demoteAdminController);
 router.delete("/groups/:groupId/leave", requireAuth, leaveGroupController);
 router.delete("/groups/:groupId", requireAuth, deleteGroupController);
 

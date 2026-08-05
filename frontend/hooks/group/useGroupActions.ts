@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-import { addMembers, createGroup, deleteGroup, leaveGroup, updateGroup } from "@/services/groups";
+import { addMembers, createGroup, deleteGroup, demoteAdmin, leaveGroup, promoteMember, removeMember, updateGroup } from "@/services/groups";
 import { queryKeys } from "@/lib/query-keys";
 import { toast } from "sonner";
 
@@ -104,6 +104,48 @@ export function useGroupActions() {
         },
     });
 
+    const removeMemberMutation = useMutation({
+        mutationFn: ({
+            groupId,
+            memberId,
+        }: {
+            groupId: string;
+            memberId: string;
+        }) => removeMember(groupId, memberId),
+
+        onSuccess: () => {
+            toast.success("Member removed");
+        },
+    });
+
+    const promoteMutation = useMutation({
+        mutationFn: ({
+            groupId,
+            memberId,
+        }: {
+            groupId: string;
+            memberId: string;
+        }) => promoteMember(groupId, memberId),
+
+        onSuccess: () => {
+            toast.success("Admin promoted");
+        },
+    });
+
+    const demoteMutation = useMutation({
+        mutationFn: ({
+            groupId,
+            memberId,
+        }: {
+            groupId: string;
+            memberId: string;
+        }) => demoteAdmin(groupId, memberId),
+
+        onSuccess: () => {
+            toast.success("Admin demoted");
+        },
+    });
+
     return {
         createGroup: createMutation.mutate,
         isCreatingGroup: createMutation.isPending,
@@ -119,5 +161,14 @@ export function useGroupActions() {
 
         addMembers: addMembersMutation.mutateAsync,
         isAddingMembers: addMembersMutation.isPending,
+
+        removeMember: removeMemberMutation.mutate,
+        isRemovingMember: removeMemberMutation.isPending,
+
+        promoteMember: promoteMutation.mutate,
+        isPromotingMember: promoteMutation.isPending,
+
+        demoteAdmin: demoteMutation.mutate,
+        isDemotingAdmin: demoteMutation.isPending,
     };
 }
