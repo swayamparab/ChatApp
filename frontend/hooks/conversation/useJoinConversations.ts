@@ -11,6 +11,11 @@ export function useJoinConversations() {
 
     const joinedRoomsRef = useRef(new Set<string>());
 
+    //clear old rooms
+    useEffect(() => {
+        joinedRoomsRef.current.clear();
+    }, [socket.id]);
+
     useEffect(() => {
         if (!socket.connected || !data) {
             return;

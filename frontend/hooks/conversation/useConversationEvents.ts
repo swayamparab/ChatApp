@@ -83,11 +83,26 @@ export function useConversationEvents() {
             });
         }
 
-        function handleGroupAdded(data: {
+        function handleMemberRemoved(data: {
             conversationId: string;
+            memberId: string;
         }) {
             queryClient.invalidateQueries({
+                queryKey: queryKeys.groupInfo(data.conversationId),
+            });
+
+            queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
+            });
+        }
+
+        function handleGroupAdded(data: { conversationId: string }) {
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.conversations,
+            });
+
+            socket.emit("join_conversation", {
+                conversationId: data.conversationId,
             });
         }
 
@@ -122,6 +137,7 @@ export function useConversationEvents() {
         socket.on("group_updated", handleGroupUpdated);
         socket.on("left_group", handleLeftGroup);
         socket.on("member_added", handleMemberAdded);
+        socket.on("member_removed", handleMemberRemoved);
         socket.on("group_added", handleGroupAdded);
         socket.on("group_deleted", handleGroupDeleted);
 
@@ -129,6 +145,7 @@ export function useConversationEvents() {
             socket.off("group_updated", handleGroupUpdated);
             socket.off("left_group", handleLeftGroup);
             socket.off("member_added", handleMemberAdded);
+            socket.off("member_removed", handleMemberRemoved);
             socket.off("group_added", handleGroupAdded);
             socket.off("group_deleted", handleGroupDeleted);
         };

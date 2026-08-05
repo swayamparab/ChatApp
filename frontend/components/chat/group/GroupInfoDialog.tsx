@@ -17,6 +17,7 @@ import GroupMemberItem from "./GroupMemberItem";
 import { useEffect, useState } from "react";
 import { useGroupActions } from "@/hooks/group/useGroupActions";
 import { useSearchUsers } from "@/hooks/useSearchUsers";
+import { toast } from "sonner";
 
 type GroupInfoDialogProps = {
     open: boolean;
@@ -415,12 +416,22 @@ export default function GroupInfoDialog({
                                         selectedMembers.length === 0 ||
                                         isAddingMembers
                                     }
-                                    onClick={() =>
-                                        addMembers({
-                                            groupId,
-                                            memberIds: selectedMembers,
-                                        })
-                                    }
+                                    onClick={async () => {
+                                        try {
+                                            await addMembers({
+                                                groupId,
+                                                memberIds: selectedMembers,
+                                            });
+
+                                            setAddingMembers(false);
+                                            setSelectedMembers([]);
+                                            setSearch("");
+
+                                            toast("member added!")
+                                        } catch (error) {
+                                            toast.error(error instanceof Error ? error.message : "Failed to add members");
+                                        }
+                                    }}
                                     className="
                                         flex-1
                                         rounded-lg

@@ -22,6 +22,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchMessages } from "@/hooks/message/useSearchMessages";
 import { useCallActions } from "@/hooks/call/useCallActions";
 import GroupInfoDialog from "../group/GroupInfoDialog";
+import { useGroupInfo } from "@/hooks/group/useGroupInfo";
 
 type ChatHeaderProps = {
     isTyping: boolean;
@@ -95,6 +96,12 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
             conversation.conversationId === conversationId
     );
 
+    const isGroup = conversation?.type === "group";
+
+    const { data: groupInfo } = useGroupInfo(
+        isGroup ? conversationId : ""
+    );
+
     if (isLoading) {
         return (
             <header
@@ -137,8 +144,6 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
         );
     }
 
-    const isGroup = conversation.type === "group";
-
     const isOnline =
         !isGroup &&
         onlineUsers.includes(conversation.otherUser!.id);
@@ -149,13 +154,13 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
             : "";
 
     const title = isGroup
-        ? conversation.group!.name!
+        ? groupInfo?.group.name ?? conversation.group!.name
         : conversation.otherUser!.username;
 
     const avatarLetter = title.charAt(0).toUpperCase();
 
     const subtitle = isGroup
-        ? `${conversation.group!.memberCount} members`
+        ? `${groupInfo?.group.members.length ?? conversation.group!.memberCount} members`
         : isTyping
             ? "Typing..."
             : isOnline
@@ -365,10 +370,10 @@ export default function ChatHeader({ isTyping, onJumpToMessage }: ChatHeaderProp
 
                             <p
                                 className={`truncate text-sm ${isTyping
-                                        ? "text-green-400"
-                                        : isOnline
-                                            ? "text-emerald-400"
-                                            : "text-slate-400"
+                                    ? "text-green-400"
+                                    : isOnline
+                                        ? "text-emerald-400"
+                                        : "text-slate-400"
                                     }`}
                             >
                                 {subtitle}

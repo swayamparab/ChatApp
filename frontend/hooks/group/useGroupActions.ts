@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 
 import { addMembers, createGroup, deleteGroup, leaveGroup, updateGroup } from "@/services/groups";
 import { queryKeys } from "@/lib/query-keys";
+import { toast } from "sonner";
 
 export function useGroupActions() {
     const queryClient = useQueryClient();
@@ -13,11 +14,17 @@ export function useGroupActions() {
         mutationFn: createGroup,
 
         onSuccess: (data) => {
+
+            toast.success("Group Created!");
+
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
             });
 
             router.push(`/chat/${data.conversationId}`);
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 
@@ -25,11 +32,16 @@ export function useGroupActions() {
         mutationFn: deleteGroup,
 
         onSuccess: () => {
+            toast.success("Group Deleted!")
+
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
             });
 
             router.replace("/chat");
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 
@@ -37,11 +49,16 @@ export function useGroupActions() {
         mutationFn: leaveGroup,
 
         onSuccess: () => {
+            toast.success("You left the group")
+
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
             });
 
             router.replace("/chat");
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 
@@ -49,6 +66,8 @@ export function useGroupActions() {
         mutationFn: updateGroup,
 
         onSuccess: (_, variables) => {
+            toast.success("Group info updated!");
+
             queryClient.invalidateQueries({
                 queryKey: queryKeys.groupInfo(
                     variables.groupId
@@ -59,12 +78,17 @@ export function useGroupActions() {
                 queryKey: queryKeys.conversations,
             });
         },
+        onError: (error) => {
+            toast.error(error.message);
+        },
     });
 
     const addMembersMutation = useMutation({
         mutationFn: addMembers,
 
         onSuccess: (_, variables) => {
+            toast.success("Members added!");
+
             queryClient.invalidateQueries({
                 queryKey: queryKeys.groupInfo(
                     variables.groupId
@@ -74,6 +98,9 @@ export function useGroupActions() {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.conversations,
             });
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 

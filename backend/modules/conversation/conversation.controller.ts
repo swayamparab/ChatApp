@@ -84,7 +84,9 @@ export async function createGroupController(req: Request, res: Response) {
             data
         );
 
-        for (const memberId of data.memberIds) {
+        const memberIds = [...new Set([req.userId, ...data.memberIds])];
+
+        for (const memberId of memberIds) {
             emitToUser(memberId, "group_added", {
                 conversationId: conversation.id,
             });
@@ -194,6 +196,10 @@ export async function addMembersController(
         );
 
         for (const memberId of result.memberIds) {
+            emitToUser(memberId, "group_added", {
+                conversationId: result.conversationId,
+            });
+
             joinUserToConversation(
                 memberId,
                 result.conversationId
@@ -204,12 +210,6 @@ export async function addMembersController(
             conversationId: result.conversationId,
             memberIds: result.memberIds,
         });
-
-        for (const memberId of result.memberIds) {
-            emitToUser(memberId, "group_added", {
-                conversationId: result.conversationId,
-            });
-        }
 
         return res.status(200).json({
             success: true,
