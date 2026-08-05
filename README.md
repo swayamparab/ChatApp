@@ -2,7 +2,7 @@
 
 A modern full-stack real-time one-to-one communication platform built with **Next.js**, **Express**, **PostgreSQL**, **Drizzle ORM**, **Socket.IO**, and **WebRTC**.
 
-Relay provides secure messaging, media sharing, voice & video calling, and a responsive experience across desktop and mobile.
+Relay is a production-style real-time communication platform featuring secure authentication, one-to-one messaging, group chats with role-based administration, media sharing, voice & video calling, and live synchronization powered by Socket.IO and React Query.
 
 ---
 
@@ -36,9 +36,9 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 
 ---
 
-## Real-Time Messaging
+## Messaging
 
-- One-to-one real-time messaging
+- One-to-one Real-Time messaging
 - Text messages
 - Image messages
 - Video messages
@@ -54,6 +54,47 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 - Optimistic UI updates
 - Cursor-based infinite scrolling
 - Automatic scroll position restoration
+- Message search
+- Infinite scrolling
+- Cursor pagination
+- Live message editing
+- Live message deletion
+- Reply previews
+- Media previews
+- Auto read synchronization
+
+---
+
+## Real-Time Synchronization
+
+- Socket.IO room architecture
+- Live conversation updates
+- Real-time group synchronization
+- Live member join/leave
+- Live admin promotion/demotion
+- Live group rename
+- Live conversation ordering
+- Live unread count updates
+- Live typing indicators
+- Read receipt synchronization
+
+---
+
+## Group Chats
+
+- Create groups
+- Rename groups
+- Add members
+- Remove members
+- Leave groups
+- Delete groups
+- Multiple administrators
+- Promote members to admin
+- Demote admins
+- Real-time group updates
+- Live member synchronization
+- Automatic room management
+- Role-based permissions
 
 ---
 
@@ -92,7 +133,8 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 - Call duration
 - Mute microphone
 - Ongoing call card
-- Speaker selection (supported browsers)
+- ICE candidate exchange
+- WebRTC signaling through Socket.IO
 
 ---
 
@@ -104,10 +146,13 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 - Mute microphone
 - Remote camera status
 - Camera-off placeholder
-- Picture-in-Picture (PiP) mode
+- Picture-in-Picture (PiP) mode support
 - Draggable floating video window
 - Fullscreen / Restore
 - Responsive mobile experience
+- Draggable video window
+- Camera switching
+- Camera state synchronization
 
 ---
 
@@ -120,13 +165,18 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 
 ---
 
-## Presence
+## Presence & Activity
 
+- Single persistent Socket.IO connection per browser tab
 - Online / Offline status
 - Last seen
 - Typing indicators
 - Live unread counts
-- Single persistent Socket.IO connection per browser tab
+- Live online users
+- Last seen updates
+- Typing indicators
+- Read receipts
+- Live unread counters
 
 ---
 
@@ -139,6 +189,18 @@ Relay provides secure messaging, media sharing, voice & video calling, and a res
 - shadcn/ui components
 - Toast notifications
 - Optimistic updates
+
+---
+
+## Performance
+
+- Cursor-based pagination
+- Infinite message loading
+- React Query caching
+- Optimistic UI updates
+- Cache synchronization via Socket.IO
+- Minimal API refetching
+- Efficient room-based broadcasts
 
 ---
 
@@ -244,30 +306,61 @@ npm run dev
 
 # Technical Highlights
 
-- Layered backend architecture (Routes → Controllers → Services → Database)
-- Socket.IO room-based messaging
-- WebRTC peer-to-peer audio/video communication
-- STUN server integration
+- Layered backend architecture
+- Service-based business logic
+- Socket.IO event-driven architecture
+- Room-based real-time communication
+- WebRTC peer-to-peer calling
 - Cursor-based infinite pagination
 - React Query cache synchronization
 - Optimistic UI updates
 - Secure HttpOnly cookie authentication
-- Type-safe API validation with Zod
+- Role-based group permissions
+- Zod request validation
+- Drizzle ORM with PostgreSQL
+- Cloudinary media storage
 - Fully typed TypeScript codebase
-- Modular frontend architecture using custom hooks and providers
+- Modular React hooks architecture
+- Responsive mobile-first UI
+
+---
+
+# Project Structure
+
+frontend/
+├── app/
+├── components/
+├── hooks/
+├── providers/
+├── services/
+├── lib/
+└── types/
+
+backend/
+├── modules/
+├── sockets/
+├── middleware/
+├── routes/
+├── db/
+├── services/
+└── lib/
 
 ---
 
 # Future Improvements
 
-- TURN server for production-grade WebRTC reliability
-- Call history
-- Group chats
+- TURN server for production-grade WebRTC
 - Screen sharing
-- Emoji reactions
-- Message search
-- Push notifications
 - End-to-end encryption
+- Push notifications
+- PWA support
+- Message reactions
+- Pinned messages
+- Polls
+- Voice/video group calls
+- Message forwarding
+- User blocking
+- Archived chats
 
 ---
 
