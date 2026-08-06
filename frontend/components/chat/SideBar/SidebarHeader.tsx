@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import CreateGroupDialog from "../group/CreateGroupDialog";
+import { api } from "@/lib/api";
 
 export default function SidebarHeader() {
     const { data } = useCurrentUser();
@@ -32,13 +33,7 @@ export default function SidebarHeader() {
 
     async function handleLogout() {
         try {
-            await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
-                {},
-                {
-                    withCredentials: true,
-                }
-            );
+            await api.post("/auth/logout");
 
             queryClient.clear();
 
