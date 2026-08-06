@@ -4,7 +4,7 @@ import { useSocket } from "../useSocket";
 import { useCall } from "./useCall";
 import { CallUser, initialCallState } from "@/providers/CallProvider";
 import { useWebRTC } from "../webrtc/useWebRTC";
-import { useCurrentUser } from "../useCurrentUser";
+import { useCurrentUser } from "../user/useCurrentUser";
 import { toast } from "sonner";
 import { useRingtone } from "./useRingtone";
 

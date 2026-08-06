@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { useCall } from "@/hooks/call/useCall";
 import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 export function RemoteVideo() {
     const videoRef = useRef<HTMLVideoElement>(null);

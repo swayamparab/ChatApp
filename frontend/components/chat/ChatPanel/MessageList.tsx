@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 
 import { useMessages } from "@/hooks/message/useMessages";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 import MessageBubble from "./MessageBubble";
 import { useMarkConversationAsRead } from "@/hooks/conversation/useMarkConversationAsRead";

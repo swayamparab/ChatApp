@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import { X } from "lucide-react";
 
-import { useSearchUsers } from "@/hooks/useSearchUsers";
+import { useSearchUsers } from "@/hooks/user/useSearchUsers";
 import { useGroupActions } from "@/hooks/group/useGroupActions";
 
 type CreateGroupDialogProps = {

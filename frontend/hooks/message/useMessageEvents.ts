@@ -12,7 +12,7 @@ import type { Message, GetMessagesResponse, } from "@/types/message";
 
 import type { GetConversationsResponse, } from "@/types/conversations";
 
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 import type { InfiniteData } from "@tanstack/react-query";
 

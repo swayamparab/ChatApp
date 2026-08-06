@@ -20,3 +20,22 @@ export type SearchUsersResponse = {
     success: boolean;
     users: SearchUser[];
 };
+
+export type UpdateProfileRequest = {
+    username?: string;
+    currentPassword?: string;
+    newPassword?: string;
+};
+
+export type UpdateProfileResponse = {
+    success: boolean;
+    message: string;
+    user: {
+        id: string;
+        username: string;
+        email: string;
+        lastSeen: string | null;
+        createdAt: string;
+        updatedAt: string;
+    };
+};

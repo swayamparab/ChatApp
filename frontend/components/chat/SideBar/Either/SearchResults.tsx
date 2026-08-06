@@ -1,4 +1,4 @@
-import { useSearchUsers } from "@/hooks/useSearchUsers";
+import { useSearchUsers } from "@/hooks/user/useSearchUsers";
 import UserSearchCard from "../UserSearchCard";
 
 type SearchResultsProps = {

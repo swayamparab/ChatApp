@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSocket } from "@/hooks/useSocket";
 import { Conversation } from "@/types/conversations";
 import { useRouter, useParams } from "next/navigation";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 type ConversationItemProps = {
     conversation: Conversation;

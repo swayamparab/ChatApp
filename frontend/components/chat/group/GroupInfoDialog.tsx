@@ -11,12 +11,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Pencil, Check, X } from "lucide-react";
 
 import { useGroupInfo } from "@/hooks/group/useGroupInfo";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 
 import GroupMemberItem from "./GroupMemberItem";
 import { useEffect, useState } from "react";
 import { useGroupActions } from "@/hooks/group/useGroupActions";
-import { useSearchUsers } from "@/hooks/useSearchUsers";
+import { useSearchUsers } from "@/hooks/user/useSearchUsers";
 import { toast } from "sonner";
 
 type GroupInfoDialogProps = {

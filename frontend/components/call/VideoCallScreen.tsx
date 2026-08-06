@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 import { useCall } from "@/hooks/call/useCall";
 import { useCallActions } from "@/hooks/call/useCallActions";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser } from "@/hooks/user/useCurrentUser";
 import { useCallDuration } from "@/hooks/call/useCallDuration";
 import { useWebRTC } from "@/hooks/webrtc/useWebRTC";
 import { useWebRTCActions } from "@/hooks/webrtc/useWebRTCActions";
