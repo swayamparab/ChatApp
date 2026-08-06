@@ -19,7 +19,7 @@ export const updateProfileSchema = z
 
         newPassword: z
             .string()
-            .min(8, "Password must be at least 8 characters.")
+            .min(6, "Password must be at least 6 characters.")
             .optional(),
     })
     .refine(

@@ -107,10 +107,8 @@ export default function SidebarHeader() {
                             className="w-44 border-slate-800 bg-slate-900"
                         >
                             <DropdownMenuItem
-                                onClick={() =>
-                                    setSettingsOpen(true)
-                                }
-                                className="cursor-pointer"
+                                onClick={() => setSettingsOpen(true)}
+                                className="cursor-pointer text-white focus:bg-slate-800 focus:text-white"
                             >
                                 <Settings className="mr-2 h-4 w-4" />
                                 Settings

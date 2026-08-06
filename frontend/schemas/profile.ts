@@ -5,36 +5,35 @@ export const updateProfileSchema = z
         username: z
             .string()
             .trim()
-            .min(3, "Username must be at least 3 characters.")
-            .max(20, "Username cannot exceed 20 characters."),
+            .min(3)
+            .max(20),
 
-        currentPassword: z.string(),
+        currentPassword: z.string().optional(),
 
         newPassword: z
             .string()
             .min(6, "Password must be at least 6 characters.")
-            .or(z.literal("")),
+            .optional(),
 
-        confirmPassword: z.string(),
+        confirmPassword: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-        if (data.newPassword && !data.currentPassword) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["currentPassword"],
-                message: "Current password is required.",
-            });
-        }
+        if (data.newPassword) {
+            if (!data.currentPassword) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["currentPassword"],
+                    message: "Current password is required.",
+                });
+            }
 
-        if (
-            data.newPassword &&
-            data.newPassword !== data.confirmPassword
-        ) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["confirmPassword"],
-                message: "Passwords do not match.",
-            });
+            if (data.newPassword !== data.confirmPassword) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["confirmPassword"],
+                    message: "Passwords do not match.",
+                });
+            }
         }
     });
 

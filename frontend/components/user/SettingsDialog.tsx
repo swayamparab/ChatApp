@@ -72,6 +72,7 @@ export default function SettingsDialog({
             username: data.user.username,
             currentPassword: "",
             newPassword: "",
+            confirmPassword: "",
         });
     }, [data, reset, open]);
 
@@ -217,35 +218,22 @@ export default function SettingsDialog({
 
                                 <div className="relative">
                                     <Input
-                                        id="currentPassword"
-                                        type={
-                                            showCurrentPassword
-                                                ? "text"
-                                                : "password"
-                                        }
-                                        placeholder="Current password"
-                                        autoComplete="current-password"
-                                        aria-invalid={!!errors.currentPassword}
-                                        {...register("currentPassword")}
+                                        id="newPassword"
+                                        type={showNewPassword ? "text" : "password"}
+                                        placeholder="New password"
+                                        autoComplete="new-password"
+                                        aria-invalid={!!errors.newPassword}
+                                        {...register("newPassword")}
                                     />
 
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            setShowNewPassword(
-                                                !showNewPassword
-                                            )
+                                            setShowNewPassword(!showNewPassword)
                                         }
-                                        className="
-                                            absolute
-                                            right-3
-                                            top-1/2
-                                            -translate-y-1/2
-                                            text-slate-400
-                                            hover:text-white
-                                        "
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                                     >
-                                        {showCurrentPassword ? (
+                                        {showNewPassword ? (
                                             <EyeOff className="h-4 w-4" />
                                         ) : (
                                             <Eye className="h-4 w-4" />
@@ -255,13 +243,11 @@ export default function SettingsDialog({
 
                                 {errors.newPassword && (
                                     <p className="text-sm text-red-500">
-                                        {
-                                            errors.newPassword
-                                                .message
-                                        }
+                                        {errors.newPassword.message}
                                     </p>
                                 )}
                             </div>
+
                             <div className="space-y-2">
                                 <Label htmlFor="confirmPassword">
                                     Confirm Password
@@ -269,35 +255,22 @@ export default function SettingsDialog({
 
                                 <div className="relative">
                                     <Input
-                                        id="currentPassword"
-                                        type={
-                                            showCurrentPassword
-                                                ? "text"
-                                                : "password"
-                                        }
-                                        placeholder="Current password"
-                                        autoComplete="current-password"
-                                        aria-invalid={!!errors.currentPassword}
-                                        {...register("currentPassword")}
+                                        id="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="Confirm password"
+                                        autoComplete="new-password"
+                                        aria-invalid={!!errors.confirmPassword}
+                                        {...register("confirmPassword")}
                                     />
 
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            setShowConfirmPassword(
-                                                !showConfirmPassword
-                                            )
+                                            setShowConfirmPassword(!showConfirmPassword)
                                         }
-                                        className="
-                                            absolute
-                                            right-3
-                                            top-1/2
-                                            -translate-y-1/2
-                                            text-slate-400
-                                            hover:text-white
-                                        "
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                                     >
-                                        {showCurrentPassword ? (
+                                        {showConfirmPassword ? (
                                             <EyeOff className="h-4 w-4" />
                                         ) : (
                                             <Eye className="h-4 w-4" />
