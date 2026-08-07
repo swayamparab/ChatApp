@@ -6,21 +6,23 @@ export const updateProfileSchema = z
             .string()
             .trim()
             .min(3, "Username must be at least 3 characters.")
-            .max(20, "Username cannot exceed 20 characters.")
-            .optional(),
+            .max(20, "Username cannot exceed 20 characters."),
 
         currentPassword: z.string().optional(),
 
         newPassword: z
             .string()
-            .min(6, "Password must be at least 6 characters.")
             .optional(),
 
         confirmPassword: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-        // Password validation
-        if (data.newPassword) {
+        // Only validate passwords if the user entered one
+        if (
+            data.currentPassword ||
+            data.newPassword ||
+            data.confirmPassword
+        ) {
             if (!data.currentPassword) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -29,25 +31,34 @@ export const updateProfileSchema = z
                 });
             }
 
-            if (data.newPassword !== data.confirmPassword) {
+            if (!data.newPassword) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["newPassword"],
+                    message: "New password is required.",
+                });
+            }
+
+            if (
+                data.newPassword &&
+                data.newPassword.length < 6
+            ) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["newPassword"],
+                    message: "Password must be at least 6 characters.",
+                });
+            }
+
+            if (
+                data.newPassword !== data.confirmPassword
+            ) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: ["confirmPassword"],
                     message: "Passwords do not match.",
                 });
             }
-        }
-
-        // At least one field should be changed
-        if (
-            !data.username &&
-            !data.newPassword
-        ) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["username"],
-                message: "Nothing to update.",
-            });
         }
     });
 
