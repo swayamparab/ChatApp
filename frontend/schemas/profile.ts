@@ -5,8 +5,9 @@ export const updateProfileSchema = z
         username: z
             .string()
             .trim()
-            .min(3)
-            .max(20),
+            .min(3, "Username must be at least 3 characters.")
+            .max(20, "Username cannot exceed 20 characters.")
+            .optional(),
 
         currentPassword: z.string().optional(),
 
@@ -18,6 +19,7 @@ export const updateProfileSchema = z
         confirmPassword: z.string().optional(),
     })
     .superRefine((data, ctx) => {
+        // Password validation
         if (data.newPassword) {
             if (!data.currentPassword) {
                 ctx.addIssue({
@@ -34,6 +36,18 @@ export const updateProfileSchema = z
                     message: "Passwords do not match.",
                 });
             }
+        }
+
+        // At least one field should be changed
+        if (
+            !data.username &&
+            !data.newPassword
+        ) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ["username"],
+                message: "Nothing to update.",
+            });
         }
     });
 
