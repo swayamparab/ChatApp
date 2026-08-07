@@ -91,15 +91,22 @@ export default function SidebarHeader() {
                     </Button>
 
                     <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-slate-400 hover:bg-slate-800 hover:text-white"
-                                aria-label="More options"
-                            >
-                                <MoreVertical className="h-5 w-5" />
-                            </Button>
+                        <DropdownMenuTrigger
+                            className="
+                                inline-flex
+                                h-9
+                                w-9
+                                items-center
+                                justify-center
+                                rounded-md
+                                text-slate-400
+                                transition
+                                hover:bg-slate-800
+                                hover:text-white
+                            "
+                            aria-label="More options"
+                        >
+                            <MoreVertical className="h-5 w-5" />
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent

@@ -35,14 +35,6 @@ export const updateProfileSchema = z
             message: "Current password is required.",
         }
     )
-    .refine(
-        (data) =>
-            data.username ||
-            data.newPassword,
-        {
-            message: "Nothing to update.",
-        }
-    );
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 

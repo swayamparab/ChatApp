@@ -20,10 +20,6 @@ export async function updateProfile(
 
     const updates: Partial<typeof users.$inferInsert> = {};
 
-    if (Object.keys(updates).length === 0) {
-        throw new Error("Nothing to update");
-    }
-
     // Username
     if (
         data.username &&
@@ -37,11 +33,22 @@ export async function updateProfile(
             throw new Error("Username already exists");
         }
 
-        updates.username = data.username;
+        updates.username = data.username.trim();
     }
 
     // Password
+    // Password
     if (data.newPassword) {
+
+        const samePassword = await bcrypt.compare(
+            data.newPassword,
+            currentUser.password
+        );
+
+        if (samePassword) {
+            throw new Error("New password must be different");
+        }
+
         const validPassword = await bcrypt.compare(
             data.currentPassword!,
             currentUser.password
@@ -55,6 +62,10 @@ export async function updateProfile(
             data.newPassword,
             10
         );
+    }
+
+    if (Object.keys(updates).length === 0) {
+        throw new Error("Nothing to update");
     }
 
     const [updatedUser] = await db
